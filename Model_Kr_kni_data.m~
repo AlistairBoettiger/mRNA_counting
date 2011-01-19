@@ -1,0 +1,135 @@
+
+
+%%                          Model_Kr_kni_data.m
+
+% Alistair Boettiger                    Date Begun: 01/17/11
+% Levine Lab                            Last Modified: 01/19/11
+%                                           
+
+%% Simulate Kr and kni data
+% Adapted from simulation of hb data written in comp_hbdata_binomial.m
+% 
+%% Updates
+%
+%% Kr data
+% Enhancer size and input concentration not well characterized.  Try to
+% estimate some parallels and differences.
+% Current fraction of activated nuclei is based on reporter vs. endogenous.
+%  Endogenous is also somewhat patchy, but more importantly not captured by
+%  the 2 enhancer.  
+
+
+% fout = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Results/';
+% folder = '/Volumes/Data/Lab Data/Shadow_data/Processed/';
+% edat =  'kr2enh_22C_LacZ_kr14_data.mat';
+% load([folder,edat]); 
+% 
+% 
+% N = 500; 
+% figure(1); clf; imshow(handles.It);
+
+
+
+% inputs
+
+ names = {'no primary','no shadow','control'};
+ col = {'blue','green','red','magenta'}; 
+pL1 = [.15,1,.15];% probability of S enhancer not forming a loop in shadow alone, primary alone, and Primary + Shadow
+pL2 = [1,.05,.05];% " " for primary
+a_effs = [.05, .05]/20; 
+pro_open = .6; 
+
+
+
+figure(4); clf;  
+
+colordef black; set(gcf,'color','k'); 
+
+ cc =14; time = 30; % time in minutes
+N = 50; 
+ 
+V = 200; % number of concentration points to check
+stp = 10; 
+Ts = time*60/stp; % number of time points to check
+
+
+D = 4.5;% diffusion rate of bcd (according to Dostatni)
+cG = 4.8; % c Gregor
+
+C = linspace(2,7,V);  % range of concentrations to explore; 
+Th = 1:2000; % range of thresholds number of molecules to explore
+      
+low = cG-cG*.1; % 10% less than threshold bcd concentration
+high = cG + cG*.1; % 10% more than threshold bcd concentration
+
+miss_rate1 = zeros(1,Ts); % Primary, diffusion limited miss rate
+miss_rate2 = zeros(1,Ts);  % shadow, diffusion limited miss rate
+miss_rate3 = zeros(1,Ts);  % shadow, diffusion limited miss rate
+ 
+
+
+
+for e = 1:3 
+    bf = zeros(Ts,N+1);
+    for t = 1:Ts
+        T = t*stp;% T = 1*60;
+        
+        % Primary enhancer
+        a = a_effs(1); 
+        phalf = gammainc(a*cG*D*T,floor(Th),'lower');  % 1 - upper is lower
+         [err,thresh] = min( abs(phalf - .5) );
+         pint =  1-gammainc(a*C*D*T,floor(thresh),'upper');
+        [err,cut] = min( abs(C - low));  % find where lines intersect
+        miss_rate1(t) = pint(cut);       
+        
+        % Shadow enhancer
+        a = a_effs(2); 
+          phalf = gammainc(a*cG*D*T,floor(Th),'lower');  % 1 - upper is lower
+         [err,thresh] = min( abs(phalf - .5) );
+         pint =  1-gammainc(a*C*D*T,floor(thresh),'upper');
+        [err,cut] = min( abs(C - low));  % find where lines intersect
+        miss_rate2(t) = pint(cut);    
+        
+        
+%       % KEEP THIS.  USEFUL CODE!        
+%         figure(1); clf; plot(C,pint,'linewidth',2); hold on; 
+%         plot([low,low],[0,1],'c');
+%         hold on; plot([high,high],[0,1],'r');
+%         figure(1); hold on; plot([C(cut)], [pint(cut)],'r.')
+%         
+%         vert = [C(1:cut)',pint(1:cut)'];  vert = [vert; C(cut),0;0,0];
+%         fac = [1:cut+2];
+%         
+%         patch('Faces',fac,'Vertices',vert,'Facecolor',[0,.5,1]);
+%         alpha(.7);
+        
+ %   end
+
+%     figure(2); clf; plot(miss_rate, 'k.'); 
+%     bvar = N*miss_rate.*(1-miss_rate);
+%     figure(2); clf; plot(bvar); 
+%     figure(3); clf; hist(miss_rate,0:.01:1); xlim([0,1]);
+
+ 
+    
+        bf(t,:) = binopdf(0:1:N,N,(1-(1-miss_rate1(t))*(1-pL1(e) )*pro_open)*(1-(1-miss_rate2(t))*(1-pL2(e) )*pro_open)  );
+    end
+
+%     ns = floor(logspace(0,log10(Ts),10));
+%     figure(1); clf; plot(bf(ns,:)','r');
+%     set(gcf,'color','k');
+    
+    xbf = linspace(0,1,N+1);
+    bfD = sum(bf);
+    bfD = bfD/sum(bfD)*N;
+    mean(bfD)
+    
+    
+    figure(4); hold on; plot(xbf,bfD,'color',col{e},'linewidth',2);
+end
+legend(names);
+title(['cc',num2str(cc),' T = ',num2str(time), 'min  N = ',num2str(N), ' cells']); 
+
+
+
+%sum(bfD)*1/N
