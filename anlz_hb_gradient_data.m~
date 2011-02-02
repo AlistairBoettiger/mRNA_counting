@@ -23,8 +23,6 @@ c_inds = sub2ind([h,w],floor(nuc_cents(2,:)*h/hn),floor(nuc_cents(1,:)*w/wn));
 d = sqrt( (nuc_cents(1,:)*w/wn).^2 + (nuc_cents(2,:)*h/hn).^2);
 
 
-
-
 % Plot mRNA count per cell, size normalized, and cell area.  
         cell_cnt = zeros(h,w); 
         cell_sadj = zeros(h,w); 

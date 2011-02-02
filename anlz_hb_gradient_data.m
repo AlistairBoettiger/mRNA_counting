@@ -1,6 +1,11 @@
 
 %% anlz_hb_gradient_data.m
 
+% Alistair Boettiger                                Date Begun: 02/02/11
+% Levine Lab                                    Last Modified: 02/02/11
+
+% uses radial distance.  should use planar distance.
+% Will work better if original images are oriented along the AP axis.  
 
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
@@ -21,8 +26,6 @@ Nnucs =  max(NucLabeled(:));
 c_inds = sub2ind([h,w],floor(nuc_cents(2,:)*h/hn),floor(nuc_cents(1,:)*w/wn));
 % compute distances
 d = sqrt( (nuc_cents(1,:)*w/wn).^2 + (nuc_cents(2,:)*h/hn).^2);
-
-
 
 
 % Plot mRNA count per cell, size normalized, and cell area.  
@@ -86,9 +89,9 @@ figure(1); clf;
 mRNA = linspace(0,1400,15);
 for j=1:Sects
     subplot(Sects,1,j);
-    hist(Q{j},mRNA); xlim([0,1500]);
+    hist(Q{j},mRNA); xlim([0,1500]); axis off; 
 end
-
+set(gcf,'color','k');
 
 
 
