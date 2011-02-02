@@ -11,11 +11,8 @@ fout = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling
 
 % States
 
-N = 3; % number of binding sites
+N = 6; % number of binding sites
 
-c_max = 58.5 ; % molecules per micron square at x = 0 
-%  necessary for c = 4.8 at x = .5
-a_eff = 0.05; % size of primar
 
 bound = cell(1,N); 
 AllStates = [];
@@ -30,7 +27,7 @@ AllStates = AllStates';
 S = length(AllStates);
 
 k0 = .03; % much better this is slow and later ones are fast.  
-k1 = 1; 
+k1 = .1; 
 k2= 1;
 km1 = 100;
 km2 = 25;
@@ -64,7 +61,10 @@ G = zeros(S);  % Transition Matrix
         0     0     0     0   km3     km3     km3     -3*km3];  % 123  
 
 % Need an algorithm to build this correctly for arbitrary N.    
-   
+  
+ks = 1:n+1;
+km = (1:n+1)/sqrt(3); 
+[Gu, Gl] = nFillingMatrix(N,ks,km);
 
 Cs = 100; % different concentration values to try
 AllStates(1) = 1;
@@ -73,10 +73,50 @@ c = linspace(1,Cs,Cs);
 %c = logspace(-4,2,Cs);
 
 
-x = linspace(0,1,100);
-c = c_max*exp(-x*5);
+c_max = 58.5 ; % molecules per micron square at x = 0 
+%  necessary for c = 4.8 at x = .5
+a_eff = 0.003; % effective size of primary enhancer
+tau = 60*3; % integration time seconds
+D = 4.5; % um^2/s
+
+
+pts = 60; % number of nuclei in cc13 embryo
+x = linspace(0,1,pts);
+c = c_max*D*a_eff*tau*exp(-x*5);
 figure(1); clf; plot(x,c,'g'); ylabel('molecules/um^3'); 
 
+half_pt = round(pts/2); % the middle point, x = .5
+Thresh = c(half_pt); %
+p_see_above_thresh = zeros(1,pts);
+p_see_below_thresh = zeros(1,pts);
+for i = 1:pts
+   p_see_above_thresh(i) = gammainc(c(i),Thresh,'lower');  % 1 - upper is lower  % I think this floor is artifactual.
+    
+   % p_see_above_thresh(i) = gammainc(c(i),floor(Thresh + .1*Thresh),'lower');  % 1 - upper is lower
+    % p_see_below_thresh(i) = gammainc(c(i),floor(Thresh - .1*Thresh),'upper');  % 1 - upper is lower
+end       
+
+
+figure(2); clf; plot(x,p_see_above_thresh,'c.');
+xlabel('cell position'); ylabel('probability of expression');
+title(['a=',num2str(a_eff,3),'um tau = ',num2str(tau), 's  D=',num2str(D), 'c_{1/2} = 4.8 #/um^3']);
+set(gcf,'color','w'); 
+
+% hold on; plot(x,p_see_below_thresh,'r.');
+ect_on = sum(p_see_above_thresh(half_pt:end))/half_pt
+
+
+
+ect_off = 1-sum(p_see_above_thresh(1:half_pt))/half_pt
+
+ect_on = sum(p_see_above_thresh(half_pt+1:end))/half_pt
+
+y = zeros(1,100);
+c = linspace(0,7,100);
+for i=1:100
+    y(i) = gammainc(c(i),3.8,'lower');
+end
+figure(2); clf; plot(c,y);
 
 %% Theory:
 
@@ -149,10 +189,10 @@ end
 %
 figure(1); clf; colordef white; set(gcf,'color','w');
 
-col = jet(8);
+col = jet(S);
 
 figure(1); clf;
-for j=1:8
+for j=1:S
     plot(c,state(:,j),'.','color',col(j,:)); hold on;
 end
 plot(c,p,'k--');
@@ -163,7 +203,7 @@ legend('0','1','2','3','12','13','23','123','det. theory','opt for N=3','opt for
 figure(2); clf; plot(timedat{1,45},timedat{2,45});
 
 figure(3); clf;
-for j=1:8
+for j=1:S
     plot(x,state(:,j),'.','color',col(j,:)); hold on;
 end
  plot(x,p,'k--');
