@@ -59,44 +59,42 @@ figure(4); clf; imagesc(cell_area); colormap('jet'); colorbar; set(gcf,'color','
 nuc_order = NucLabeled(c_inds);
 [b,m,n] = unique(nuc_order);
 dists = d(m);
-figure(1); clf; plot(dists,mRNA_sadj(1:196),'y.');  % check results
+figure(1); clf; plot(dists,mRNA_sadj,'k.');  % check results
 Data = [dists; mRNA_sadj]';
 Data_sort = sortrows(Data); 
-figure(1); clf; plot(Data_sort(:,1),Data_sort(:,2)); % check results 
 
 
 % Convert distances to bcd concentrations.  
 bcd = log(dists); % just logorithmic.  Don't need arbitrary scaling coeff.
-figure(1); clf; plot(bcd,mRNA_sadj,'y.');
+%figure(1); clf; plot(bcd,mRNA_sadj,'k.');
+
+
 
 Data2 = [bcd; mRNA_sadj; dists]';
 Data2 = sortrows(Data2);
 
-t = linspace(0,2*pi,100);
-Sects = 6;
-xc = zeros(Sects,100);
-yc = zeros(Sects,100);
+Sects = 14;
+mu = zeros(1,Sects);
+sigma = zeros(1,Sects);
+
 Q = cell(1,Sects); 
+
 dbnd = zeros(Sects,1);
 for j=1:Sects
     Q{j} = Data2( floor((j-1)*Nnucs/Sects) + 1: floor(j*Nnucs/Sects), 2);
-    r = Data2(floor(j*Nnucs/Sects), 3);
-    xc(j,:) = r*cos(t);
-    yc(j,:) = r*sin(t); 
-    figure(3); hold on; plot(xc(j,:),yc(j,:),'w','linewidth',3);
+    mu(j) = nanmean(Q{j});
+    sigma(j) = nanstd(Q{j});
+    fano = sigma(j)^2/mu(j); 
 end
 
-figure(1); clf;
-mRNA = linspace(0,1400,15);
-for j=1:Sects
-    subplot(Sects,1,j);
-    hist(Q{j},mRNA); xlim([0,1500]); axis off; 
-end
-set(gcf,'color','k');
+x = linspace(0,max(dists)*50/1000,Sects);
 
+figure(1); clf; plot(Data_sort(:,1)*50/1000,Data_sort(:,2),'k.'); % check results 
+figure(1); hold on; errorbar(x,mu,sigma,'linestyle','none','linewidth',3,'color','r');
+ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
 
-
-
+set(gcf,'color','w');
+figure(2); clf; plot(sigma./mu,'k'); ylim([0,1]);
 
 
 
