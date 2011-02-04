@@ -9,24 +9,25 @@
 
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-fname = 'hbCent_hb_LacZ_v2';
+%fname = 'hbCent_hb_LacZ_v2';
+fname = 'gtX_hb_grad_01';
 
 load([folder,fname,'.mat']);
 [h,w] = size(NucLabeled);
 [hn,wn] = size(In); % size associated with nuc centroid positions. 
 Nnucs =  max(NucLabeled(:)); 
 
-%  % Plotting for trouble shooting
-%     figure(1); clf; hist(mRNA_sadj,30);
-%     figure(2); clf; imagesc(NucLabeled); 
-%     hold on; plot(nuc_cents(1,:)*w/wn,nuc_cents(2,:)*h/hn,'wo');
+ % Plotting for trouble shooting
+    figure(1); clf; hist(mRNA_sadj,30);
+    figure(2); clf; imagesc(NucLabeled); 
+    hold on; plot(nuc_cents(1,:)*w/wn,nuc_cents(2,:)*h/hn,'wo');
 
     
 % convert nucleus centroids to indexed postions
 c_inds = sub2ind([h,w],floor(nuc_cents(2,:)*h/hn),floor(nuc_cents(1,:)*w/wn));
 % compute distances
-d = sqrt( (nuc_cents(1,:)*w/wn).^2 + (nuc_cents(2,:)*h/hn).^2);
-
+%d = sqrt( (nuc_cents(1,:)*w/wn).^2 + (nuc_cents(2,:)*h/hn).^2);
+d = nuc_cents(1,:)*h/hn;
 
 % Plot mRNA count per cell, size normalized, and cell area.  
         cell_cnt = zeros(h,w); 
@@ -58,7 +59,7 @@ figure(4); clf; imagesc(cell_area); colormap('jet'); colorbar; set(gcf,'color','
 nuc_order = NucLabeled(c_inds);
 [b,m,n] = unique(nuc_order);
 dists = d(m);
-figure(1); clf; plot(dists,mRNA_sadj,'y.');  % check results
+figure(1); clf; plot(dists,mRNA_sadj(1:196),'y.');  % check results
 Data = [dists; mRNA_sadj]';
 Data_sort = sortrows(Data); 
 figure(1); clf; plot(Data_sort(:,1),Data_sort(:,2)); % check results 
