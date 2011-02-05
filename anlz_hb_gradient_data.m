@@ -89,12 +89,22 @@ end
 
 x = linspace(0,max(dists)*50/1000,Sects);
 
-figure(1); clf; plot(Data_sort(:,1)*50/1000,Data_sort(:,2),'k.'); % check results 
-figure(1); hold on; errorbar(x,mu,sigma,'linestyle','none','linewidth',3,'color','r');
+
+figure(1); clf; colordef white; set(gcf,'color','w');
+
+plot(Data_sort(:,1)*50/1000,Data_sort(:,2),'k.'); % check results 
+hold on; errorbar(x,mu,sigma,'linestyle','none','linewidth',3,'color','r');
 ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
 
-set(gcf,'color','w');
-figure(2); clf; plot(sigma./mu,'k'); ylim([0,1]);
+
+figure(2); clf; 
+colordef white; set(gcf,'color','w');
+plot(sigma./mu,'k'); ylim([0,1]);
+
+
+figure(2); clf; 
+colordef white; set(gcf,'color','w');
+plot(sigma./mu,'k'); ylim([0,1]);
 
 
 

@@ -1,59 +1,108 @@
-clear all;
 
 
-% INPUT:
-% knu ... 1-by-q row vector; rate constants of the chemical reactions;
-% knu = k/nu^(order-1), where nu=volume and order=order of the chemical reaction
-% c ... Nchs-by-q; c(j,i) = coeficient at the j-th chemical species at the reactant side of the i-th reaction
-% p ... Nchs-by-q; p(j,i) = coeficient at the j-th chemical species at the product side of the i-th reaction
-% A0 ... Nchs-by-1 column vector;
-% A0(j) = number of molecules of j-th chemical species at the initial time t=0
-% tfin ... final time; if the simulation raches tfin it stops
-%
-% OUTPUT:
-% A ... Nchs-by-N; A(j,m) = number of j-molecules in time interval [t(m), t(m+1)]
-% A(:,1) == A0(:);
-% t ... 1-by-N;
-% prop (ajouté par moi) propensity pour chaque état
+% Nchs ... number of chemical species
+% q ... number of chemical reactions
+%    knu ... 1-by-q row vector; rate constants of the chemical reactions;
+%            knu = k/nu^(order-1), where nu=volume and order=order of the chemical reaction
+%    c ... Nchs-by-q; c(j,i) = coeficient at the j-th chemical species at the reactant side of the i-th reaction
+%    p ... Nchs-by-q; p(j,i) = coeficient at the j-th chemical species at the product side of the i-th reaction
+%    A0 ... Nchs-by-1 column vector;
+%           A0(j) = number of molecules of j-th chemical species at the initial time t=0
+%    tfin ... final time; if the simulation raches tfin it stops
 
-% Nchns different chemical species
-mRNA = 1;
-promoter_open = 0;
-promoter_closed = 0; 
+%clear all;
 
 
-% Q reactions
+% Species
+% 1. promoter_closed
+% 2. promoter_open
+% 3. mRNA
+
+% Reactions
+% -> promoter_open
+% -> promoter_closed
 % promoter_closed -> promoter_open
 % promoter_open -> promoter_closed
-% promoter_open -> mRNA + promoter
-% promoter_closed + mRNA -> promoter_closed + mRNA  % dummy rxn
+% promoter_open -> promoter_open + mRNA
+% mRNA -> 0
 
 
-A0 = [mRNA;
-      promoter_open;
-      promoter_closed];
+% Mean burst size should be: b =  k_tx / k_off
+% Inter-burst interval should be: t_off =  1/k_on
+Nreal = 100;
 
-k = [.01,.01,1,1];
+tfin = 60*20;
 
-% reactions  
-c = [1, 1, 0, 0;  % 1 promoter_closed
-     0, 0, 0, 1;   
-     0, 0, 1, 0];
+% mu_M = (k_on*k_off/(k_off + k_on)*b )/k_d
+
+mu_M = 1000; % This is MEASURED directly
+t_off = 30; % lifetime of off state = time to switch on.  This is MEASURED  
+f = .5; % fraction on.  THIS IS MEASURED
+k_d = 1/(5*60);  % 5 min -- should be able to MEASURE this!
+
+k_on = 1/t_off;  % defined by lifetime of off state
+k_off = k_on*(1/f-1); % chosen so f fraction are on;
+
+k_tx = k_d*mu_M*(k_off+k_on)/(k_on);
+%k_tx = b*k_off;
+
+
+b = k_tx/k_off;  disp(['b = ',num2str(b)]);
+
+N = 100;
+xx = linspace(0,1,N);
+
+% p = gamma(k_on + k_off)/(gamma(k_on)*gamma(k_off))*(1/k_tx)*x.^(k_on-1).*(1-x).^(k_off-1);
+% 
+% figure(1); clf; plot(x,p);
+
+k = [0 0 k_on k_off k_tx k_d];
+
+c = [0, 0, 1, 0, 0, 0;
+     0, 0, 0, 1, 1, 0;
+     0, 0, 0, 0, 0, 1];
  
  
- 
- % products
- p = [0,0,1,1;
-      1,0,0,0;
-      0,1,0,0];
+p = [1, 0, 0, 1,0,0;
+     0, 1, 1, 0,1,0;
+     0, 0, 0, 0,1,0];
+A0 = [1;
+      0;
+      0];
   
 
-  T = 100; 
+
+%ode45
+
+% plot Nreal realizations
+
+figure(1); clf;
+
+figure(2); clf;
+
+dots = zeros(Nreal,1); 
+
+for n = 1 : Nreal
+  [A,t] = gillespiessa(k, c,p, A0,tfin);
   
-  [A,t,prop] = GibsonBruck(k,c,p,A0,T);
-  
-  figure(1); clf; 
-  plot(t,A(1,:),'ko','linewidth',3);
-  hold on; 
-      plot(t,A(2,:),'gx','linewidth',3);  
-      plot(t,A(3,:),'r.','linewidth',3);
+%  [A,t] = GibsonBruck(k, c,p, A0,tfin);
+
+ 
+%   figure(1);
+%   plot( t,A(1,:), 'ro');
+%   hold on;
+%   plot( t,A(2,:), 'g.');
+%    plot( t,A(3,:), 'b.');
+
+   dots(n) = A(3,end);
+end % for n
+
+  figure(1);
+  %plot( t,A(1,:), 'ro');
+  hold on;
+  plot( t,A(2,:), 'g.');
+  plot( t,A(3,:), 'b.');
+
+figure(2); clf; hist(dots);
+cov = std(dots)/mean(dots);
+title(['cov=',num2str(cov,4)]);
