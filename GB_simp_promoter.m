@@ -1,4 +1,11 @@
+%%                       GB_simp_promoter.m
+% 
+% Alistair Boettiger                                   Date Begun: 02/03/11
+% Levine Lab                                        Last Modified: 02/04/11
 
+%% Description
+% Simulate simple promoter bursting to fit to hb data on fraction of
+% activated nuclei, total mRNA, activation time and degredation rates.  
 
 % Nchs ... number of chemical species
 % q ... number of chemical reactions
@@ -35,18 +42,17 @@ tfin = 60*20;
 
 % mu_M = (k_on*k_off/(k_off + k_on)*b )/k_d
 
-mu_M = 1000;
-k_tx = k_d*mu_M*(k_off+k_on)/(k_on);
+mu_M = 1000; % This is MEASURED directly
+t_off = 30; % lifetime of off state = time to switch on.  This is MEASURED  
+f = .5; % fraction on.  THIS IS MEASURED
+k_d = 1/(5*60);  % 5 min -- should be able to MEASURE this!
 
-t_off = 30; % lifetime of off state = time to switch on.  
-f = .5; % fraction on
-
-k_on = 1/t_off;
+k_on = 1/t_off;  % defined by lifetime of off state
 k_off = k_on*(1/f-1); % chosen so f fraction are on;
 
 k_tx = k_d*mu_M*(k_off+k_on)/(k_on);
 %k_tx = b*k_off;
-k_d = 1/(5*60);  % 5 min
+
 
 b = k_tx/k_off;  disp(['b = ',num2str(b)]);
 

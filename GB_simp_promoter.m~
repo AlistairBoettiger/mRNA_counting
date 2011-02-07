@@ -1,4 +1,11 @@
+%%                       GB_simp_promoter.m
+% 
+% Alistair Boettiger                                   Date Begun: 02/03/11
+% Levine Lab                                        Last Modified: 02/04/11
 
+%% Description
+% Simulate simple promoter bursting to fit to hb data on fraction of
+% activated nuclei, total mRNA, activation time and degredation rates.  
 
 % Nchs ... number of chemical species
 % q ... number of chemical reactions

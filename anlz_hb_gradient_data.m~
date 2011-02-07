@@ -11,6 +11,7 @@ clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
 %fname = 'hbCent_hb_LacZ_v2';
 fname = 'gtX_hb_grad_01';
+% fname = 'MP05_sna_y_22C_theshp1';
 
 load([folder,fname,'.mat']);
 [h,w] = size(NucLabeled);
@@ -18,7 +19,7 @@ load([folder,fname,'.mat']);
 Nnucs =  max(NucLabeled(:)); 
 
  % Plotting for trouble shooting
-    figure(1); clf; hist(mRNA_sadj,30);
+    figure(1); clf; colordef white; hist(mRNA_sadj,30); set(gcf,'color','w');
     figure(2); clf; imagesc(NucLabeled); 
     hold on; plot(nuc_cents(1,:)*w/wn,nuc_cents(2,:)*h/hn,'wo');
 

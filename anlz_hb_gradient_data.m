@@ -10,7 +10,8 @@
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
 %fname = 'hbCent_hb_LacZ_v2';
-fname = 'gtX_hb_grad_01';
+%fname = 'gtX_hb_grad_01';
+fname = 'MP05_sna_y_22C_theshp1';
 
 load([folder,fname,'.mat']);
 [h,w] = size(NucLabeled);
@@ -22,18 +23,13 @@ Nnucs =  max(NucLabeled(:));
     figure(2); clf; imagesc(NucLabeled); 
     hold on; plot(nuc_cents(1,:)*w/wn,nuc_cents(2,:)*h/hn,'wo');
 
+  
     
-% convert nucleus centroids to indexed postions
-c_inds = sub2ind([h,w],floor(nuc_cents(2,:)*h/hn),floor(nuc_cents(1,:)*w/wn));
-% compute distances
-%d = sqrt( (nuc_cents(1,:)*w/wn).^2 + (nuc_cents(2,:)*h/hn).^2);
-d = nuc_cents(1,:)*h/hn;
-
-% Plot mRNA count per cell, size normalized, and cell area.  
+    
+    % Plot mRNA count per cell, size normalized, and cell area.  
         cell_cnt = zeros(h,w); 
         cell_sadj = zeros(h,w); 
-        cell_area = zeros(h,w); 
-        
+        cell_area = zeros(h,w);      
         reg_data = regionprops(NucLabeled,'PixelIdxList');
             for k=1:Nnucs
                 pixes = reg_data(k).PixelIdxList;             
@@ -41,12 +37,34 @@ d = nuc_cents(1,:)*h/hn;
                 cell_sadj(pixes) = mRNA_sadj(k);
                 cell_area(pixes) = nuc_area(k);
             end
+        colordef black;
+        figure(2); clf; imagesc(cell_cnt); colormap('jet'); colorbar; set(gcf,'color','k');
+        figure(3); clf; imagesc(cell_sadj); colormap('jet'); colorbar; set(gcf,'color','k');
+        figure(4); clf; imagesc(cell_area); colormap('jet'); colorbar; set(gcf,'color','k');%
+        
+%% Orient image along major axis      
+    bw = imresize(uint16(cell_sadj),.25); 
+    thresh = graythresh(bw);
+    bw = im2bw(bw,thresh); 
+    figure(8); clf; imshow(bw);
 
-colordef black;
-figure(2); clf; imagesc(cell_cnt); colormap('jet'); colorbar; set(gcf,'color','k');
-figure(3); clf; imagesc(cell_sadj); colormap('jet'); colorbar; set(gcf,'color','k');
-figure(4); clf; imagesc(cell_area); colormap('jet'); colorbar; set(gcf,'color','k');
-      
+    L = bwlabel(bw);
+    rprops = regionprops(L,'MajorAxis','Orientation');
+    NucLabeled = imrotate(NucLabeled,360-rprops.Orientation,'nearest'); 
+    figure(8); clf; imagesc(NucLabeled);
+    
+    
+%% convert nucleus centroids to indexed postions
+S = regionprops(NucLabeled,'Centroid');
+nuc_cents = reshape([S.Centroid],2,length(S));
+[h,w] = size(NucLabeled); 
+c_inds = sub2ind([h,w],floor(nuc_cents(2,:)),floor(nuc_cents(1,:)));
+% compute distances
+
+% c_inds = sub2ind([h,w],floor(nuc_cents(2,:)*h/hn),floor(nuc_cents(1,:)*w/wn));
+% compute distances
+%d = sqrt( (nuc_cents(1,:)*w/wn).^2 + (nuc_cents(2,:)*h/hn).^2);
+d = nuc_cents(2,:)*h/hn;
 
 
 
@@ -73,7 +91,8 @@ bcd = log(dists); % just logorithmic.  Don't need arbitrary scaling coeff.
 Data2 = [bcd; mRNA_sadj; dists]';
 Data2 = sortrows(Data2);
 
-Sects = 14;
+%%
+Sects = round(sqrt(Nnucs));
 mu = zeros(1,Sects);
 sigma = zeros(1,Sects);
 
@@ -92,19 +111,20 @@ x = linspace(0,max(dists)*50/1000,Sects);
 
 figure(1); clf; colordef white; set(gcf,'color','w');
 
-plot(Data_sort(:,1)*50/1000,Data_sort(:,2),'k.'); % check results 
+plot(Data_sort(:,1)*50/1000,Data_sort(:,2),'k'); % check results 
 hold on; errorbar(x,mu,sigma,'linestyle','none','linewidth',3,'color','r');
 ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
 
 
 figure(2); clf; 
 colordef white; set(gcf,'color','w');
-plot(sigma./mu,'k'); ylim([0,1]);
+plot(mu,sigma./mu,'k'); ylim([0,1]);
+ylabel('CoV'); xlabel('mean count');
 
-
-figure(2); clf; 
+figure(3); clf; 
 colordef white; set(gcf,'color','w');
-plot(sigma./mu,'k'); ylim([0,1]);
+plot(x,sigma./mu,'k'); ylim([0,1]);
+ylabel('CoV'); xlabel('distance (\mum)');
 
 
 
