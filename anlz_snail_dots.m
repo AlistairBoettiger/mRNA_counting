@@ -10,11 +10,7 @@
 %% Load data, histogram cell_counts
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-%fname = 'hbCent_hb_LacZ_v2';
-%fname = 'gtX_hb_grad_01';
-%fname = 'MP05_sna_y_22C_theshp1';
-
-fname = 'yw_ths_sog_01_lowt';
+fname = 'MP05_sna_y_22C_04';
 
 load([folder,fname,'.mat']);
 [h,w] = size(NucLabeled);
@@ -39,16 +35,130 @@ Nnucs =  max(NucLabeled(:));
             end
         colordef black;
   
-figure(3); clf; cmax = 150;
- subplot(1,2,1); imagesc(cell_sadj1-30); colormap('hot'); colorbar; 
- set(gcf,'color','k'); caxis([0,cmax]); 
- title('ths');
+figure(3); clf; cmax = 800;
+ subplot(1,2,1); imagesc(cell_sadj1); colormap('hot'); colorbar; 
+ set(gcf,'color','k');
+% caxis([0,cmax]); 
+ title('sna');
  
  subplot(1,2,2); imagesc(cell_sadj2); colormap('hot'); colorbar;
- set(gcf,'color','k'); caxis([0,cmax]);
- title('sog');
+ set(gcf,'color','k'); 
+ %caxis([0,cmax]);
+ title('y');
   
-%% 
+  
+%% Define expression region
+
+spread = 1.35;
+t1 = .5;
+
+% Automatic Threshold
+C1 = uint8( cell_sadj1/max(cell_sadj1(:))*255);
+%t1 = graythresh(C1);
+bw1 = im2bw(C1,t1); % 
+bw1 = imclose(bw1,strel('disk',100)); 
+bw1 = imfill(bw1,'holes');
+bw1 = bwareaopen(bw1,2E4);
+
+bndry1 = bwboundaries(bw1)
+figure(3); clf; subplot(2,2,1); imshow(C1);  hold on;
+plot(bndry1{1}(:,2),bndry1{1}(:,1),'c');
+subplot(2,2,2); imshow(bw1); hold on;
+
+inReg = unique(bw1.*NucLabeled);
+inReg(inReg==0) = [];
+
+onMask = ismember(NucLabeled,inReg);
+
+outReg = setdiff(1:Nnucs,inReg);
+on_cnts = mRNA_sadj1(inReg);
+off_cnts = mRNA_sadj1(outReg);
+
+
+on_mean = mean(on_cnts);
+on_std = std(on_cnts);
+off_mean = mean(off_cnts);
+
+
+m = linspace(0,cmax,30);
+figure(2); clf; 
+subplot(2,2,1); hist(on_cnts,m); 
+title(['sna mean=',num2str(on_mean,4),' std=',num2str(on_std,4),' cov=',num2str(on_std/on_mean,3)]);
+subplot(2,2,2); hist(off_cnts,m); title(['mean=',num2str(off_mean,4)]);
+
+
+over1 = find(mRNA_sadj1>on_mean*spread);
+under1 = find(mRNA_sadj1<on_mean/spread); 
+
+Over1 = ismember(NucLabeled,over1).*onMask; 
+Under1 = ismember(NucLabeled,under1).*onMask; 
+
+I = uint8(zeros(h,w,3));
+I(:,:,1) =  C1;
+I(:,:,2) = C1 - uint8(255*Over1);
+I(:,:,3) = uint8(255*Under1)+C1 -uint8(255*Over1);
+figure(4); clf; subplot(1,2,1); imshow(I);
+title(['sna  mean=',num2str(on_mean,4),' std=',num2str(on_std,4),' cov=',num2str(on_std/on_mean,3)]);
+set(gcf,'color','k');
+ hold on;
+plot(bndry1{1}(:,2),bndry1{1}(:,1),'c');
+%
+
+% 
+% 
+% Automatic Threshold
+C1 = uint8( cell_sadj2/max(cell_sadj2(:))*255);
+%t1 = graythresh(C1);
+bw1 = im2bw(C1,t1); % 
+bw1 = imclose(bw1,strel('disk',100)); 
+bw1 = imfill(bw1,'holes');
+bw1 = bwareaopen(bw1,2E4);
+
+bndry1 = bwboundaries(bw1);
+figure(3);  subplot(2,2,3); imshow(C1); hold on;
+plot(bndry1{1}(:,2),bndry1{1}(:,1),'c');
+subplot(2,2,4); imshow(bw1); hold on;
+
+inReg = unique(bw1.*NucLabeled);
+inReg(inReg==0) = [];
+outReg = setdiff(1:Nnucs,inReg);
+
+onMask = ismember(NucLabeled,inReg);
+
+on_cnts = mRNA_sadj2(inReg);
+off_cnts = mRNA_sadj2(outReg);
+
+on_mean = mean(on_cnts);
+on_std = std(on_cnts);
+off_mean = mean(off_cnts);
+
+
+over1 = find(mRNA_sadj2>on_mean*spread);
+under1 = find(mRNA_sadj2<on_mean/spread); 
+
+Over1 = ismember(NucLabeled,over1).*onMask; 
+Under1 = ismember(NucLabeled,under1).*onMask; 
+
+I = uint8(zeros(h,w,3));
+I(:,:,1) =  C1;
+I(:,:,2) = C1 - uint8(255*Over1);
+I(:,:,3) = uint8(255*Under1)+C1 -uint8(255*Over1);
+figure(4); subplot(1,2,2); imshow(I);
+title(['y  mean=',num2str(on_mean,4),' std=',num2str(on_std,4),' cov=',num2str(on_std/on_mean,3)]);
+ hold on;
+plot(bndry1{1}(:,2),bndry1{1}(:,1),'c');
+
+
+
+m = linspace(0,cmax,30);
+figure(2); 
+subplot(2,2,3); hist(on_cnts,m);
+title(['y  mean=',num2str(on_mean,4),' std=',num2str(on_std,4),' cov=',num2str(on_std/on_mean,3)]);
+subplot(2,2,4); hist(off_cnts,m); title(['mean=',num2str(off_mean,4)]);
+
+ 
+ 
+ 
 
  
  
