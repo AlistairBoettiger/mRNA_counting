@@ -15,10 +15,11 @@ folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeli
 % fname = 'MP05_sna_y_22C_06_bleach_lowT';
 
 
-fname = 'MP05_sna_y_22C_01';
-load([folder,fname,'.mat']);
+ fname = 'MP05_sna_y_22C_04';
+load([folder,fname,'.mat']);  
 
-
+    % Notes:
+    % 'MP05_sna_y_22C_02' is young
 
  % Plotting for trouble shooting
 %     figure(1); clf; 
@@ -27,16 +28,18 @@ load([folder,fname,'.mat']);
     
     MP05_sna = mRNA_sadj1;
     MP05_y = mRNA_sadj2;
-    MP05_Nucs = NucLabeled;  Nnucs05 = max(NucLabeled(:)); ;
+    MP05_Nucs = NucLabeled;  Nnucs05 = max(NucLabeled(:)); 
+    MP05_conn =  connectivity(NucLabeled);
     
-    mRNA = linspace(0,800,30); 
+    mRNA = linspace(0,800,50); 
     
-    figure(2); clf; 
-    subplot(2,2,1); hist(MP05_sna,mRNA);  title('snail'); xlim([0,800]);
-    subplot(2,2,2);  hist(MP05_y,mRNA); title('MP05 y'); xlim([0,800]);
+    figure(2); clf; set(gcf,'color','k'); colordef black;
+    subplot(2,2,1); hist(MP05_sna,mRNA);  title('snail'); xlim([0,max(mRNA)]);
+    subplot(2,2,2);  hist(MP05_y,mRNA); title('MP05 y'); xlim([0,max(mRNA)]);
     
     
-    fname = 'MP10_22C_sna_y_05';
+    % fname = 'MP10_sna_y_22C_01';  
+    fname = 'MP10_22C_sna_y_01'; % 05
 
     % Notes:
     % Data from 02-08-11
@@ -67,9 +70,10 @@ load([folder,fname,'.mat']);
     MP10_sna = mRNA_sadj1;
     MP10_y = mRNA_sadj2;
     MP10_Nucs = NucLabeled;  Nnucs10 = max(NucLabeled(:)); 
+     MP10_conn =  connectivity(NucLabeled);
  
-    subplot(2,2,3); hist(MP10_sna,mRNA);  title('snail'); xlim([0,800]);
-    subplot(2,2,4);  hist(MP10_y,mRNA); title('MP10 y'); xlim([0,800]);
+    subplot(2,2,3); hist(MP10_sna,mRNA);  title('snail'); xlim([0,max(mRNA)]);
+    subplot(2,2,4);  hist(MP10_y,mRNA); title('MP10 y'); xlim([0,max(mRNA)]);
  
     
     %%
@@ -78,45 +82,108 @@ load([folder,fname,'.mat']);
     [h,w] = size(MP05_Nucs);
         MP05_sna_plot = zeros(h,w); 
         MP05_y_plot = zeros(h,w);   
+        MP05_sna_var = zeros(1,Nnucs05);
+        MP05_y_var = zeros(1,Nnucs05);
         reg_data = regionprops(MP05_Nucs,'PixelIdxList');
             for k=1:Nnucs05
+                % Assign all pixels in nucleus N equal to the number of
+                % transcripts contained in that nucleus (corrected for
+                % area)
                 pixes = reg_data(k).PixelIdxList;             
                 MP05_sna_plot(pixes) = MP05_sna(k);
                 MP05_y_plot(pixes) = MP05_y(k);
+                
+                % Compute variance among neighbors    k = 30
+                Neibs = MP05_conn(k,:)>20;
+                local_sna_cnts = [MP05_sna(Neibs),MP05_sna(k)];
+                MP05_sna_var(k) = std(local_sna_cnts)/mean(local_sna_cnts); 
+                
+                local_y_cnts = [MP05_y(Neibs),MP05_y(k)];
+                MP05_y_var(k) = std(local_y_cnts)/mean(local_y_cnts); 
+                
+%                 C = MP05_Nucs;  
+%                 neib_inds = find(Neibs == 1);
+%                 for j = 1:length(neib_inds)
+%                     C(C==neib_inds(j)) = 400;
+%                 end
+%                 figure(1); clf; imagesc(C);
             end
+
+
+
             
-            [h,w] = size(MP10_Nucs);
+        [h,w] = size(MP10_Nucs);
         MP10_sna_plot = zeros(h,w); 
         MP10_y_plot = zeros(h,w);   
+        MP10_sna_var = zeros(1,Nnucs10);
+        MP10_y_var = zeros(1,Nnucs10);
         reg_data = regionprops(MP10_Nucs,'PixelIdxList');
             for k=1:Nnucs10
                 pixes = reg_data(k).PixelIdxList;             
                 MP10_sna_plot(pixes) = MP10_sna(k);
                 MP10_y_plot(pixes) = MP10_y(k);
+                
+                 % Compute variance among neighbors    k = 30
+                Neibs = MP10_conn(k,:)>20;
+                local_sna_cnts = [MP10_sna(Neibs),MP10_sna(k)];
+                MP10_sna_var(k) = std(local_sna_cnts)/mean(local_sna_cnts); 
+                
+                local_y_cnts = [MP10_y(Neibs),MP10_y(k)];
+                MP10_y_var(k) = std(local_y_cnts)/mean(local_y_cnts); 
+                
             end
             
             
+MP05_sna_on = MP05_sna > mean(MP05_sna)*.6;   
+MP05_y_on = MP05_y > mean(MP05_y)*.6; 
+            
+MP05_mean_sna_var = mean(MP05_sna_var(MP05_sna_on))
+MP05_mean_y_var = mean(MP05_y_var(MP05_y_on))
+
+
+  
+MP10_sna_on = MP10_sna > mean(MP10_sna)*.6;   
+MP10_y_on = MP10_y > mean(MP10_y)*.6; 
+            
+MP10_mean_sna_var = mean(MP10_sna_var(MP10_sna_on))
+MP10_mean_y_var = mean(MP10_y_var(MP10_y_on))
+ 
+
+
+figure(4); clf; 
+subplot(2,2,1); scatter(MP05_sna,MP05_sna_var);
+subplot(2,2,2); scatter(MP05_y,MP05_y_var);
+subplot(2,2,3); scatter(MP10_sna,MP10_sna_var);
+subplot(2,2,4); scatter(MP10_y,MP10_y_var);
+
+ %          
         colordef black;
   
 figure(3); clf; cmax = 800;
  subplot(2,2,1); imagesc(MP05_sna_plot); colormap('hot'); colorbar; 
  set(gcf,'color','k');% caxis([0,cmax]); 
- title('MP05 sna');
+ title(['MP05 sna, local var = ',num2str(MP05_mean_sna_var,2)]  );
  
  subplot(2,2,2); imagesc(MP05_y_plot); colormap('hot'); colorbar;
  set(gcf,'color','k'); 
- title('MP05 y');
+ title(['MP05 y, local var = ',num2str(MP05_mean_y_var,2)]  );
  
   subplot(2,2,3); imagesc(MP10_sna_plot); colormap('hot'); colorbar; 
  set(gcf,'color','k');% caxis([0,cmax]); 
- title('MP10 sna');
+ title(['MP10 sna, local var = ',num2str(MP10_mean_sna_var,2)]  );
  
  subplot(2,2,4); imagesc(MP10_y_plot); colormap('hot'); colorbar;
  set(gcf,'color','k'); 
- title('MP10 y');
+ title(['MP10 y, local var = ',num2str(MP10_mean_y_var,2)]  );
   
     
-    
+
+ %%
+ 
+ figure(4); clf;
+ 
+ DepthDots(In,Cell_bnd,inds_Z,h,w);
+ 
     
     %%
     
