@@ -2,27 +2,128 @@
 %% anlz_2chn_dots.m
 
 % Alistair Boettiger                                Date Begun: 02/02/11
-% Levine Lab                                    Last Modified: 02/02/11
+% Levine Lab                                    Last Modified: 02/11/11
 
-% uses radial distance.  should use planar distance.
-% Will work better if original images are oriented along the AP axis.  
+% Analyze snail and yellow data
 
 %% Load data, histogram cell_counts
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-fname = 'MP05_sna_y_22C_04';
+%fname = 'MP05_sna_y_22C_04';
+% fname = 'MP10_22C_sna_y_06';
+% fname = 'MP05_sna_y_22C_06_bleachdata';
+% fname = 'MP05_sna_y_22C_06_bleach_lowT';
 
+
+fname = 'MP05_sna_y_22C_01';
 load([folder,fname,'.mat']);
-[h,w] = size(NucLabeled);
-[hn,wn] = size(In); % size associated with nuc centroid positions. 
-Nnucs =  max(NucLabeled(:)); 
+
+
 
  % Plotting for trouble shooting
-    figure(1); clf; 
-    subplot(2,1,1); hist(mRNA_sadj1,30);
-    subplot(2,1,2);  hist(mRNA_sadj2,30);
+%     figure(1); clf; 
+%     subplot(2,1,1); hist(mRNA_sadj1,30);  title('snail');
+%     subplot(2,1,2);  hist(mRNA_sadj2,30); title('y');
     
-%% Plot cell counts    
+    MP05_sna = mRNA_sadj1;
+    MP05_y = mRNA_sadj2;
+    MP05_Nucs = NucLabeled;  Nnucs05 = max(NucLabeled(:)); ;
+    
+    mRNA = linspace(0,800,30); 
+    
+    figure(2); clf; 
+    subplot(2,2,1); hist(MP05_sna,mRNA);  title('snail'); xlim([0,800]);
+    subplot(2,2,2);  hist(MP05_y,mRNA); title('MP05 y'); xlim([0,800]);
+    
+    
+    fname = 'MP10_22C_sna_y_05';
+
+    % Notes:
+    % Data from 02-08-11
+    % 'MP10_22C_sna_y_01' starts correctly.  
+    % 'MP10_22C_sna_y_02'  misses some apical endogenous transcripts.  probably cc13
+    % 'MP10_22C_sna_y_04' very young
+    % 'MP10_22C_sna_y_05' misses a few apical endogenous transcripts
+    % 'MP10_22C_sna_y_06' starts mid nuclei misses MANY apical endogenous transcripts
+    % 'MP10_22C_sna_y_07' starts w/ nucs, misses many apical endogenous transcripts
+    % 'MP10_22C_sna_y_08' starts w/ nucs, misses many apical endogenous transcripts  
+    % 'MP10_22C_sna_y_09' starts w/ nucs, misses many apical endogenous transcripts  
+    % 'MP10_22C_sna_y_10' starts w/ nucs, misses many apical endogenous transcripts  
+    
+    % Data from 01-31-11
+    % 'MP10_sna_y_22C_01_0503';
+    %  'MP10_sna_y_22C_02'; -- starts Much Much two deep, still shows nice  correlation of y to sna, though misses half of transcripts.
+    % 03 - 06 all WAY too deep, miss the top half of every cell
+    % 07 -- young embryo.  missing some?
+    % 08,09 too deep.  10 + no data. 
+    
+    % 'MP10_sna_y_22C_b_01'; % this one is pretty good
+    % 'MP10_sna_y_22C_b_02' % starts just a bit low, misses some apical transcripts   
+    % 'MP10_sna_y_22_b_03' starts w/ nucs, misses many apical endogenous transcripts     
+    
+    
+load([folder,fname,'.mat']);
+    
+    MP10_sna = mRNA_sadj1;
+    MP10_y = mRNA_sadj2;
+    MP10_Nucs = NucLabeled;  Nnucs10 = max(NucLabeled(:)); 
+ 
+    subplot(2,2,3); hist(MP10_sna,mRNA);  title('snail'); xlim([0,800]);
+    subplot(2,2,4);  hist(MP10_y,mRNA); title('MP10 y'); xlim([0,800]);
+ 
+    
+    %%
+    
+    
+    [h,w] = size(MP05_Nucs);
+        MP05_sna_plot = zeros(h,w); 
+        MP05_y_plot = zeros(h,w);   
+        reg_data = regionprops(MP05_Nucs,'PixelIdxList');
+            for k=1:Nnucs05
+                pixes = reg_data(k).PixelIdxList;             
+                MP05_sna_plot(pixes) = MP05_sna(k);
+                MP05_y_plot(pixes) = MP05_y(k);
+            end
+            
+            [h,w] = size(MP10_Nucs);
+        MP10_sna_plot = zeros(h,w); 
+        MP10_y_plot = zeros(h,w);   
+        reg_data = regionprops(MP10_Nucs,'PixelIdxList');
+            for k=1:Nnucs10
+                pixes = reg_data(k).PixelIdxList;             
+                MP10_sna_plot(pixes) = MP10_sna(k);
+                MP10_y_plot(pixes) = MP10_y(k);
+            end
+            
+            
+        colordef black;
+  
+figure(3); clf; cmax = 800;
+ subplot(2,2,1); imagesc(MP05_sna_plot); colormap('hot'); colorbar; 
+ set(gcf,'color','k');% caxis([0,cmax]); 
+ title('MP05 sna');
+ 
+ subplot(2,2,2); imagesc(MP05_y_plot); colormap('hot'); colorbar;
+ set(gcf,'color','k'); 
+ title('MP05 y');
+ 
+  subplot(2,2,3); imagesc(MP10_sna_plot); colormap('hot'); colorbar; 
+ set(gcf,'color','k');% caxis([0,cmax]); 
+ title('MP10 sna');
+ 
+ subplot(2,2,4); imagesc(MP10_y_plot); colormap('hot'); colorbar;
+ set(gcf,'color','k'); 
+ title('MP10 y');
+  
+    
+    
+    
+    %%
+    
+[hn,wn] = size(In); % size associated with nuc centroid positions. 
+Nnucs =  max(NucLabeled(:)); 
+    
+% Plot cell counts    
     % Plot mRNA count per cell, size normalized, and cell area.  
 
         cell_sadj1 = zeros(h,w); 
@@ -49,8 +150,8 @@ figure(3); clf; cmax = 800;
   
 %% Define expression region
 
-spread = 1.35;
-t1 = .5;
+spread = 1.5;
+t1 = .25;
 
 % Automatic Threshold
 C1 = uint8( cell_sadj1/max(cell_sadj1(:))*255);
