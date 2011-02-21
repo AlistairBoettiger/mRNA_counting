@@ -86,7 +86,7 @@ I(:,:,3) = uint8(255*Under1)+C1 -uint8(255*Over1);
 
 C = gray(max(mRNA_sadj1));
 imshow(I); colormap(C); colorbar; cbfreeze; 
-title(['sna  mean=',num2str(on_mean,4),' std=',num2str(on_std,4),...
+title(['mean=',num2str(on_mean,4),' std=',num2str(on_std,4),...
     ' cov=',num2str(on_std/on_mean,3)]);
 set(gcf,'color','k');
  hold on;  plot(bndry1{1}(:,2),bndry1{1}(:,1),'c');
