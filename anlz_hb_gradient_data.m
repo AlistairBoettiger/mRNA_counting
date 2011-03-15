@@ -10,8 +10,10 @@
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
 %fname = 'hbCent_hb_LacZ_v2';
-%fname = 'gtX_hb_grad_01';
-fname = 'MP05_sna_y_22C_theshp1';
+fname = 'gtX_hb_grad_01';
+% fname = MP09_22C_hb_y_01
+% fname = MP09_22C_hb_y_d_01
+
 
 load([folder,fname,'.mat']);
 [h,w] = size(NucLabeled);
@@ -109,9 +111,17 @@ end
 x = linspace(0,max(dists)*50/1000,Sects);
 
 
+figure(1); clf; colordef black; set(gcf,'color','k');
+
+plot(Data_sort(:,1)*50/1000,flipud(Data_sort(:,2)),'w.'); % check results 
+hold on; errorbar(x,fliplr(mu),fliplr(sigma),'linestyle','none','linewidth',3,'color','r');
+ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
+set(gca,'FontSize',14);
+
+
 figure(1); clf; colordef white; set(gcf,'color','w');
 
-plot(Data_sort(:,1)*50/1000,Data_sort(:,2),'k'); % check results 
+plot(Data_sort(:,1)*50/1000,Data_sort(:,2),'k.'); % check results 
 hold on; errorbar(x,mu,sigma,'linestyle','none','linewidth',3,'color','r');
 ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
 
@@ -126,11 +136,38 @@ colordef white; set(gcf,'color','w');
 plot(x,sigma./mu,'k'); ylim([0,1]);
 ylabel('CoV'); xlabel('distance (\mum)');
 
+%%
+
+fimage = 'gtX_hb_grad_01_01_max.tif';
+dataf = '/Volumes/Data/Lab Data/Raw_Data/02-03-11/';
+
+I = imread([dataf,fimage]);
+[h,w] = size(I(:,:,1));
 
 
-% hold on;
-%     scatter(nuc_cents(1,:),nuc_cents(2,:)); 
-%     
-%     M = NucLabeled - 150*C;
-%     figure(2); clf; imagesc(M);hold on;
-%         scatter(nuc_cents(1,:),nuc_cents(2,:)); 
+
+I2 = uint16(zeros(h,w,3));
+I2(:,:,1) = 2*I(:,:,1);
+I2(:,:,2) = I(:,:,3);
+I2(:,:,3) = I(:,:,3);
+
+ I2 = imrotate(I2,90);
+
+figure(4); clf; image(I2(500:1500,:,:));
+hold on;
+
+ysc = 1;
+xsc = 4.65;
+
+plot(50+xsc*Data_sort(:,1)*50/1000,ysc*flipud(Data_sort(:,2)),'w.','MarkerSize',10); % check results 
+hold on; errorbar(50+xsc*x,ysc*fliplr(mu),ysc*fliplr(sigma),'linestyle','none','linewidth',3,'color','r');
+axis on; axis xy;
+ylabel('number of mRNA transcripts per cell','FontSize',14); 
+xlabel('distance (\mum)','FontSize',14);
+set(gca,'FontSize',14);
+
+
+
+
+
+

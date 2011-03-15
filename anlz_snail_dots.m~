@@ -15,10 +15,26 @@ folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeli
 % fname = 'MP05_sna_y_22C_06_bleach_lowT';
 
 
- fname = 'MP05_sna_y_22C_04';
+ %fname = 'MP05_sna_y_22C_04';
+ fname = 'MP05_22C_sna_y_01_p1p05';
+ 
+ 
 load([folder,fname,'.mat']);  
 
     % Notes:
+    % MP05_22C_sna_y from 02-17-11 (slide is 02-06-11?), threshs: .1, .05
+    %        miss some possible dots at .1.  pretty clean at .05.  
+    % MP05_22C_sna_y_01_p1p05
+    % MP05_22C_sna_y_02_p1p05
+    %
+    % at .07, .03
+    % MP05_22C_sna_y_01
+    % MP05_22C_sna_y_02
+    % 
+    
+    
+    % 
+    %   with thresholds: .07 .03
     % 'MP05_sna_y_22C_01' is sna mean 600
     % 'MP05_sna_y_22C_02' is young 300
      % 'MP05_sna_y_22C_03' is sna mean 600
@@ -33,7 +49,9 @@ load([folder,fname,'.mat']);
 %     figure(1); clf; 
 %     subplot(2,1,1); hist(mRNA_sadj1,30);  title('snail');
 %     subplot(2,1,2);  hist(mRNA_sadj2,30); title('y');
-    
+   
+
+
     MP05_sna = mRNA_sadj1;
     MP05_y = mRNA_sadj2;
     MP05_Nucs = NucLabeled;  Nnucs05 = max(NucLabeled(:)); 
@@ -47,10 +65,10 @@ load([folder,fname,'.mat']);
     
     
     % fname = 'MP10_sna_y_22C_01';  
-    fname = 'MP10_22C_sna_y_c_07'; 
+    fname = 'MP10_22C_sna_y_c_06'; 
 
     % Notes:
-    % Data from 02-08-11
+    % Data from 02-08-11   (MOSTLY STARTS TOO DEEP, EXCEPT IM 01)
     % 'MP10_22C_sna_y_01' starts correctly.  
     % 'MP10_22C_sna_y_02'  misses some apical endogenous transcripts.  probably cc13
     % 'MP10_22C_sna_y_04' very young
@@ -61,7 +79,7 @@ load([folder,fname,'.mat']);
     % 'MP10_22C_sna_y_09' starts w/ nucs, misses many apical endogenous transcripts  
     % 'MP10_22C_sna_y_10' starts w/ nucs, misses many apical endogenous transcripts  
     
-    % Data from 01-31-11
+    % Data from 01-31-11   (MOSTLY STARTS TOO DEEP, EXCEPT IM 01)
     % 'MP10_sna_y_22C_01'; % good image, 
     % 'MP10_sna_y_22C_01_0503'; poor threshold choice
     %  'MP10_sna_y_22C_02'; -- starts Much Much two deep, still shows nice  correlation of y to sna, though misses half of transcripts.
@@ -69,12 +87,12 @@ load([folder,fname,'.mat']);
     % 07 -- young embryo.  missing some?
     % 08,09 too deep.  10 + no data. 
     % 
-    % Series b
+    % Series b 01-31-11   (MOSTLY STARTS TOO DEEP, EXCEPT IM 01) 
     % 'MP10_sna_y_22C_b_01'; % this one is pretty good
     % 'MP10_sna_y_22C_b_02' % starts just a bit low, misses some apical transcripts   
     % 'MP10_sna_y_22_b_03' starts w/ nucs, misses many apical endogenous transcripts     
     %
-    % Data from 02-06-11 folder (taken 02-12-11).  
+    % Data from 02-06-11 folder (taken 02-12-11).  (GOOD DATA)
     % MP10_22C_sna_y_c_01 mean sna =400, bit young
     % _02 very younger mean sna =200,
     %_03  younger mean sna =300,
@@ -158,6 +176,34 @@ subplot(2,2,3);
 [MP10_sna_on_cnts,MP10_sna_off_cnts]= fxn_regionvar(MP10_Nucs,MP10_sna_plot,MP10_sna,t1,spread,Nnucs10);
 subplot(2,2,4);
 [MP10_y_on_cnts,MP10_y_off_cnts]= fxn_regionvar(MP10_Nucs,MP10_y_plot,MP10_y,t1,spread,Nnucs10);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -27,11 +27,9 @@ folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeli
 
 mRNA = linspace(0,400,30); 
 
-fname = 'YW_ths_sog_02'; % save([folder,fname,'.mat']);
+fname = 'YW_ths_sog_08'; % save([folder,fname,'.mat']);
 
-load([folder,fname,'.mat']);
-    
-   
+load([folder,fname,'.mat']);  
     ths = mRNA_sadj1;
     sog = mRNA_sadj2;
     Nucs = NucLabeled;  
@@ -40,20 +38,15 @@ load([folder,fname,'.mat']);
  
     subplot(2,1,1); hist(ths,mRNA);  title('ths'); xlim([0,max(mRNA)]);
     subplot(2,1,2);  hist(sog,mRNA); title('sog'); xlim([0,max(mRNA)]);
-
     
-    
-[ths_plot,sog_plot,ths_var,sog_var] = fxn_compdotvar(Nucs,conn,ths,sog,Nnucs);
-            
+[ths_plot,sog_plot,ths_var,sog_var] = fxn_compdotvar(Nucs,conn,ths,sog,Nnucs);          
             
 ths_on = ths > mean(ths)*.6;   
 sog_on = sog > mean(sog)*.6; 
             
 mean_ths_var = mean(ths_var(ths_on));
 mean_sog_var = mean(sog_var(sog_on));
-
-  
-        
+ 
   
 figure(3); clf; cmax = max(mRNA);
  colordef black;
@@ -66,12 +59,10 @@ figure(3); clf; cmax = max(mRNA);
  title(['sog, local var = ',num2str(mean_sog_var,2)]  );
  
 %% Define expression region
-
+spread = 1.5;
+t1 = .3;
  
-spread = 1.35;
-t1 = .45;
- 
- figure(5); clf; subplot(2,1,1);
+ figure(5); clf; subplot(1,2,1);
 [ths_on_cnts,ths_off_cnts]= fxn_regionvar(Nucs,ths_plot,ths,t1,spread,Nnucs);
-subplot(2,1,2);
+subplot(1,2,2);
 [sog_on_cnts,sog_off_cnts]= fxn_regionvar(Nucs,sog_plot,sog,t1,spread,Nnucs);
