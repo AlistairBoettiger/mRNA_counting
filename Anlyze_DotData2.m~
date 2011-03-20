@@ -12,13 +12,57 @@
 
 clear all;
 
-folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-% fname =   'MP10_22C_sna_y_c';  %
-fname =  'MP05_22C_sna_y'; 
-%load([folder,fname,'_slidedata'], 'Data'); 
+  t = .5; 
+spread = 1.4;
 
+folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
+% fname =   'MP10_22C_sna_y_c';  load([folder,fname,'_Slidedata'], 'Data');  %
+%fname =  'MP05_22C_sna_y'; load([folder,fname,'_Slidedata'], 'Data'); 
+
+cor = 0; 
+
+ fname =  'MP05_22C_sna_y_c';  cor = 1;  emb = '08';  %  emb = '04'; %   emb = '07'; 
+
+ % fname =  'MP05_22C_sna_y_c'; 
+ % fname =  'MP10_22C_sna_y_c';  emb = '01'; % emb = '02';% emb = '03';%  emb = '04';%  emb = '05'; % emb = '07';  %** emb = '06';%**  %   emb = '08'; %
+
+
+chn = 2; i = str2double(emb);
+
+load([folder,fname,'_slidedata'], 'Data'); 
+
+
+
+
+load([folder,fname,'_',emb,'_nucdata.mat']); 
    
-load([folder,fname,'_Slidedata'], 'Data');  % fixed mRNA sadj
+              mRNAsadj = Data{i,chn}.mRNAsadj;
+
+  PlotmRNA = imresize(NucLabeled,.5,'nearest');
+  NucLabel = imresize(NucLabeled,.5,'nearest'); 
+                      Nnucs =    max( NucLabeled(:) );
+                      for n=1:Nnucs;
+                          PlotmRNA(PlotmRNA==n) = mRNAsadj(n+cor);
+                      end
+                     
+                      chn_names = {'snail';'reporter'};
+                      
+                      figure(1); clf; colordef black;
+                      imagesc(PlotmRNA); colormap hot; colorbar;
+                      set(gcf,'color','k'); axis off;
+                      title([chn_names{chn},' ',texlabel(fname,'literal')],'FontSize',14);
+                      set(gca,'FontSize',14);
+          
+  [ons,offs] = fxn_regionvar(NucLabel,PlotmRNA,mRNAsadj,0,spread,Nnucs);
+   
+
+  
+
+%%
+
+
+
+%load([folder,fname,'_Slidedata'], 'Data');  % fixed mRNA sadj
 
 % load([folder,fname,'_slidedata_3te'], 'Data'); 
 % load([folder,'MP05_data_b'], 'Data');
@@ -45,10 +89,12 @@ spread = 1.4;
                     else
                         emb = num2str(i);
                     end
+                 
                     
                     mRNAsadj = Data{i,chn}.mRNAsadj;
                     load([folder,fname,'_',emb,'_nucdata.mat']); 
                     
+                                  
                  catch err
                      disp(err.message); 
                      break
@@ -92,8 +138,16 @@ spread = 1.4;
 %                        Data{i,chn}.NucLabeled = NucLabeled;
 %                        Data{i,chn}.PlotmRNA = Plot_mRNA; 
 %               % ----------------------------  %
-                
+                try
                      Nnucs =    max( Data{i,chn}.NucLabeled(:) );
+                catch
+                       PlotmRNA = imresize(NucLabeled,.5,'nearest');
+                      Nnucs =    max( NucLabeled(:) );
+                      for n=1:Nnucs;
+                          PlotmRNA(PlotmRNA==n) = mRNAsadj(n+1);
+                      end
+                end
+                
                      [ons{i,chn},offs{i,chn}] = fxn_regionvar(Data{i,chn}.NucLabeled,Data{i,chn}.PlotmRNA,mRNAsadj,0,spread,Nnucs);
                     
                    
@@ -113,6 +167,12 @@ spread = 1.4;
     
     Ons_mean(:,1)./Ons_mean(:,2)
     Ons_std(:,1)./Ons_std(:,2)
+    
+    Ons_std(:,2)./Ons_mean(:,2)
+    Ons_std(:,1)./Ons_mean(:,1)
+    
+    
+    % save([folder,fname,'_MP10_ons'], 'ons'); 
     
 %    ave(:,1)./ave(:,2)
 %    stdev(:,1)./stdev(:,2)
