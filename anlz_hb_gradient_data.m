@@ -2,7 +2,7 @@
 %% anlz_hb_gradient_data.m
 
 % Alistair Boettiger                                Date Begun: 02/02/11
-% Levine Lab                                    Last Modified: 02/02/11
+% Levine Lab                                    Last Modified: 03/30/11
 
 % uses radial distance.  should use planar distance.
 % Will work better if original images are oriented along the AP axis.  
@@ -43,23 +43,49 @@ Nnucs =  max(NucLabeled(:));
         figure(2); clf; imagesc(cell_cnt); colormap('jet'); colorbar; set(gcf,'color','k');
         figure(3); clf; imagesc(cell_sadj); colormap('jet'); colorbar; set(gcf,'color','k');
         figure(4); clf; imagesc(cell_area); colormap('jet'); colorbar; set(gcf,'color','k');%
+  %% New data-method
+  clear all;
+   
+  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
+  fname = 'MP09_22C_hb_y_d';
+  emb = '05';  i = str2double(emb); cor = 1; 
+
+  chn = 1;
+  
+  load([folder,fname,'_',emb,'_nucdata.mat']); 
+  load([folder,fname,'_slidedata'], 'Data'); 
+   
+              mRNAsadj = Data{i,chn}.mRNAsadj;
+
+  PlotmRNA = imresize(NucLabeled,.5,'nearest');
+  NucLabel = imresize(NucLabeled,.5,'nearest'); 
+                      Nnucs =    max( NucLabeled(:) );
+                      for n=1:Nnucs;
+                          PlotmRNA(PlotmRNA==n) = mRNAsadj(n+cor);
+                      end
+    figure(1); clf; imagesc(PlotmRNA); colormap hot; 
+  
+  
         
-%% Orient image along major axis      
-    bw = imresize(uint16(cell_sadj),.25); 
+%% Orient image along major axis     
+    bw = imresize(uint16(PlotmRNA),.2); 
+    
     thresh = graythresh(bw);
     bw = im2bw(bw,thresh); 
+    bw = bwareaopen(bw,100);
     figure(8); clf; imshow(bw);
 
     L = bwlabel(bw);
     rprops = regionprops(L,'MajorAxis','Orientation');
-    NucLabeled = imrotate(NucLabeled,360-rprops.Orientation,'nearest'); 
-    figure(8); clf; imagesc(NucLabeled);
+    NucLabel = imrotate(NucLabel,180-rprops.Orientation,'nearest'); 
+    figure(8); clf; imagesc(NucLabel);
     
     
 %% convert nucleus centroids to indexed postions
-S = regionprops(NucLabeled,'Centroid');
+S = regionprops(NucLabel,'Centroid');
 nuc_cents = reshape([S.Centroid],2,length(S));
-[h,w] = size(NucLabeled); 
+[h,w] = size(NucLabel); 
+[hn,wn] = size(NucLabel); 
 c_inds = sub2ind([h,w],floor(nuc_cents(2,:)),floor(nuc_cents(1,:)));
 % compute distances
 
@@ -68,7 +94,12 @@ c_inds = sub2ind([h,w],floor(nuc_cents(2,:)),floor(nuc_cents(1,:)));
 %d = sqrt( (nuc_cents(1,:)*w/wn).^2 + (nuc_cents(2,:)*h/hn).^2);
 d = nuc_cents(2,:)*h/hn;
 
+if length(c_inds) < length(mRNAsadj);
+    mRNAsadj = mRNAsadj(2:end);
+end
 
+
+maternal = min(mRNAsadj);
 
 %  % Plotting for troubleshooting
 %     C = false(h,w);
@@ -76,11 +107,11 @@ d = nuc_cents(2,:)*h/hn;
 %     figure(1); clf; imshow(C);
 
 % Sort by distance from upper left corner (max bcd).  
-nuc_order = NucLabeled(c_inds);
+nuc_order = NucLabel(c_inds);
 [b,m,n] = unique(nuc_order);
 dists = d(m);
-figure(1); clf; plot(dists,mRNA_sadj,'k.');  % check results
-Data = [dists; mRNA_sadj]';
+figure(1); clf; plot(dists,mRNAsadj - maternal,'g.');  % check results
+Data = [dists; mRNAsadj - maternal]';
 Data_sort = sortrows(Data); 
 
 
@@ -90,7 +121,7 @@ bcd = log(dists); % just logorithmic.  Don't need arbitrary scaling coeff.
 
 
 
-Data2 = [bcd; mRNA_sadj; dists]';
+Data2 = [bcd; mRNAsadj-maternal; dists]';
 Data2 = sortrows(Data2);
 
 %%
@@ -126,14 +157,29 @@ hold on; errorbar(x,mu,sigma,'linestyle','none','linewidth',3,'color','r');
 ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
 
 
+figure(5); clf; 
+colordef white; set(gcf,'color','w');
+plot(mu,sigma,'k.'); hold on; plot(mu,sigma.*sqrt([0,diff(mu)]),'g.'); 
+ xlabel('mean count');
+
 figure(2); clf; 
 colordef white; set(gcf,'color','w');
-plot(mu,sigma./mu,'k'); ylim([0,1]);
-ylabel('CoV'); xlabel('mean count');
+plot(x,sigma,'r.'); 
+hold on; plot(x,mu,'m.'); legend('\sigma','\mu','Location','Best');
+xlabel('distance (\mum)');
 
 figure(3); clf; 
 colordef white; set(gcf,'color','w');
-plot(x,sigma./mu,'k'); ylim([0,1]);
+plot(diff(sigma),'r-'); 
+hold on; plot(diff(mu),'m-'); legend('\sigma','\mu');
+xlabel('distance (\mum)');
+
+
+
+
+figure(4); clf; 
+colordef white; set(gcf,'color','w');
+plot(x,sigma./mu,'k.'); ylim([0,1]);
 ylabel('CoV'); xlabel('distance (\mum)');
 
 %%

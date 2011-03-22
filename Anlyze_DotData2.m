@@ -21,8 +21,12 @@ folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeli
 
 cor = 0; 
 
- fname =  'MP05_22C_sna_y_c';  cor = 1;  emb = '08';  %  emb = '04'; %   emb = '07'; 
+ % fname =  'MP05_22C_sna_y_c';  cor = 1;  emb = '08';  %  emb = '04'; %   emb = '07'; 
 
+ %fname =  'MP05_22C_sna_y_c';  cor = 1;  emb = '01';
+ 
+  fname = 'MP10_22C_sna_y_d'; emb = '05';
+ 
  % fname =  'MP05_22C_sna_y_c'; 
  % fname =  'MP10_22C_sna_y_c';  emb = '01'; % emb = '02';% emb = '03';%  emb = '04';%  emb = '05'; % emb = '07';  %** emb = '06';%**  %   emb = '08'; %
 
@@ -32,6 +36,7 @@ chn = 2; i = str2double(emb);
 load([folder,fname,'_slidedata'], 'Data'); 
 
 
+%%
 
 
 load([folder,fname,'_',emb,'_nucdata.mat']); 
@@ -56,7 +61,26 @@ load([folder,fname,'_',emb,'_nucdata.mat']);
   [ons,offs] = fxn_regionvar(NucLabel,PlotmRNA,mRNAsadj,0,spread,Nnucs);
    
 
+ %% TOT Histograms 
   
+
+       mRNAsadj1 = Data{i,1}.mRNAsadj;
+      mRNAsadj2 = Data{i,2}.mRNAsadj;
+      
+      ms = linspace(0,400,50);
+      
+      M1 = hist(mRNAsadj1,ms);
+      M2 = hist(mRNAsadj2,ms);
+      
+      figure(1); clf; colordef black; set(gcf,'color','k');
+      set(gca,'FontSize',14);
+      bar(ms,M1,'r','EdgeColor','k');alpha .7; hold on; 
+      bar(ms,M2,'g','EdgeColor','k'); 
+      xlim([-5,max(ms)]);
+  
+  
+  
+
 
 %%
 
@@ -69,7 +93,7 @@ load([folder,fname,'_',emb,'_nucdata.mat']);
 
 % Quick look at data distributions 
 
-N = length(Data); 
+N = length(Data);  N = 2
 ave = zeros(N,2);
 stdev = zeros(N,2); 
 ons = cell(N,2);
@@ -79,10 +103,10 @@ offs = cell(N,2);
 
 t = .5; 
 spread = 1.4;
-
     figure(1); clf;
     for chn = 1:2  
             for i=1:N
+
                 try
                     if i<10
                         emb = ['0',num2str(i)];
@@ -140,17 +164,21 @@ spread = 1.4;
 %               % ----------------------------  %
                 try
                      Nnucs =    max( Data{i,chn}.NucLabeled(:) );
+                     [ons{i,chn},offs{i,chn}] = fxn_regionvar(Data{i,chn}.NucLabeled,Data{i,chn}.PlotmRNA,mRNAsadj,0,spread,Nnucs);
+                      
                 catch
+                    
                        PlotmRNA = imresize(NucLabeled,.5,'nearest');
-                      Nnucs =    max( NucLabeled(:) );
+                       NucLabel = imresize(NucLabeled,.5,'nearest'); 
+                      Nnucs =    max( NucLabel(:) );
                       for n=1:Nnucs;
                           PlotmRNA(PlotmRNA==n) = mRNAsadj(n+1);
                       end
+                      [ons{i,chn},offs{i,chn}] = fxn_regionvar(NucLabel,PlotmRNA,mRNAsadj,0,spread,Nnucs);
+                  
                 end
-                
-                     [ons{i,chn},offs{i,chn}] = fxn_regionvar(Data{i,chn}.NucLabeled,Data{i,chn}.PlotmRNA,mRNAsadj,0,spread,Nnucs);
-                    
                    
+                   %            
 %                       figure(1);
 %                           subplot(2,N,N*(chn-1)+i);
 %                          hist(mRNAsadj,linspace(0,400,30)); xlim([0,400]);
@@ -164,6 +192,9 @@ spread = 1.4;
            
     Ons_mean = cellfun(@mean,ons)
     Ons_std = cellfun(@var,ons)
+    
+    dot_hist = cellfun(@hist,ons); 
+    
     
     Ons_mean(:,1)./Ons_mean(:,2)
     Ons_std(:,1)./Ons_std(:,2)

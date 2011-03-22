@@ -10,12 +10,33 @@
 % different embryos for Mat-alpha-Gal4 1x vs 2x.  
 %
 
-clear all;
+%clear all;
 
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-fname =  'MGa2x_LacZ_sna' %  'MGa_LacZ'; %  
+fname =   'MGa_LacZ'; %  'MGa2x_LacZ_sna_b' %  'MGa2x_LacZ_sna' %  
 load([folder,fname,'_slidedata'], 'Data'); 
 
+%% individual embryo
+
+emb = '03';  i = str2double(emb); 
+
+
+
+
+       mRNAsadj1 = Data{i,1}.mRNAsadj;
+      mRNAsadj2 = Data{i,2}.mRNAsadj;
+      
+      ms = linspace(0,300,30);
+      
+      M1 = hist(mRNAsadj1,ms);
+      M2 = hist(mRNAsadj2,ms);
+      
+      figure(1); clf; colordef black; set(gcf,'color','k');
+      set(gca,'FontSize',14);
+      bar(ms,M1,'r'); hold on; 
+      bar(ms,M2,'g'); xlim([-10,280]);
+
+%%  All embryos
 
 % Quick look at data distributions 
 
@@ -71,7 +92,24 @@ spread = 1.4;
             end
  
     end
-           
+       
+     MGa1x_ave = ave;
+ MGa1x_std = stdev;
+    
+% MGa2x_ave = ave;
+% MGa2x_std = stdev;
+    
+%  MGa2x_b_ave = ave;
+%  MGa2x_b_std = stdev;
+
+MGa2x_means = [MGa2x_ave(:,1); MGa2x_b_ave(:,1)];
+MGa2x_stds = [MGa2x_std(:,1); MGa2x_b_std(:,1)];
+
+
+figure(1); clf; scatter(MGa2x_means,MGa2x_stds,'ro');
+hold on; scatter(MGa1x_ave(:,1),MGa1x_std(:,1),'go');
+
+
 
         
         
