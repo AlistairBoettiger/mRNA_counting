@@ -10,13 +10,151 @@
 % different embryos for Mat-alpha-Gal4 1x vs 2x.  
 %
 
-%clear all;
+clear all;
 
+
+
+%% combine data from multiple slides
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-fname =   'MGa_LacZ'; %  'MGa2x_LacZ_sna_b' %  'MGa2x_LacZ_sna' %  
-load([folder,fname,'_slidedata'], 'Data'); 
+%     rawfolder =  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MGa1x/';
+%     fname1 = 'MGa_LacZ';  fname2 = 'MGa1x_LacZ_b' ; combname = 'MGa1x_LacZ_combined';
 
-%% individual embryo
+ rawfolder =  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MGa2x/';
+    fname1 = 'MGa2x_LacZ_sna';  fname2 = 'MGa2x_LacZ_sna_b' ; combname = 'MGa2x_LacZ_combined';
+
+  NDat = []; Dat = []; 
+for slide = 1:2
+    clear Data; 
+    if slide == 1
+        fname = fname1;
+        load([folder,fname,'_slidedata'], 'Data'); 
+    elseif slide == 2
+    fname = fname2; 
+    load([folder,fname,'_slidedata'], 'Data'); 
+    end
+  
+        NData= cell(15,1);
+        k = 0; 
+    for i = 1:15
+        k = k + 1;
+        if i<10
+            emb = ['0',num2str(i)];
+        else
+            emb = num2str(i);
+        end
+
+        try
+            load([rawfolder,fname,'_',emb,'_nucdata.mat']);
+           catch de
+               disp(de.message);
+            try
+            load([folder,fname,'_',emb,'_nucdata.mat']);
+            catch de
+                disp(de.message);
+                disp('giving up');
+                break
+            end
+        end
+          NData{i} = NucLabeled;
+    end
+NDat =  [NDat; NData(1:k-1)];   
+Dat =   [Dat; Data(1:k-1,:)] ;    
+    
+end
+
+
+% save([folder, combname,'_slidedata'], 'Dat','NDat'); 
+%  load([folder, combname,'_slidedata'], 'Dat','NDat');
+
+
+%%  All embryos
+
+% Quick look at data distributions 
+
+cor = 1; % offset correction factor between NucLabeled and mRNAsadj indices
+
+N = 24; 
+
+ h = 2048; w = 2048;
+
+t = .5; 
+spread = 1.4;
+
+for slide = 1:2
+    clear NDat Dat; 
+    if slide == 1;
+        fname =  'MGa1x_LacZ_combined';  load([folder,fname,'_slidedata']); 
+    elseif slide == 2; 
+        fname = 'MGa2x_LacZ_combined'; load([folder,fname,'_slidedata']); 
+    end
+    
+    
+    ave = NaN*zeros(N,2);
+    stdev = NaN*zeros(N,2); 
+    ons = cell(N,2);
+    offs = cell(N,2);
+
+
+    figure(2); clf;
+    for chn = 1:2  
+            for i=1:N
+                try
+                    if i<10
+                        emb = ['0',num2str(i)];
+                    else
+                        emb = num2str(i);
+                    end
+                    
+                    mRNAsadj = Dat{i,chn}.mRNAsadj;
+                    
+                catch err
+                     disp(err.message); 
+                     break
+                end
+
+                           
+                 PlotmRNA = imresize(NDat{i},.5,'nearest');
+                 NucLabel = imresize(NDat{i},.5,'nearest'); 
+                 Nnucs =    max( NucLabel(:) );
+                 for n=1:Nnucs;
+                      PlotmRNA(PlotmRNA==n) = mRNAsadj(n+cor);
+                 end
+                   
+                     ave(i,chn) = nanmean(mRNAsadj);
+                     stdev(i,chn) = nanstd(mRNAsadj);
+                 
+%                   figure(2);
+%                      subplot(2,N,N*(chn-1)+i);
+%                      hist(mRNAsadj,linspace(0,400,30)); xlim([0,400]);
+%                      title([ 'mean = ' num2str( ave(i,chn),3), '  std = ',num2str(stdev(i,chn),3) ] ) ; 
+% 
+%                  figure(3);   
+%                     subplot(2,N,N*(chn-1)+i);
+%                     imagesc(PlotmRNA); axis off; set(gcf,'color','k');
+            end           
+    end
+    
+    if slide == 1
+        MGa1x_ave = ave;
+        MGa1x_std = stdev;
+        clear ave stdev;
+    elseif slide == 2
+        MGa2x_ave = ave;
+        MGa2x_std = stdev;
+        clear ave stdev;
+    end
+end      
+     
+%%
+
+
+
+figure(1); clf; scatter(MGa2x_ave(:,1),MGa2x_std(:,1),'ro');
+hold on; scatter(MGa1x_ave(:,1),MGa1x_std(:,1),'g.');
+
+
+
+        %% individual embryo
 
 emb = '03';  i = str2double(emb); 
 
@@ -36,81 +174,4 @@ emb = '03';  i = str2double(emb);
       bar(ms,M1,'r'); hold on; 
       bar(ms,M2,'g'); xlim([-10,280]);
 
-%%  All embryos
-
-% Quick look at data distributions 
-
-N = length(Data); 
-ave = NaN*zeros(N,2);
-stdev = NaN*zeros(N,2); 
-ons = cell(N,2);
-offs = cell(N,2);
-
- h = 2048; w = 2048;
-
-t = .5; 
-spread = 1.4;
-
-    figure(2); clf;
-    for chn = 1:2  
-            for i=1:N
-                try
-                    if i<10
-                        emb = ['0',num2str(i)];
-                    else
-                        emb = num2str(i);
-                    end
-                    
-                    mRNAsadj = Data{i,chn}.mRNAsadj;
-                    load([folder,fname,'_',emb,'_nucdata.mat']); 
-                    
-                 catch err
-                     disp(err.message); 
-                     break
-                end
-
-                      PlotmRNA = imresize(NucLabeled,.5,'nearest');
-                      Nnucs =    max( NucLabeled(:) );
-                      for n=1:Nnucs;
-                          PlotmRNA(PlotmRNA==n) = mRNAsadj(n+1);
-                      end
-                          
-                      
-%                      [ons{i,chn},offs{i,chn}] = fxn_regionvar(Data{i,chn}.NucLabeled,Data{i,chn}.PlotmRNA,mRNAsadj,0,spread,Nnucs);
-                    
-                   
-                      figure(2);
-                          subplot(2,N,N*(chn-1)+i);
-                         hist(mRNAsadj,linspace(0,400,30)); xlim([0,400]);
-                         ave(i,chn) = nanmean(mRNAsadj);
-                         stdev(i,chn) = nanstd(mRNAsadj);
-                         title([ 'mean = ' num2str( ave(i,chn),3), '  std = ',num2str(stdev(i,chn),3) ] ) ; 
-                         
-                         figure(3);   subplot(2,N,N*(chn-1)+i);
-                         imagesc(PlotmRNA); axis off; set(gcf,'color','k');
-        %   disp(i);
-            end
- 
-    end
-       
- MGa1x_ave = ave;
- MGa1x_std = stdev;
-    
-% MGa2x_ave = ave;
-% MGa2x_std = stdev;
-    
-%  MGa2x_b_ave = ave;
-%  MGa2x_b_std = stdev;
-%%
-
-MGa2x_means = [MGa2x_ave(:,1); MGa2x_b_ave(:,1)];
-MGa2x_stds = [MGa2x_std(:,1); MGa2x_b_std(:,1)];
-
-
-figure(1); clf; scatter(MGa2x_means,MGa2x_stds,'ro');
-hold on; scatter(MGa1x_ave(:,1),MGa1x_std(:,1),'go');
-
-
-
-        
         
