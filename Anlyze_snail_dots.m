@@ -120,9 +120,9 @@ end
              ' (',num2str(std(MP05_ons{e,1}),3), ')']);
     end
    
-       figure(2); clf;  colordef black; set(gcf,'color','k');
+       figure(22); clf;  colordef black; set(gcf,'color','k');
     for e=1:10
-        figure(2); subplot(5,2,e); 
+        figure(22); subplot(5,2,e); 
          hist(MP10_ons{5,2},x);
          set(findobj(gca,'Type','patch'),'FaceColor','y');
          hold on; hist(MP10_ons{e,1},x);  xlim([0,450]);
