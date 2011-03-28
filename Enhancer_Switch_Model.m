@@ -47,3 +47,47 @@ CoV = std(dots)/mean(dots);
 disp(['Mean Burst Size = ',  num2str(mean_burst,3) '  Mean promoter openings = ',num2str(mean_openings,3)  ]); 
 
 disp(['Mean = ',num2str(Mr,3), '   Std = ',num2str(Sr,3), '   CoV = ',num2str(CoV,2),  ' Fano = ',num2str(Sr^2/Mr,2) ]);
+
+
+%%  2 enhancer percent time active model
+
+% The target activation for an individual gene is N/N_tot nuclei
+% if driven by a single enhancer this process is at best Poisson, and the
+% probability of getting 10% lower or 10% higher than the target is given
+% by the incomplete gamma function.
+
+% This premise is wrong. 
+
+gammainc(1,3,'lower'); % chance of getting less than 1 event when on average we get 3 events per window
+gammainc(1,2,'lower')^2; 
+
+
+% When there are two enhancers in the system things become more
+% complicated. 
+% 
+
+sum(poissrnd(1.1,1,N)<1)/N;
+
+
+sum(cumsum(-log(rand(1,1000))/7 )<10); % poisson with mean 70
+
+sum(cumsum(-log(rand(1,1000))/4.5 )<10); % poisson with mean 45
+
+clear all; 
+
+N = 100; 
+oneEr = .7;
+twoEr = oneEr/2;
+
+samples = 1000;
+oneE = zeros(1,samples);
+twoE = zeros(1,samples);
+for n = 1:samples;
+    oneE(n) = sum(poissrnd(oneEr,1,N)<1)/N; 
+    twoE(n) = sum(poissrnd(twoEr,1,N)+poissrnd(twoEr,1,N)<1)/N;
+end
+figure(1); clf; subplot(2,1,1); hist(oneE,linspace(0,1,30));
+subplot(2,1,2); hist(twoE,linspace(0,1,30)); 
+
+std(oneE)
+std(twoE)

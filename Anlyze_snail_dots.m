@@ -57,9 +57,9 @@ stre = 25;
 for slide = 1:2
     if slide == 1
       % fname =   'MP10_22C_sna_y_c'; cor = 0;  load([folder,fname,'_Slidedata'], 'Data');  % 
-       fname =   'MP10_22C_sna_y_d'; cor = 1;  load([folder,fname,'_slidedata_v2']);  % 
+       fname =   'MP10_22C_sna_y_d'; cor = 1;  load([folder,fname,'_slidedata_v4']);  % 
     elseif slide == 2
-        fname =  'MP05_22C_sna_y_c'; cor = 1; load([folder,fname,'_slidedata'], 'Data'); 
+        fname =  'MP05_22C_sna_y_c'; cor = 1; load([folder,fname,'_slidedata_v2'], 'Data'); 
     end
 
     figure(1); clf;
