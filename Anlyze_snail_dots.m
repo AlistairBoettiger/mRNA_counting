@@ -59,7 +59,8 @@ for slide = 1:2
       % fname =   'MP10_22C_sna_y_c'; cor = 0;  load([folder,fname,'_Slidedata'], 'Data');  % 
        fname =   'MP10_22C_sna_y_d'; cor = 1;  load([folder,fname,'_slidedata_v4']);  % 
     elseif slide == 2
-        fname =  'MP05_22C_sna_y_c'; cor = 1; load([folder,fname,'_slidedata_v2'], 'Data'); 
+          %  fname =   'MP10_22C_sna_y_e'; cor = 1;  load([folder,fname,'_slidedata']);  % 
+         fname =  'MP05_22C_sna_y_c'; cor = 1; load([folder,fname,'_slidedata_v2'], 'Data'); 
     end
 
     figure(1); clf;
@@ -73,8 +74,12 @@ for slide = 1:2
                     end            
                     
                     mRNAsadj = Data{i,chn}.mRNAsadj;
-                    load([folder,fname,'_',emb,'_nucdata.mat']); 
-                                                   
+                    try
+                        load([folder,fname,'_',emb,'_nucdata.mat']); 
+                    catch err
+                        load([rawfolder,fname,'_',emb,'_nucdata.mat']); 
+                    end
+                        
                  catch err
                      disp(err.message); 
                      break
@@ -110,7 +115,7 @@ end
  %%   
     x = linspace(0,450,50); 
     figure(1); clf; colordef black; set(gcf,'color','k');
-    for e=1:5
+    for e=1:4
         figure(1); subplot(4,2,e); 
          hist(MP05_ons{e,2},x);
          set(findobj(gca,'Type','patch'),'FaceColor','y');
