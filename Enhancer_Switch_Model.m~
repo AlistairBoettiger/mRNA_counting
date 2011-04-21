@@ -5,7 +5,30 @@
 % Alistair Boettiger                                Date Begun: 03/19/11
 % Levine Lab            
 
+%%
 
+%% Actually interesting: (?)
+
+% 10% off, 10% off, 1% off.
+% imagine 1 chance to turn on, on cells make 200 +/- sqrt(200) transcripts
+% off celsl make 0.
+
+FAC = .9; % fraction of active cells 
+mpc = 200; % mean mRNA per cell
+Ncells = 2500; % number of cells; 
+
+sigma = std([mpc*ones(1,round(Ncells*FAC)) + sqrt(mpc)*(.5-rand(1,round(Ncells*FAC)))  , 0*ones(1,round(Ncells*(1-FAC) ))]);
+mu = mean([mpc*ones(1,round(Ncells*FAC)) + sqrt(mpc)*(.5-rand(1,round(Ncells*FAC))), 0*ones(1,round(Ncells*(1-FAC)))]);
+cov_1x = sigma/mu 
+
+FAC = 1-(1-FAC)^2;
+sigma = std([mpc*ones(1,round(Ncells*FAC)) + sqrt(mpc)*(.5-rand(1,round(Ncells*FAC))) , 0*ones(1,round(Ncells*(1-FAC)))]);
+mu = mean([mpc*ones(1,round(Ncells*FAC)) + sqrt(mpc)*(.5-rand(1,round(Ncells*FAC))) , 0*ones(1,round(Ncells*(1-FAC)))]);
+cov_2x = sigma/mu 
+
+cov_1x/cov_2x
+
+%%
 %mean_dots =  120; %225;%   300;
 % 5; % 2; % average time open (in seconds)
 t_loop = 20;
