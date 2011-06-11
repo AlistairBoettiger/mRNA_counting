@@ -7,10 +7,12 @@
 
   %% New data-method
   clear all;
-    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP01_22C/'; %'/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP01_22C/'; %  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP09_22C/'; %
-  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-   fname = 'MP01_22C_hb_y_f'; Es = 12; %'MP09_22C_hb_y_f'; Es = 7;  %  'MP09_22C_hb_y_e'; Es =12; % 'MP09_22C_hb_y_d'; Es =12; % 'MP02_22C_hb_y'; Es = 12; %'MP02_22C_hb_y_b'; Es = 10; %    'MP01_22C_hb_y_c'; Es = 4; %   'MP01_22C_hb_y'; Es = 13; % 
- 
+   maternal =0; 
+    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s01_MP09/'; %s03_MP02/';% s02_MP01/';%/        '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP01_22C/'; %  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP09_22C/'; %
+  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';  %'/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
+   fname ='s01_MP09_Hz_22C_b'; Es = 10; cor = 0;  % 's03_MP02_Hz_22C' ; Es = 10; cor = 0; maternal = 100;  % 's02_MP01_Hz_22C' ; Es = 10; cor = 0; % 's01_MP09_Hz_22C_b'; Es = 10; cor = 0;   %'MP01_22C_hb_y_f'; Es = 12;  cor = 1;  %'MP09_22C_hb_y_f'; Es = 7;  cor = 1;  %  'MP09_22C_hb_y_e'; Es =12;  cor = 1; % 'MP09_22C_hb_y_d'; Es =12;  cor = 1; % 'MP02_22C_hb_y'; Es = 12; cor = 1;  %'MP02_22C_hb_y_b';  cor = 1; Es = 10; %    'MP01_22C_hb_y_c';  cor = 1; Es = 4; %   'MP01_22C_hb_y';  cor = 1; Es = 13; % 
+  maternal = 15; missG = 1.3;
+   
  slidedata_type = 1;
    
  try
@@ -32,7 +34,7 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
         emb = num2str(e);
     end
   
-  i = str2double(emb); cor = 1; 
+  i = str2double(emb);
 
   
   try
@@ -41,7 +43,7 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
       try 
            load([rawfolder,fname,'_',emb,'_nucdata.mat']);  
       catch er
-      break
+      continue
       end
   end
     
@@ -49,10 +51,28 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
               mRNAsadj = Data{i,1}.mRNAsadj;
               mRNAsadj2= Data{i,2}.mRNAsadj;
   else
-       load([folder,fname,'_',emb,'_1','_data.mat']); 
-      mRNAsadj = mRNA_sadj;
-      load([folder,fname,'_',emb,'_2','_data.mat']); 
-      mRNAsadj2 = mRNA_sadj;
+      try
+          load([folder,fname,'_',emb,'_1','_data.mat']); 
+          mRNAsadj = mRNA_sadj;
+          load([folder,fname,'_',emb,'_2','_data.mat']); 
+          mRNAsadj2 = mRNA_sadj;
+      catch er
+          disp(er.message);
+          slidedata_type = 3;
+          
+          try
+              load([folder,fname,'_',emb,'_chn1','_data.mat']); 
+              mRNAsadj = mRNA_sadj;
+              load([folder,fname,'_',emb,'_chn2','_data.mat']); 
+              mRNAsadj2 = mRNA_sadj;
+          catch er
+              disp(er.message);
+              disp('unable to load image');
+              break
+          end
+      end
+ 
+       
   end
               
       PlotmRNA = imresize(NucLabeled,.5,'nearest');
@@ -100,7 +120,7 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
     end
 
 
-    maternal =0; % min(mRNAsadj); %0; % 
+   % maternal =0; % min(mRNAsadj); %0; % 
 
     
     
@@ -116,8 +136,8 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
     nuc_order = NucLabel(c_inds);
     [b,m,n] = unique(nuc_order);
     dists = d(m);
-    figure(1); clf; plot(dists,mRNAsadj - maternal,'g.');  % check results
-    Data_notsort = [dists; mRNAsadj - maternal; mRNAsadj2]';
+    figure(1); clf; plot(dists,mRNAsadj ,'g.');  % check results
+    Data_notsort = [dists; mRNAsadj ; missG*(mRNAsadj2+maternal)]';
     Data_sort = sortrows(Data_notsort); 
 
     meanvar = std(Data_sort(10:20,2));
@@ -127,11 +147,6 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
       continue 
   end
  
-% % Convert distances to bcd concentrations.  
-% bcd = log(dists); % just logorithmic.  Don't need arbitrary scaling coeff.
-% %figure(1); clf; plot(bcd,mRNA_sadj,'k.');
-% Data2 = [bcd; mRNAsadj-maternal; dists]';
-% Data2 = sortrows(Data2);
 
 %%
 Sects = round(sqrt(Nnucs));
@@ -227,12 +242,12 @@ legend('hb CoV','y CoV','Poisson CoV');
   title(['Nuclei = ',num2str(Nnucs)]);
 
 figure(12); subplot(4,4,e);  
-    plot(Data_sort(:,1),Nnucs*Data_sort(:,2),'k.'); % check results  
+    plot(Data_sort(:,1),Data_sort(:,2),'k.'); % check results  
     title(['Nuclei = ',num2str(Nnucs)]);
-hold on; errorbar(x,Nnucs*mu(:,1),Nnucs*sigma(:,1),'linestyle','none','linewidth',3,'color','r');
+hold on; errorbar(x,mu(:,1),sigma(:,1),'linestyle','none','linewidth',3,'color','r');
 ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
-plot(Data_sort(:,1),Nnucs*Data_sort(:,3),'b.'); 
-hold on; errorbar(x,Nnucs*mu(:,2),Nnucs*sigma(:,2),'linestyle','none','linewidth',3,'color','c');
+plot(Data_sort(:,1),Data_sort(:,3),'b.'); 
+hold on; errorbar(x,mu(:,2),sigma(:,2),'linestyle','none','linewidth',3,'color','c');
 ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
 
 hbdata{e}.Data_sort = Data_sort;
@@ -241,9 +256,17 @@ hbdata{e}.bsmu = bsmu;
 hbdata{e}.sigma = sigma;
 hbdata{e}.bssigma = bssigma;
 hbdata{e}.x = x; 
+hbdata{e}.Nnucs = Nnucs; 
 end
 
+
+save([folder,fname,'_graddata'],'hbdata'); 
+
 %%
+old_plots = 0; 
+if old_plots == 1
+
+
 e =6;
 figure(2); clf; colordef black; set(gcf,'color','k');
 errorbar(hbdata{e}.x,hbdata{e}.sigma(:,1)./(hbdata{e}.mu(:,1)),hbdata{e}.bssigma(:,1)./(hbdata{e}.mu(:,1)),'r.','MarkerSize',10); hold on;
@@ -407,4 +430,5 @@ legend('measured endogenous','measured reporter','Poisson','Location','Best');
 set(gca,'FontSize',16);
 
 
+end
 end
