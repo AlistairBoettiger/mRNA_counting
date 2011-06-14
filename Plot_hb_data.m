@@ -20,16 +20,12 @@ fname = 's03_MP02_Hz_22C';
 load([folder,fname,'_graddata'],'hbdata'); 
 MP02 = hbdata;
 
-%%
-
-figure(1); clf; 
-colordef white; set(gcf,'color','w');  F = 14;
-
-
+%% Correct orientations and Choose embryos to graph 
 
 e=4;% 4; 
 e1=e;
 o1 = 4E4;
+
 % Orient Anterior Left
      or1 = MP01{e}.mu(1,1) -  MP01{e}.mu(end,1);
      MP01{e}.x = MP01{e}.x + o1; 
@@ -44,12 +40,6 @@ o1 = 4E4;
            MP01{e}.bssigma(:,1) = flipud(MP01{e}.bssigma(:,1));
            MP01{e}.bssigma(:,2) = flipud(MP01{e}.bssigma(:,2));
         end
-% errorbar(MP01{e}.x,MP01{e}.sigma(:,1)./MP01{e}.mu(:,1),MP01{e}.bssigma(:,1)./MP01{e}.mu(:,1),  'b*','MarkerSize',10); 
-% plot(MP01{e}.x,sqrt(MP01{e}.mu(:,1))./MP01{e}.mu(:,1),'k.','MarkerSize',10);
-errorbar(MP01{e}.x,MP01{e}.sigma(:,2)./MP01{e}.mu(:,2),MP01{e}.bssigma(:,2)./MP01{e}.mu(:,2),  'g*','MarkerSize',10); ylim([0,1]);
-hold on;
-
-
 
 e=1; % 8;
 e2=e;
@@ -70,11 +60,6 @@ o2 = 0;
            MP02{e}.bssigma(:,2) = flipud(MP02{e}.bssigma(:,2));
         end
 
-% errorbar(MP01{e}.x,MP01{e}.sigma(:,1)./MP01{e}.mu(:,1),MP01{e}.bssigma(:,1)./MP01{e}.mu(:,1),  'b*','MarkerSize',10); 
-% plot(MP02{e}.x,sqrt(MP02{e}.mu(:,1))./MP02{e}.mu(:,1),'k.','MarkerSize',10);
-errorbar(MP02{e}.x,MP02{e}.sigma(:,2)./MP02{e}.mu(:,2),MP02{e}.bssigma(:,2)./MP02{e}.mu(:,2),  'm*','MarkerSize',10); ylim([0,1]);
-
-
 % MP09 Data: control embryos
     e = 5; % 5 9; 
     e9 = e;
@@ -94,16 +79,33 @@ errorbar(MP02{e}.x,MP02{e}.sigma(:,2)./MP02{e}.mu(:,2),MP02{e}.bssigma(:,2)./MP0
            MP09{e}.bssigma(:,2) = flipud(MP09{e}.bssigma(:,2));
         end
     % Plot
-%    errorbar(MP09{e}.x,MP09{e}.sigma(:,1)./MP09{e}.mu(:,1),MP09{e}.bssigma(:,1)./MP09{e}.mu(:,1),  'b.','MarkerSize',10); 
-%  plot(MP09{e}.x,sqrt(MP09{e}.mu(:,1))./MP09{e}.mu(:,1),'k.','MarkerSize',10);
+%% Plot CoV
+
+figure(1); clf; 
+colordef white; set(gcf,'color','w');  F = 14;
+
+e=e1; 
+% plot(MP01{e}.x,sqrt(MP01{e}.mu(:,1))./MP01{e}.mu(:,1),'k.','MarkerSize',10);
+errorbar(MP01{e}.x,MP01{e}.sigma(:,2)./MP01{e}.mu(:,2),MP01{e}.bssigma(:,2)./MP01{e}.mu(:,2),  'g*','MarkerSize',10); ylim([0,1]);
 hold on;
-    
-    errorbar(MP09{e}.x,MP09{e}.sigma(:,2)./MP09{e}.mu(:,2),MP09{e}.bssigma(:,2)./MP09{e}.mu(:,2),  'b.','MarkerSize',10); ylim([0,1]);
+e = e2;
+% plot(MP02{e}.x,sqrt(MP02{e}.mu(:,1))./MP02{e}.mu(:,1),'k.','MarkerSize',10);
+errorbar(MP02{e}.x,MP02{e}.sigma(:,2)./MP02{e}.mu(:,2),MP02{e}.bssigma(:,2)./MP02{e}.mu(:,2),  'm*','MarkerSize',10); ylim([0,1]);
+hold on;
+    e = e9; 
+errorbar(MP09{e}.x,MP09{e}.sigma(:,2)./MP09{e}.mu(:,2),MP09{e}.bssigma(:,2)./MP09{e}.mu(:,2),  'b.','MarkerSize',10); ylim([0,1]);
+
+% The endogenous variances 
+errorbar(MP01{e}.x,MP01{e}.sigma(:,1)./MP01{e}.mu(:,1),MP01{e}.bssigma(:,1)./MP01{e}.mu(:,1),  'k.','MarkerSize',10); 
+errorbar(MP01{e}.x,MP01{e}.sigma(:,1)./MP01{e}.mu(:,1),MP01{e}.bssigma(:,1)./MP01{e}.mu(:,1),  'k.','MarkerSize',10); 
+errorbar(MP09{e}.x,MP09{e}.sigma(:,1)./MP09{e}.mu(:,1),MP09{e}.bssigma(:,1)./MP09{e}.mu(:,1),  'k.','MarkerSize',10); 
+
+ 
+ % plot(MP09{e}.x,sqrt(MP09{e}.mu(:,1))./MP09{e}.mu(:,1),'k.','MarkerSize',10);
     ylabel('CoV','FontSize',F);
     xlabel('distance (\mum)','Fontsize',F); hold on;
-set(gca,'Fontsize',F);
-
-legend(['no proximal, N=',num2str(MP01{e1}.Nnucs)],...
+    set(gca,'Fontsize',F);
+    legend(['no proximal, N=',num2str(MP01{e1}.Nnucs)],...
     ['no distal, N=',num2str(MP02{e2}.Nnucs)],['cntrl N=',num2str(MP09{e9}.Nnucs)]);
 
 %% Separate plot of gradients

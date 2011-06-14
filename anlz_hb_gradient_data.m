@@ -17,7 +17,7 @@
    maternal =0; 
     rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s03_MP02/';%s01_MP09/'; % s02_MP01/';%        '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP01_22C/'; %  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP09_22C/'; %
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';  %'/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-   fname = 's03_MP02_Hz_22C' ; Es = 12; cor = 0; ver = '';% '_v2'; % 's01_MP09_Hz_22C'; Es = 12; cor = 0; ver = ''; % 's01_MP09_Hz_22C_b'; Es = 12; cor = 0;  %  's02_MP01_Hz_22C' ; Es = 10; cor = 0; %    's01_MP09_Hz_22C_b'; Es = 10; cor = 0;   %'MP01_22C_hb_y_f'; Es = 12;  cor = 1;  %'MP09_22C_hb_y_f'; Es = 7;  cor = 1;  %  'MP09_22C_hb_y_e'; Es =12;  cor = 1; % 'MP09_22C_hb_y_d'; Es =12;  cor = 1; % 'MP02_22C_hb_y'; Es = 12; cor = 1;  %'MP02_22C_hb_y_b';  cor = 1; Es = 10; %    'MP01_22C_hb_y_c';  cor = 1; Es = 4; %   'MP01_22C_hb_y';  cor = 1; Es = 13; % 
+   fname = 's03_MP02_Hz_22C' ; Es = 12; cor = 0; ver =  '_v2';%; % 's01_MP09_Hz_22C'; Es = 12; cor = 0; ver = ''; % 's01_MP09_Hz_22C_b'; Es = 12; cor = 0;  %  's02_MP01_Hz_22C' ; Es = 10; cor = 0; %    's01_MP09_Hz_22C_b'; Es = 10; cor = 0;   %'MP01_22C_hb_y_f'; Es = 12;  cor = 1;  %'MP09_22C_hb_y_f'; Es = 7;  cor = 1;  %  'MP09_22C_hb_y_e'; Es =12;  cor = 1; % 'MP09_22C_hb_y_d'; Es =12;  cor = 1; % 'MP02_22C_hb_y'; Es = 12; cor = 1;  %'MP02_22C_hb_y_b';  cor = 1; Es = 10; %    'MP01_22C_hb_y_c';  cor = 1; Es = 4; %   'MP01_22C_hb_y';  cor = 1; Es = 13; % 
   maternal = 0; 
   missG = 1.3; %1.3;
    
@@ -165,7 +165,7 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
  end
  
 
-%%
+%% Cluster cells based on distance from anterior pole
 Sects = round(sqrt(Nnucs));
 Q = cell(1,Sects); 
 mu = zeros(Sects,2);
@@ -194,6 +194,24 @@ end
 
 % x = linspace(mean(dists(1:Sects)),mean(dists(end-Sects:1:end)),Sects)*50/1000;
 
+
+
+% fix orientation
+or = mu(1,1) -  mu(end,1);
+if or<0
+   Data_sort(:,2) = flipud( Data_sort(:,2));
+   Data_sort(:,3) = flipud( Data_sort(:,3));
+   mu(:,1) = flipud(mu(:,1));
+   sigma(:,1) = flipud(sigma(:,1));
+   mu(:,2) = flipud(mu(:,2));
+   sigma(:,2) = flipud(sigma(:,2));
+   bssigma(:,1) = flipud(bssigma(:,1));
+   bssigma(:,2) = flipud(bssigma(:,2));
+   PlotmRNA_r = fliplr(PlotmRNA_r);
+   PlotmRNA2_r = fliplr(PlotmRNA2_r); 
+end
+
+%% Plotting
 
 figure(1); clf; colordef black; set(gcf,'color','k');
 plot(Data_sort(:,1),flipud(Data_sort(:,2)),'w.'); % check results 
@@ -235,17 +253,13 @@ set(gca,'FontSize',16);
 
 figure(10); subplot(4,4,e);  colordef white; set(gcf,'color','w');
     plot(Data_sort(:,1),Data_sort(:,2),'k.'); % check results  
+    hold on; 
+    errorbar(x,mu(:,1),sigma(:,1),'linestyle','none','linewidth',3,'color','r');
+    plot(Data_sort(:,1),Data_sort(:,3),'b.'); 
+    hold on; 
+    errorbar(x,mu(:,2),sigma(:,2),'linestyle','none','linewidth',3,'color','c');
+    ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
     title(['Nuclei = ',num2str(Nnucs)]);
-
-%plot(Data_sort(:,1)*50/1000,Data_sort(:,2),'k.'); % check results 
-%figure(1); clf; set(gcf,'color','w'); 
-hold on; errorbar(x,mu(:,1),sigma(:,1),'linestyle','none','linewidth',3,'color','r');
-ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
- 
-plot(Data_sort(:,1),Data_sort(:,3),'b.'); 
-hold on; errorbar(x,mu(:,2),sigma(:,2),'linestyle','none','linewidth',3,'color','c');
-ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
-
 
 
 figure(11); subplot(4,4,e);  
@@ -257,16 +271,17 @@ plot(x,sqrt(mu(:,1))./mu(:,1),'k.','MarkerSize',10);
 ylabel('CoV'); xlabel('distance (\mum)');
 legend('hb CoV','y CoV','Poisson CoV');
   title(['Nuclei = ',num2str(Nnucs)]);
+ 
+% figure(12); subplot(4,4,e);  colordef white; set(gcf,'color','w');
+%     plot(Data_sort(:,1),Data_sort(:,2),'k.'); % check results  
+%     title(['Nuclei = ',num2str(Nnucs)]);
+% hold on; errorbar(x,mu(:,1),sigma(:,1),'linestyle','none','linewidth',3,'color','r');
+% ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
+% plot(Data_sort(:,1),Data_sort(:,3),'b.'); 
+% hold on; errorbar(x,mu(:,2),sigma(:,2),'linestyle','none','linewidth',3,'color','c');
+% ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
 
-figure(12); subplot(4,4,e);  colordef white; set(gcf,'color','w');
-    plot(Data_sort(:,1),Data_sort(:,2),'k.'); % check results  
-    title(['Nuclei = ',num2str(Nnucs)]);
-hold on; errorbar(x,mu(:,1),sigma(:,1),'linestyle','none','linewidth',3,'color','r');
-ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
-plot(Data_sort(:,1),Data_sort(:,3),'b.'); 
-hold on; errorbar(x,mu(:,2),sigma(:,2),'linestyle','none','linewidth',3,'color','c');
-ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
-
+    
 hbdata{e}.Data_sort = Data_sort;
 hbdata{e}.mu = mu;
 hbdata{e}.bsmu = bsmu;
@@ -281,173 +296,3 @@ end
 
 save([folder,fname,'_graddata'],'hbdata'); 
 
-%%
-old_plots = 0; 
-if old_plots == 1
-
-
-e =6;
-figure(2); clf; colordef black; set(gcf,'color','k');
-errorbar(hbdata{e}.x,hbdata{e}.sigma(:,1)./(hbdata{e}.mu(:,1)),hbdata{e}.bssigma(:,1)./(hbdata{e}.mu(:,1)),'r.','MarkerSize',10); hold on;
-errorbar(hbdata{e}.x,hbdata{e}.sigma(:,2)./(hbdata{e}.mu(:,2)),hbdata{e}.bssigma(:,2)./(hbdata{e}.mu(:,2)),'g.','MarkerSize',10);
- plot(hbdata{e}.x,sqrt(hbdata{e}.mu(:,1))./(hbdata{e}.mu(:,1)),'w.','MarkerSize',10);
-ylabel('CoV','FontSize',16); xlabel('distance (\mum)','FontSize',16);
-ylim([0,1]);
-legend('measured endogenous','measured reporter','Poisson','Location','Best');
-set(gca,'FontSize',16);
-
-%%
-figure(2); clf; colordef black; set(gcf,'color','k');
-errorbar(hbdata{e}.x,flipud(hbdata{e}.sigma(:,1)./(hbdata{e}.mu(:,1))),flipud(hbdata{e}.bssigma(:,1)./(hbdata{e}.mu(:,1))),'r.','MarkerSize',10); hold on;
-errorbar(hbdata{e}.x,flipud(hbdata{e}.sigma(:,2)./(hbdata{e}.mu(:,2))),flipud(hbdata{e}.bssigma(:,2)./(hbdata{e}.mu(:,2))),'g.','MarkerSize',10);
- plot(hbdata{e}.x,flipud(sqrt(hbdata{e}.mu(:,1))./(hbdata{e}.mu(:,1))),'w.','MarkerSize',10);
-ylabel('CoV','FontSize',16); xlabel('distance (\mum)','FontSize',16);
-ylim([0,1]);
-legend('measured endogenous','measured reporter','Poisson','Location','Best');
-set(gca,'FontSize',16);
-
-
-%%
-k = 1; offset =0;
-figure(3); clf; colordef black; set(gcf,'color','k');
-    plot(hbdata{e}.Data_sort(:,1)+offset(k),(hbdata{e}.Data_sort(:,2)),'.','color','r'); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),(hbdata{e}.mu(:,1)),(hbdata{e}.sigma(:,1)),'linestyle','none','linewidth',3,'color','m');
-    plot(hbdata{e}.Data_sort(:,1)+offset(k),(hbdata{e}.Data_sort(:,3)),'+','color','g'); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),(hbdata{e}.mu(:,2)),(hbdata{e}.sigma(:,2)),'linestyle','none','linewidth',3,'color','c');
-    ylabel('number of mRNA transcripts per cell','FontSize',16);
-xlabel('distance (\mum)','FontSize',16);
-set(gca,'FontSize',16);
-
-    %%
-k = 1; offset =0;
-figure(3); clf; colordef black; set(gcf,'color','k');
-    plot(hbdata{e}.Data_sort(:,1)+offset(k),flipud(hbdata{e}.Data_sort(:,2)),'.','color','r'); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),flipud(hbdata{e}.mu(:,1)),flipud(hbdata{e}.sigma(:,1)),'linestyle','none','linewidth',3,'color','m');
-    plot(hbdata{e}.Data_sort(:,1)+offset(k),flipud(hbdata{e}.Data_sort(:,3)),'+','color','g'); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),flipud(hbdata{e}.mu(:,2)),flipud(hbdata{e}.sigma(:,2)),'linestyle','none','linewidth',3,'color','c');
-
-    ylabel('number of mRNA transcripts per cell','FontSize',16);
-xlabel('distance (\mum)','FontSize',16);
-set(gca,'FontSize',16);
-    
-%%
-
-otherplots = 0; 
-if otherplots ==1 
-
-%
-col = {'r','g'};
-figure(1); clf; colordef white; set(gcf,'color','w');
-offset = [0,0];
-flips = [1,0];
-
-k = 0;
-for e = [11,12];
-    k = k+1;
-    if flips(k) == 0
-    plot(hbdata{e}.Data_sort(:,1)+offset(k),(hbdata{e}.Data_sort(:,2)),'.','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),(hbdata{e}.mu(:,1)),(hbdata{e}.sigma(:,1)),'linestyle','none','linewidth',3,'color',col{k});
-    
-    plot(hbdata{e}.Data_sort(:,1)+offset(k),(hbdata{e}.Data_sort(:,3)),'+','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),(hbdata{e}.mu(:,2)),(hbdata{e}.sigma(:,2)),'linestyle','none','linewidth',1,'color',col{k});
-    else
-     plot(hbdata{e}.Data_sort(:,1)+offset(k),flipud(hbdata{e}.Data_sort(:,2)),'.','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),flipud(hbdata{e}.mu(:,1)),flipud(hbdata{e}.sigma(:,1)),'linestyle','none','linewidth',3,'color',col{k});
-    
-        plot(hbdata{e}.Data_sort(:,1)+offset(k),flipud(hbdata{e}.Data_sort(:,3)),'+','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),flipud(hbdata{e}.mu(:,2)),flipud(hbdata{e}.sigma(:,2)),'linestyle','none','linewidth',1,'color',col{k});
-    end
-    
-end
-ylabel('number of mRNA transcripts per cell','FontSize',16);
-xlabel('distance (\mum)','FontSize',16);
-set(gca,'FontSize',16);
-
-%% for MP09e
-
-col = {'k';'b'}; % {'c';'m';'r';'g';'b'};%  
-figure(1); clf; colordef white; set(gcf,'color','w');
-offset =[1.1E4; 3.7E4]; % [1.8E4; 0E4; 0; 2.1E4; 4E4]; %  [2E4,0,2.5E4]; % % [0; 1.8E4; 3.7E4];
-flips = [0,0];% [1,1,0,0,0]; %  % [0,0,0];
-
-k = 0;
-for e =[8]; % [2,3,5,7,8]; % 
-    k = k+1;
-     if flips(k) == 0
-    plot(hbdata{e}.Data_sort(:,1)+offset(k),(hbdata{e}.Data_sort(:,2)),'.','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),(hbdata{e}.mu(:,1)),(hbdata{e}.sigma(:,1)),'linestyle','none','linewidth',3,'color',col{k});
-    
-    plot(hbdata{e}.Data_sort(:,1)+offset(k),(hbdata{e}.Data_sort(:,3)),'+','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),(hbdata{e}.mu(:,2)),(hbdata{e}.sigma(:,2)),'linestyle','none','linewidth',1,'color',col{k});
-    else
-     plot(hbdata{e}.Data_sort(:,1)+offset(k),flipud(hbdata{e}.Data_sort(:,2)),'.','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),flipud(hbdata{e}.mu(:,1)),flipud(hbdata{e}.sigma(:,1)),'linestyle','none','linewidth',3,'color',col{k});
-    
-        plot(hbdata{e}.Data_sort(:,1)+offset(k),flipud(hbdata{e}.Data_sort(:,3)),'+','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),flipud(hbdata{e}.mu(:,2)),flipud(hbdata{e}.sigma(:,2)),'linestyle','none','linewidth',1,'color',col{k});
-    end
-end
-ylabel('number of mRNA transcripts per cell','FontSize',16);  
-xlabel('distance (\mum)','FontSize',16);
-set(gca,'FontSize',16);
-
-
-%% for MP09e
-
-col = {'r'}; % {'c';'m';'r';'g';'b'};%  
-coly = {'g';'y'};
-colb = {'m';'c'};
-figure(1); clf; colordef black; set(gcf,'color','k');
-offset =[1.1E4; 3.7E4]; % [1.8E4; 0E4; 0; 2.1E4; 4E4]; %  [2E4,0,2.5E4]; % % [0; 1.8E4; 3.7E4];
-flips = [0,0];% [1,1,0,0,0]; %  % [0,0,0];
-
-k = 0;
-for e =[8]; % [2,3,5,7,8]; % 
-    k = k+1;
-     if flips(k) == 0
-    plot(hbdata{e}.Data_sort(:,1)+offset(k),(hbdata{e}.Data_sort(:,2)),'.','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),(hbdata{e}.mu(:,1)),(hbdata{e}.sigma(:,1)),'linestyle','none','linewidth',3,'color',colb{k});
-    
-     plot(hbdata{e}.Data_sort(:,1)+offset(k),(hbdata{e}.Data_sort(:,3)),'+','color',coly{k}); % check results 
-     hold on; errorbar(hbdata{e}.x+offset(k),(hbdata{e}.mu(:,2)),(hbdata{e}.sigma(:,2)),'linestyle','none','linewidth',3,'color',[0,.75,.75]);
-     else
-     plot(hbdata{e}.Data_sort(:,1)+offset(k),flipud(hbdata{e}.Data_sort(:,2)),'.','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),flipud(hbdata{e}.mu(:,1)),flipud(hbdata{e}.sigma(:,1)),'linestyle','none','linewidth',3,'color',col{k});
-    
-        plot(hbdata{e}.Data_sort(:,1)+offset(k),flipud(hbdata{e}.Data_sort(:,3)),'+','color',col{k}); % check results 
-    hold on; errorbar(hbdata{e}.x+offset(k),flipud(hbdata{e}.mu(:,2)),flipud(hbdata{e}.sigma(:,2)),'linestyle','none','linewidth',1,'color','r');
-    end
-end
-ylabel('number of mRNA transcripts per cell','FontSize',16);  
-xlabel('distance (\mum)','FontSize',16);
-set(gca,'FontSize',16);
-
-%%
-
-
-
-
-errorbar(x,sigma(:,1)./mu(:,1),bssigma(:,1)./mu(:,1),  'r.','MarkerSize',10); ylim([0,1]);
-hold on;
-errorbar(x,sigma(:,2)./mu(:,2),bssigma(:,2)./mu(:,2),  'b.','MarkerSize',10); ylim([0,1]);
-plot(x,sqrt(mu(:,1))./mu(:,1),'w.','MarkerSize',10);
-ylabel('CoV'); xlabel('distance (\mum)');
-legend('measured endogenous','measured reporter','Poisson','Location','Best');
-
-
-
-
-
-figure(2); clf; colordef black; set(gcf,'color','k');
-
-
-figure(1); clf; colordef black; set(gcf,'color','k');
-plot(hbdata{e}.x,hbdata{e}.mu(:,1),'r.','MarkerSize',20); hold on;
-plot(hbdata{e}.x,hbdata{e}.mu(:,2),'g.','MarkerSize',20);
-ylabel('mean expression','FontSize',16); xlabel('distance (\mum)','FontSize',16);
-legend('measured endogenous','measured reporter','Poisson','Location','Best');
-set(gca,'FontSize',16);
-
-
-end
-end
