@@ -26,7 +26,8 @@ figure(1); clf;
 colordef white; set(gcf,'color','w');
 
 % MP09 Data: control embryos
-    e = 9; e9 = e;
+    e = 9; % 9; 
+    e9 = e;
     % Orient Anterior Left
         or9 = MP09{e}.mu(1,1) -  MP09{e}.mu(end,1);
         if or9<0
@@ -48,7 +49,8 @@ hold on;
     ylabel('CoV'); xlabel('distance (\mum)'); hold on;
     legend('hb CoV','y CoV','Poisson CoV');
 
-e=4; e1=e;
+e=4;% 4; 
+e1=e;
  % Orient Anterior Left
      or1 = MP01{e}.mu(1,1) -  MP01{e}.mu(end,1);
         if or1<0
@@ -63,9 +65,10 @@ e=4; e1=e;
         end
 % errorbar(MP01{e}.x,MP01{e}.sigma(:,1)./MP01{e}.mu(:,1),MP01{e}.bssigma(:,1)./MP01{e}.mu(:,1),  'b*','MarkerSize',10); 
 % plot(MP01{e}.x,sqrt(MP01{e}.mu(:,1))./MP01{e}.mu(:,1),'k.','MarkerSize',10);
-errorbar(MP01{e}.x,MP01{e}.sigma(:,2)./MP01{e}.mu(:,2),MP01{e}.bssigma(:,2)./MP01{e}.mu(:,2),  'm*','MarkerSize',10); ylim([0,1]);
+errorbar(MP01{e}.x,MP01{e}.sigma(:,2)./MP01{e}.mu(:,2),MP01{e}.bssigma(:,2)./MP01{e}.mu(:,2),  'g*','MarkerSize',10); ylim([0,1]);
 
-e=8; e2=e;
+e=8; % 8;
+e2=e;
 
     % Orient Anterior Left
         or2 = MP02{e}.mu(1,1) -  MP02{e}.mu(end,1);
@@ -82,7 +85,7 @@ e=8; e2=e;
 
 % errorbar(MP01{e}.x,MP01{e}.sigma(:,1)./MP01{e}.mu(:,1),MP01{e}.bssigma(:,1)./MP01{e}.mu(:,1),  'b*','MarkerSize',10); 
 % plot(MP02{e}.x,sqrt(MP02{e}.mu(:,1))./MP02{e}.mu(:,1),'k.','MarkerSize',10);
-errorbar(MP02{e}.x,MP02{e}.sigma(:,2)./MP02{e}.mu(:,2),MP02{e}.bssigma(:,2)./MP02{e}.mu(:,2),  'g*','MarkerSize',10); ylim([0,1]);
+errorbar(MP02{e}.x,MP02{e}.sigma(:,2)./MP02{e}.mu(:,2),MP02{e}.bssigma(:,2)./MP02{e}.mu(:,2),  'm*','MarkerSize',10); ylim([0,1]);
 
 
 legend(['cntrl N=',num2str(MP09{e9}.Nnucs)],['no proximal, N=',num2str(MP01{e1}.Nnucs)],...
@@ -115,7 +118,7 @@ plot(MP01{e}.Data_sort(:,1),MP01{e}.Data_sort(:,2),'k.'); % check results
 title(['Nuclei = ',num2str(MP01{e}.Nnucs)]);
 hold on;
 errorbar(MP01{e}.x,MP01{e}.mu(:,1),MP01{e}.sigma(:,1),'linestyle','none','linewidth',3,'color','r');
-plot(MP01{e}.Data_sort(:,1),MP01{e}.Data_sort(:,3),'b.'); 
+plot(MP01{e}.Data_sort(:,1),MP01{e}.Data_sort(:,3),'g.'); 
 errorbar(MP01{e}.x,MP01{e}.mu(:,2),MP01{e}.sigma(:,2),'linestyle','none','linewidth',3,'color','c');
 ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
 
@@ -126,8 +129,26 @@ plot(MP02{e}.Data_sort(:,1),MP02{e}.Data_sort(:,2),'k.'); % check results
 title(['Nuclei = ',num2str(MP02{e}.Nnucs)]);
 hold on;
 errorbar(MP02{e}.x,MP02{e}.mu(:,1),MP02{e}.sigma(:,1),'linestyle','none','linewidth',3,'color','r');
-plot(MP02{e}.Data_sort(:,1),MP02{e}.Data_sort(:,3),'b.'); 
+plot(MP02{e}.Data_sort(:,1),MP02{e}.Data_sort(:,3),'m.'); 
 errorbar(MP02{e}.x,MP02{e}.mu(:,2),MP02{e}.sigma(:,2),'linestyle','none','linewidth',3,'color','c');
 ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
 
+
+%%
+figure(3); clf; F = 14;
+colordef white; set(gcf,'color','w');
+e = e9; plot(MP09{e}.Data_sort(:,1),MP09{e}.Data_sort(:,3),'b.');  hold on;
+e = e1; plot(MP01{e}.Data_sort(:,1),MP01{e}.Data_sort(:,3),'g.');
+e = e2; plot(MP02{e}.Data_sort(:,1),MP02{e}.Data_sort(:,3),'m.');
+
+e = e9; plot(MP09{e}.Data_sort(:,1),MP09{e}.Data_sort(:,2),'k.'); % check results  
+e = e1; plot(MP01{e}.Data_sort(:,1),MP01{e}.Data_sort(:,2),'k.'); % check results  
+e = e2; plot(MP02{e}.Data_sort(:,1),MP02{e}.Data_sort(:,2),'k.'); % check results  
+ylabel('number of mRNA transcripts per cell','Fontsize',F); 
+xlabel('distance (\mum)','Fontsize',F);
+
+legend(['cntrl N=',num2str(MP09{e9}.Nnucs)],['no proximal, N=',num2str(MP01{e1}.Nnucs)],...
+    ['no distal, N=',num2str(MP02{e2}.Nnucs)],'Endogenous, combined');
+set(gca,'Fontsize',F);
+title(['mid cc13 mRNA counts']);
 

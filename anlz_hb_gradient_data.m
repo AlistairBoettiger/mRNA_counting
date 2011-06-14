@@ -2,15 +2,22 @@
 %% anlz_hb_gradient_data.m
 
 % Alistair Boettiger                                Date Begun: 02/02/11
-% Levine Lab                                    Last Modified: 03/28/11
+% Levine Lab                                    Last Modified: 06/14/11
+
+
+%% Modifications
+% Modified 06/12/11 to scale green channel to correct for missed detection
+% rate
+% Modified 06/14/11 to save oriented mRNA plots with corrected counts.  
+
 
 
   %% New data-method
   clear all;
    maternal =0; 
-    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s01_MP09/'; %s03_MP02/';% s02_MP01/';%         '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP01_22C/'; %  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP09_22C/'; %
+    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s03_MP02/';%s01_MP09/'; % s02_MP01/';%        '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP01_22C/'; %  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP09_22C/'; %
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';  %'/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-   fname ='s01_MP09_Hz_22C_b'; Es = 10; cor = 0;  % 's03_MP02_Hz_22C' ; Es = 10; cor = 0; %  's02_MP01_Hz_22C' ; Es = 10; cor = 0; %   's01_MP09_Hz_22C_b'; Es = 10; cor = 0;   %'MP01_22C_hb_y_f'; Es = 12;  cor = 1;  %'MP09_22C_hb_y_f'; Es = 7;  cor = 1;  %  'MP09_22C_hb_y_e'; Es =12;  cor = 1; % 'MP09_22C_hb_y_d'; Es =12;  cor = 1; % 'MP02_22C_hb_y'; Es = 12; cor = 1;  %'MP02_22C_hb_y_b';  cor = 1; Es = 10; %    'MP01_22C_hb_y_c';  cor = 1; Es = 4; %   'MP01_22C_hb_y';  cor = 1; Es = 13; % 
+   fname = 's03_MP02_Hz_22C' ; Es = 12; cor = 0; ver = '';% '_v2'; % 's01_MP09_Hz_22C'; Es = 12; cor = 0; ver = ''; % 's01_MP09_Hz_22C_b'; Es = 12; cor = 0;  %  's02_MP01_Hz_22C' ; Es = 10; cor = 0; %    's01_MP09_Hz_22C_b'; Es = 10; cor = 0;   %'MP01_22C_hb_y_f'; Es = 12;  cor = 1;  %'MP09_22C_hb_y_f'; Es = 7;  cor = 1;  %  'MP09_22C_hb_y_e'; Es =12;  cor = 1; % 'MP09_22C_hb_y_d'; Es =12;  cor = 1; % 'MP02_22C_hb_y'; Es = 12; cor = 1;  %'MP02_22C_hb_y_b';  cor = 1; Es = 10; %    'MP01_22C_hb_y_c';  cor = 1; Es = 4; %   'MP01_22C_hb_y';  cor = 1; Es = 13; % 
   maternal = 0; 
   missG = 1.3; %1.3;
    
@@ -62,9 +69,9 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
           slidedata_type = 3;
           
           try
-              load([folder,fname,'_',emb,'_chn1','_data.mat']); 
+              load([folder,fname,'_',emb,'_chn1','_data',ver,'.mat']); 
               mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
-              load([folder,fname,'_',emb,'_chn2','_data.mat']); 
+              load([folder,fname,'_',emb,'_chn2','_data',ver,'.mat']); 
               mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
           catch er
               disp(er.message);
@@ -76,11 +83,13 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
        
   end
               
-      PlotmRNA = imresize(NucLabeled,.5,'nearest');
+       PlotmRNA = imresize(NucLabeled,.5,'nearest');
+       PlotmRNA2 = PlotmRNA; 
        NucLabeled = imresize(NucLabeled,.5,'nearest'); 
                       Nnucs =    max( NucLabeled(:) );
                       for n=1:Nnucs;
                           PlotmRNA(PlotmRNA==n) = mRNAsadj(n+cor);
+                          PlotmRNA2(PlotmRNA2==n) = mRNAsadj2(n+cor);
                       end
     figure(1); clf; imagesc(PlotmRNA); colormap hot; 
         
@@ -104,6 +113,9 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
     figure(1); clf; imagesc(NucLabel);
     rotes = rotes + 1; 
     
+    
+
+    
 % convert nucleus centroids to indexed postions
 
 
@@ -123,11 +135,7 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
 
    % maternal =0; % min(mRNAsadj); %0; % 
 
-    
-    
-    
-    
-    
+     
     %  % Plotting for troubleshooting
     %     C = false(h,w);
     %     C(c_inds) = 1; 
@@ -140,13 +148,21 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
     figure(1); clf; plot(dists,mRNAsadj ,'g.');  % check results
     Data_notsort = [dists; mRNAsadj ; missG*(mRNAsadj2+maternal)]';
     Data_sort = sortrows(Data_notsort); 
-
     meanvar = std(Data_sort(10:20,2));
  end
+ 
+ 
+ % show rotated image
+    figure(2); clf; 
+    PlotmRNA_r = imrotate(PlotmRNA,(0+90*rotes)-rprops.Orientation,'nearest'); 
+    PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops.Orientation,'nearest'); 
+    imagesc(PlotmRNA2_r); colormap hot;
+ 
+ 
   catch err
       disp(err.message);
       continue 
-  end
+ end
  
 
 %%
@@ -258,6 +274,8 @@ hbdata{e}.sigma = sigma;
 hbdata{e}.bssigma = bssigma;
 hbdata{e}.x = x; 
 hbdata{e}.Nnucs = Nnucs; 
+hbdata{e}.PlotmRNA2 = PlotmRNA2_r;
+hbdata{e}.PlotmRNA = PlotmRNA_r; 
 end
 
 
