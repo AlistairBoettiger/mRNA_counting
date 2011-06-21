@@ -61,9 +61,9 @@ hold on;
 errorbar(MP09{e}.x,MP09{e}.sigma(:,2)./MP09{e}.mu(:,2),MP09{e}.bssigma(:,2)./MP09{e}.mu(:,2),  'b.','MarkerSize',10); ylim([0,1]);
 
 % The endogenous variances 
-errorbar(MP01{e}.x,MP01{e}.sigma(:,1)./MP01{e}.mu(:,1),MP01{e}.bssigma(:,1)./MP01{e}.mu(:,1),  'k.','MarkerSize',10); 
-errorbar(MP01{e}.x,MP01{e}.sigma(:,1)./MP01{e}.mu(:,1),MP01{e}.bssigma(:,1)./MP01{e}.mu(:,1),  'k.','MarkerSize',10); 
-errorbar(MP09{e}.x,MP09{e}.sigma(:,1)./MP09{e}.mu(:,1),MP09{e}.bssigma(:,1)./MP09{e}.mu(:,1),  'k.','MarkerSize',10); 
+e=e1; errorbar(MP01{e}.x,MP01{e}.sigma(:,1)./MP01{e}.mu(:,1),MP01{e}.bssigma(:,1)./MP01{e}.mu(:,1),  'k.','MarkerSize',10); 
+e = e2; errorbar(MP02{e}.x,MP02{e}.sigma(:,1)./MP02{e}.mu(:,1),MP02{e}.bssigma(:,1)./MP02{e}.mu(:,1),  'k.','MarkerSize',10); 
+e = e9; errorbar(MP09{e}.x,MP09{e}.sigma(:,1)./MP09{e}.mu(:,1),MP09{e}.bssigma(:,1)./MP09{e}.mu(:,1),  'k.','MarkerSize',10); 
 
  
  % plot(MP09{e}.x,sqrt(MP09{e}.mu(:,1))./MP09{e}.mu(:,1),'k.','MarkerSize',10);
@@ -148,16 +148,16 @@ subplot(2,3,6);  imagesc(MP09{e9}.PlotmRNA); colormap hot; colorbar; axis off;ca
 
 
 %%
-clear Iin hb_map;
-Iin = imread('/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_modeling/Results/hb_expression.tif');
-figure(5); clf; imagesc(Iin(:,:,1)); colormap hot; axis off; set(gcf,'color','k');
-mask = im2bw(Iin(:,:,1),.03);
-figure(5); clf; imagesc(mask);
-
-hb_map = mask.*double(100+.5*Iin(:,:,1) -  .5*Iin(:,:,3));
-C1 = colormap(hot); C2 = colormap(1-hot);
-C = [0,0,0; C2; C1(1:end,:)];
-
-figure(6); clf; imagesc(hb_map); colormap(C); %colorbar;
-axis off; colordef black; set(gcf,'color','k');
+% clear Iin hb_map;
+% Iin = imread('/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Results/hb_expression.tif');
+% figure(5); clf; imagesc(Iin(:,:,1)); colormap hot; axis off; set(gcf,'color','k');
+% mask = im2bw(Iin(:,:,1),.03);
+% figure(5); clf; imagesc(mask);
+% 
+% hb_map = mask.*double(100+.5*Iin(:,:,1) -  .5*Iin(:,:,3));
+% C1 = colormap(hot); C2 = colormap(1-hot);
+% C = [0,0,0; C2; C1(1:end,:)];
+% 
+% figure(6); clf; imagesc(hb_map); colormap(C); %colorbar;
+% axis off; colordef black; set(gcf,'color','k');
 
