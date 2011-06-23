@@ -15,11 +15,11 @@
   %% New data-method
   clear all;
   maternal =0;  ver = '';  Es = 14; cor = 0; % defaults
-  rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s02_MP01/';%   s01_MP09/'; % s03_MP02/';%  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP01_22C/'; %  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP09_22C/'; %
+  rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s01_MP09/'; % s02_MP01/';%   s03_MP02/';%  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP01_22C/'; %  '/Volumes/Data/Lab Data/Raw_Data/02-17-11/MP09_22C/'; %
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/';  %'/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/Enhancer_Modeling/Data/'; 
-  fname = 's02_MP01_Hz_22C_b' ; %  's01_MP09_Hz_22C_b'; % 's03_MP02_Hz_22C' ; ver =  '_v2';%; %  's01_MP09_Hz_22C_b';  %    's01_MP09_Hz_22C_b';   %'MP01_22C_hb_y_f'; Es = 12;  cor = 1;  %'MP09_22C_hb_y_f'; Es = 7;  cor = 1;  %  'MP09_22C_hb_y_e'; Es =12;  cor = 1; % 'MP09_22C_hb_y_d'; Es =12;  cor = 1; % 'MP02_22C_hb_y'; Es = 12; cor = 1;  %'MP02_22C_hb_y_b';  cor = 1; Es = 10; %    'MP01_22C_hb_y_c';  cor = 1; Es = 4; %   'MP01_22C_hb_y';  cor = 1; Es = 13; % 
+  fname =  's01_MP09_Hz_22C_c'; %'s01_MP09_Hz_22C_b'; %'s02_MP01_Hz_22C_b' ; %  's03_MP02_Hz_22C' ; ver =  '_v2';%; %  's01_MP09_Hz_22C_b';  %    's01_MP09_Hz_22C_b';   %'MP01_22C_hb_y_f'; Es = 12;  cor = 1;  %'MP09_22C_hb_y_f'; Es = 7;  cor = 1;  %  'MP09_22C_hb_y_e'; Es =12;  cor = 1; % 'MP09_22C_hb_y_d'; Es =12;  cor = 1; % 'MP02_22C_hb_y'; Es = 12; cor = 1;  %'MP02_22C_hb_y_b';  cor = 1; Es = 10; %    'MP01_22C_hb_y_c';  cor = 1; Es = 4; %   'MP01_22C_hb_y';  cor = 1; Es = 13; % 
   missG = 1.3; %1.3;
-   
+    ver =  '_v2';%
   
  slidedata_type = 1;
    
@@ -109,7 +109,7 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
   
  while meanvar > 75  && rotes<4;
     
-    NucLabel = imrotate(NucLabeled,(0+90*rotes)-rprops.Orientation,'nearest'); 
+    NucLabel = imrotate(NucLabeled,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
     figure(1); clf; imagesc(NucLabel);
     rotes = rotes + 1; 
     
@@ -154,8 +154,8 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
  
  % show rotated image
     figure(2); clf; 
-    PlotmRNA_r = imrotate(PlotmRNA,(0+90*rotes)-rprops.Orientation,'nearest'); 
-    PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops.Orientation,'nearest'); 
+    PlotmRNA_r = imrotate(PlotmRNA,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
+    PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
     imagesc(PlotmRNA2_r); colormap hot;
  
  
@@ -286,5 +286,5 @@ hbdata{e}.PlotmRNA = PlotmRNA_r;
 end
 
 
-save([folder,fname,'_graddata'],'hbdata'); 
+save([folder,fname,'_graddata','ver'],'hbdata'); 
 

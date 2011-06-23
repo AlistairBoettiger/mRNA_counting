@@ -15,12 +15,21 @@ e=4;% 4;
 e1=e;
 o1 = 4E4;
 
+fname = 's02_MP01_Hz_22C_b'; 
+load([folder,fname,'_graddata'],'hbdata'); 
+MP01_b = hbdata;
+
 fname = 's03_MP02_Hz_22C'; 
 load([folder,fname,'_graddata'],'hbdata'); 
 MP02 = hbdata;
 e=1; % 8;
 e2=e;
 o2 = 0;
+
+fname = 's03_MP02_Hz_22C_b'; 
+load([folder,fname,'_graddata'],'hbdata'); 
+MP02_b = hbdata;
+
 
 fname = 's01_MP09_Hz_22C_b'; 
 load([folder,fname,'_graddata'],'hbdata'); 
@@ -29,6 +38,85 @@ MP09 = hbdata;
     e9 = e;
     o9 = 4E4;
 
+fname = 's01_MP09_Hz_22C'; 
+load([folder,fname,'_graddata'],'hbdata'); 
+MP09_a = hbdata;
+
+fname = 's01_MP09_Hz_22C_c'; 
+load([folder,fname,'_graddata'],'hbdata'); 
+MP09_c = hbdata;
+    
+%%  
+figure(3); clf; figure(4); clf; figure(5); clf;
+
+F = 14;
+Es = 12;
+%       1  2  3  4  5  6   7   8  9  10  11  12
+ofs9 = [0, 0, 0, 1.2E4, 0,2.4E4,2.4E4,0,0,0, 2E4,0];
+ofs9_a = [0, 0, 0, 0E4, 0,0E4,0E4,0,0,0, 0E4,0];
+
+i=0; ii =0; ia = 0;
+for e=1:Es
+    try
+        corr_mRNA =  1% MP09{e}.Nnucs/MP09{1}.Nnucs;
+        if MP09{e}.Nnucs > 200 && MP09{e}.Nnucs < 330;
+            i=i+1;
+            figure(3);
+            plot(MP09{e}.Data_sort(:,1)+ofs9(e),corr_mRNA*MP09{e}.Data_sort(:,2),'.','color',[i/Es,0,1-i/Es]); hold on;
+            Nucs_14{1+2*(i-1)} =['wt',num2str(e),' N=', num2str( MP09{e}.Nnucs) ];
+            plot(MP09{e}.Data_sort(:,1)+ofs9(e),corr_mRNA*MP09{e}.Data_sort(:,3),'.','color',[0,1-i/Es,i/Es]);
+            Nucs_14{2+2*(i-1)} =['y',num2str(e),' N=', num2str( MP09{e}.Nnucs) ];
+        end
+     
+               
+        if MP09{e}.Nnucs > 100 && MP09{e}.Nnucs < 200;
+            ii=ii+1;
+            figure(4);
+            plot(MP09{e}.Data_sort(:,1)+ofs9(e),corr_mRNA*MP09{e}.Data_sort(:,2),'.','color',[ii/Es,0,1-ii/Es]); hold on;
+            Nucs_13{1+2*(ii-1)} =['wt',num2str(e),' N=', num2str( MP09{e}.Nnucs) ];
+             plot(MP09{e}.Data_sort(:,1)+ofs9(e),corr_mRNA*MP09{e}.Data_sort(:,3),'.','color',[0,1-ii/Es,ii/Es]);
+            Nucs_13{2+2*(ii-1)} =['y',num2str(e),' N=', num2str( MP09{e}.Nnucs) ];
+        end
+        
+        
+    catch
+        % Nucs{e} = 'miss';
+        continue
+    end
+    
+    
+    
+    try
+        if MP09_c{e}.Nnucs > 100 && MP09_c{e}.Nnucs < 330;
+            ia=ia+1;
+            figure(5);
+            plot(MP09_c{e}.Data_sort(:,1)+ofs9_a(e),corr_mRNA*MP09_c{e}.Data_sort(:,2),'.','color',[ia/Es,0,1-ia/Es]); hold on;
+            Nucs_14a{1+2*(ia-1)} =['wt',num2str(e),' N=', num2str( MP09_c{e}.Nnucs) ];
+            plot(MP09_c{e}.Data_sort(:,1)+ofs9(e),corr_mRNA*MP09_c{e}.Data_sort(:,3),'.','color',[0,1-ia/Es,ia/Es]);
+            Nucs_14a{2+2*(ia-1)} =['y',num2str(e),' N=', num2str( MP09_c{e}.Nnucs) ];
+        end
+    catch
+        continue     
+    end
+    
+        
+end
+figure(3); 
+legend(Nucs_14{:});
+ylabel('number of mRNA transcripts per cell','Fontsize',F); 
+xlabel('distance (\mum)','Fontsize',F);
+
+figure(4); 
+legend(Nucs_13{:});
+ylabel('number of mRNA transcripts per cell','Fontsize',F); 
+xlabel('distance (\mum)','Fontsize',F);
+
+figure(5); 
+legend(Nucs_14a{:});
+ylabel('number of mRNA transcripts per cell','Fontsize',F); 
+xlabel('distance (\mum)','Fontsize',F);
+    
+    
 %% Correct alignment AP
 
 
