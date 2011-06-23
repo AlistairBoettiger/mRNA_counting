@@ -217,14 +217,14 @@ figure(1); clf; colordef black; set(gcf,'color','k');
 plot(Data_sort(:,1),flipud(Data_sort(:,2)),'w.'); % check results 
 hold on; errorbar(x,flipud(mu(:,1)),flipud(sigma(:,1)),'linestyle','none','linewidth',3,'color','r');
 ylabel('number of mRNA transcripts per cell','FontSize',16);
-xlabel('distance (\mum)','FontSize',16);
+xlabel('distance (nm)','FontSize',16);
 set(gca,'FontSize',16);
 
 figure(1); clf; colordef white; set(gcf,'color','w');
 plot(Data_sort(:,1),flipud(Data_sort(:,2)),'k.'); % check results 
 hold on; errorbar(x,flipud(mu(:,1)),flipud(sigma(:,1)),'linestyle','none','linewidth',3,'color','r');
 ylabel('number of mRNA transcripts per cell','FontSize',16);
-xlabel('distance (\mum)','FontSize',16);
+xlabel('distance (nm)','FontSize',16);
 set(gca,'FontSize',16);
 
 % flipped 
@@ -232,13 +232,13 @@ figure(1); clf; colordef white; set(gcf,'color','w');
 plot(Data_sort(:,1),(Data_sort(:,2)),'k.'); % check results 
 hold on; errorbar(x,(mu(:,1)),(sigma(:,1)),'linestyle','none','linewidth',3,'color','r');
 ylabel('number of mRNA transcripts per cell','FontSize',16);
-xlabel('distance (\mum)','FontSize',16);
+xlabel('distance (nm)','FontSize',16);
 set(gca,'FontSize',16);
 
 figure(2); clf; colordef white; set(gcf,'color','w');
 plot(x,flipud(sigma(:,1))./flipud(mu(:,1)),'ro','MarkerSize',10); ylim([0,1]);
 hold on; plot(x,sqrt(flipud(mu(:,1)))./flipud(mu(:,1)),'ko','MarkerSize',10);
-ylabel('CoV','FontSize',16); xlabel('distance (\mum)','FontSize',16);
+ylabel('CoV','FontSize',16); xlabel('distance (nm)','FontSize',16);
 legend('Actual CoV','Poisson CoV');
 set(gca,'FontSize',16);
 
@@ -246,7 +246,7 @@ set(gca,'FontSize',16);
 figure(2); clf; colordef white; set(gcf,'color','w');
 plot(x,flipud(sigma(:,1).^2)./flipud(mu(:,1)),'ro','MarkerSize',10);
 hold on; plot(x,flipud(mu(:,1))./flipud(mu(:,1)),'ko','MarkerSize',10);
-ylabel('Fano Factor','FontSize',16); xlabel('distance (\mum)','FontSize',16);
+ylabel('Fano Factor','FontSize',16); xlabel('distance (nm)','FontSize',16);
 legend('Actual','Poisson');
 set(gca,'FontSize',16);
 
@@ -258,7 +258,7 @@ figure(10); subplot(4,4,e);  colordef white; set(gcf,'color','w');
     plot(Data_sort(:,1),Data_sort(:,3),'b.'); 
     hold on; 
     errorbar(x,mu(:,2),sigma(:,2),'linestyle','none','linewidth',3,'color','c');
-    ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
+    ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
     title(['Nuclei = ',num2str(Nnucs)]);
 
 
@@ -268,7 +268,7 @@ errorbar(x,sigma(:,1)./mu(:,1),bssigma(:,1)./mu(:,1),  'r.','MarkerSize',10);
 hold on;
 errorbar(x,sigma(:,2)./mu(:,2),bssigma(:,2)./mu(:,2),  'b.','MarkerSize',10); ylim([0,1]);
 plot(x,sqrt(mu(:,1))./mu(:,1),'k.','MarkerSize',10);
-ylabel('CoV'); xlabel('distance (\mum)');
+ylabel('CoV'); xlabel('distance (nm)');
 legend('hb CoV','y CoV','Poisson CoV');
   title(['Nuclei = ',num2str(Nnucs)]);
  

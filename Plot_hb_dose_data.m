@@ -36,7 +36,7 @@ end
 xlim([0,2.1E5]); 
 legend('6x bcd, N=4 embryos','1x bcd, N=6 embryos');
 ylabel('number of mRNA transcripts per cell','Fontsize',F); 
-xlabel('distance (\mum)','Fontsize',F);
+xlabel('distance (nm)','Fontsize',F);
 %% Correct alignment AP
 
 
@@ -58,7 +58,7 @@ e = e1; plot(bcd1x{e}.Data_sort(:,1),bcd1x{e}.Data_sort(:,2),'r.');
 hold on;
 e = e2; plot(bcd6x{e}.Data_sort(:,1),bcd6x{e}.Data_sort(:,2),'b.');
 ylabel('number of mRNA transcripts per cell','Fontsize',F); 
-xlabel('distance (\mum)','Fontsize',F);
+xlabel('distance (nm)','Fontsize',F);
 
 legend(['bcd1x, N=',num2str(bcd1x{e1}.Nnucs)],...
     ['bcd6x, N=',num2str(bcd6x{e2}.Nnucs)]);
@@ -79,7 +79,7 @@ e=e2;  errorbar(bcd6x{e}.x,bcd6x{e}.sigma(:,1)./bcd6x{e}.mu(:,1),bcd6x{e}.bssigm
  
  % plot(MP09{e}.x,sqrt(MP09{e}.mu(:,1))./MP09{e}.mu(:,1),'k.','MarkerSize',10);
     ylabel('CoV','FontSize',F);
-    xlabel('distance (\mum)','Fontsize',F); hold on;
+    xlabel('distance (nm)','Fontsize',F); hold on;
     set(gca,'Fontsize',F);
     legend(['bcd1x, N=',num2str(bcd1x{e1}.Nnucs)],...
     ['bcd6x, N=',num2str(bcd6x{e2}.Nnucs)] );
@@ -93,7 +93,7 @@ plot(bcd1x{e}.Data_sort(:,1),bcd1x{e}.Data_sort(:,2),'r.'); % check results
 title(['Nuclei = ',num2str(bcd1x{e}.Nnucs)]);
 hold on;
 errorbar(Mbcd1x{e}.x,bcd1x{e}.mu(:,1),bcd1x{e}.sigma(:,1),'linestyle','none','linewidth',3,'color','r');
-ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
+ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
 xlim([0,2E5]);  ylim([0,400]);
 
 

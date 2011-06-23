@@ -104,17 +104,17 @@ end
 figure(3); 
 legend(Nucs_14{:});
 ylabel('number of mRNA transcripts per cell','Fontsize',F); 
-xlabel('distance (\mum)','Fontsize',F);
+xlabel('distance (nm)','Fontsize',F);
 
 figure(4); 
 legend(Nucs_13{:});
 ylabel('number of mRNA transcripts per cell','Fontsize',F); 
-xlabel('distance (\mum)','Fontsize',F);
+xlabel('distance (nm)','Fontsize',F);
 
 figure(5); 
 legend(Nucs_14a{:});
 ylabel('number of mRNA transcripts per cell','Fontsize',F); 
-xlabel('distance (\mum)','Fontsize',F);
+xlabel('distance (nm)','Fontsize',F);
     
     
 %% Correct alignment AP
@@ -156,7 +156,7 @@ e = e9; errorbar(MP09{e}.x,MP09{e}.sigma(:,1)./MP09{e}.mu(:,1),MP09{e}.bssigma(:
  
  % plot(MP09{e}.x,sqrt(MP09{e}.mu(:,1))./MP09{e}.mu(:,1),'k.','MarkerSize',10);
     ylabel('CoV','FontSize',F);
-    xlabel('distance (\mum)','Fontsize',F); hold on;
+    xlabel('distance (nm)','Fontsize',F); hold on;
     set(gca,'Fontsize',F);
     legend(['no proximal, N=',num2str(MP01{e1}.Nnucs)],...
     ['no distal, N=',num2str(MP02{e2}.Nnucs)],...
@@ -174,7 +174,7 @@ hold on;
 errorbar(MP01{e}.x,MP01{e}.mu(:,1),MP01{e}.sigma(:,1),'linestyle','none','linewidth',3,'color','r');
 plot(MP01{e}.Data_sort(:,1),MP01{e}.Data_sort(:,3),'g.'); 
 errorbar(MP01{e}.x,MP01{e}.mu(:,2),MP01{e}.sigma(:,2),'linestyle','none','linewidth',3,'color','c');
-ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
+ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
 xlim([0,2E5]);  ylim([0,400]);
 
 subplot(1,3,2); 
@@ -185,7 +185,7 @@ hold on;
 errorbar(MP02{e}.x,MP02{e}.mu(:,1),MP02{e}.sigma(:,1),'linestyle','none','linewidth',3,'color','r');
 plot(MP02{e}.Data_sort(:,1),MP02{e}.Data_sort(:,3),'m.'); 
 errorbar(MP02{e}.x,MP02{e}.mu(:,2),MP02{e}.sigma(:,2),'linestyle','none','linewidth',3,'color','c');
-ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
+ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
 xlim([0,2E5]); ylim([0,400]);
 
 subplot(1,3,3); 
@@ -196,7 +196,7 @@ hold on;
 errorbar(MP09{e}.x,MP09{e}.mu(:,1),MP09{e}.sigma(:,1),'linestyle','none','linewidth',3,'color','r');
 plot(MP09{e}.Data_sort(:,1),MP09{e}.Data_sort(:,3),'b.'); 
 errorbar(MP09{e}.x,MP09{e}.mu(:,2),MP09{e}.sigma(:,2),'linestyle','none','linewidth',3,'color','c');
-ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
+ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
 xlim([0,2E5]); ylim([0,400]);
 
 %%  Combined plot of gradients
@@ -211,7 +211,7 @@ e = e1; plot(MP01{e}.Data_sort(:,1),MP01{e}.Data_sort(:,2),'k.'); % check result
 e = e2; plot(MP02{e}.Data_sort(:,1),MP02{e}.Data_sort(:,2),'k.'); % check results  
 e = e9; plot(MP09{e}.Data_sort(:,1),MP09{e}.Data_sort(:,2),'k.'); % check results 
 ylabel('number of mRNA transcripts per cell','Fontsize',F); 
-xlabel('distance (\mum)','Fontsize',F);
+xlabel('distance (nm)','Fontsize',F);
 
 legend(['no proximal, N=',num2str(MP01{e1}.Nnucs)],...
     ['no distal, N=',num2str(MP02{e2}.Nnucs)],['cntrl N=',num2str(MP09{e9}.Nnucs)],'Endogenous, combined');
