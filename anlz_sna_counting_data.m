@@ -15,11 +15,12 @@
   %% New data-method
   clear all;
   maternal =0;  ver = '';  Es = 14; cor = 0; % defaults
-  rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s07_MP08/';
+  rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s04_MP10/';% s05_MP06/'   ; %   s07_MP08/'
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
-  fname =  's07_MP08Hz_snaD_22C'; missG = 1.3; %1.3; 
+  fname = 's04_MP10Hz';% 's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
+  missG = 1; %1.3; 
   
-  chns = 1; 
+  chns = 2; % 1; 
  
   
   figure(10); clf; figure(11); clf;
@@ -265,6 +266,6 @@ save([folder,fname,'_graddata','ver'],'data');
 %%
 
 e =1;
-figure(1); clf; imagesc(data{e}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([15,110]); axis off;
-figure(2); clf; imagesc(data{2}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([15,300]); axis off;
+% figure(1); clf; imagesc(data{e}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([15,110]); axis off;
+% figure(2); clf; imagesc(data{2}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([15,300]); axis off;
 

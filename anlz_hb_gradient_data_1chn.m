@@ -19,14 +19,11 @@
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
   fname = 's10_bcd1x'; % 's11_bcd6x';  %
   
-  
- slidedata_type = 1;
    
  try
    load([folder,fname,'_slidedata'], 'Data'); 
  catch er
      disp(er.message)
-     slidedata_type = 2;
  end
   
   figure(10); clf; figure(11); clf;
