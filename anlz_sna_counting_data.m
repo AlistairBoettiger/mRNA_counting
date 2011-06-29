@@ -15,13 +15,25 @@
   %% New data-method
   clear all;
   maternal =0;  ver = '';  Es = 14; cor = 0; % defaults
-  rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s04_MP10/';% s05_MP06/'   ; %   s07_MP08/'
-  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
-  fname = 's04_MP10Hz';% 's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
-  missG = 1; %1.3; 
+  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-02-17/';% 2011-05-22/'; 
+  % rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s04_MP10/';%  s21_MP07/';% s05_MP06/'   ; %   s07_MP08/'
+  rawfolder = '/Volumes/GRAID/Lab Data/Raw_Data/2011-02-17/MP10_22C/'; % 
+
+  % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %'s05_MP06Hz' ; ver = '_v2';%  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
+  fname = 'MP10_22C_sna_y_d'; ver = '_v2'; cor = 1;% 
   
-  chns = 2; % 1; 
+  missG = 1.3; 
+  
+  
+  nametype = 2; 
+  chns = 2; % 2; %
  
+   try
+     load([folder,fname,'_slidedata',ver], 'Data'); 
+   catch er
+       nametype = 1; 
+   end
+  
   
   figure(10); clf; figure(11); clf;
   
@@ -38,12 +50,19 @@ for e = 1:Es %
 
       try 
            load([rawfolder,fname,'_',emb,'_nucdata.mat']);  
+          
       catch er
-          disp(er.message);
+          disp([er.message, ' trying alternate location...']);
+           try 
+               load([folder,fname,'_',emb,'_nucdata.mat']);  
+           catch er1
+               disp(er1.message);
+           end
          continue
       end
 
-          
+      
+      if nametype == 1 
           try
               load([folder,fname,'_',emb,'_chn1','_data',ver,'.mat']); 
               mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
@@ -52,10 +71,23 @@ for e = 1:Es %
                 mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
               end
           catch er
-              disp(er.message);
-              disp('unable to load image');
-              break
+
+                  try
+                      load([folder,fname,'_',emb,'_1','_data.mat']); 
+                      mRNAsadj = mRNA_sadj;
+                      load([folder,fname,'_',emb,'_2','_data.mat']); 
+                      mRNAsadj2 = mRNA_sadj;
+                  catch er
+                      disp(er.message);
+                      break
+                  end
           end
+          
+      else
+        mRNAsadj = Data{i,1}.mRNAsadj;
+        mRNAsadj2= Data{i,2}.mRNAsadj;
+      end
+          
     
               
        PlotmRNA = imresize(NucLabeled,.5,'nearest');
@@ -71,7 +103,7 @@ for e = 1:Es %
                             PlotmRNA2(PlotmRNA2==n) = mRNAsadj2(n+cor);
                           end
                       end
-    figure(1); clf; imagesc(PlotmRNA); colormap hot; 
+    figure(1); clf; imagesc(PlotmRNA); colormap hot; colorbar;
         
 %% Orient image along major axis     
     bw = imresize(makeuint(PlotmRNA,16),.5,'nearest');  
@@ -214,7 +246,7 @@ end
 
 
 
-figure(10); subplot(4,4,e);  colordef white; set(gcf,'color','w');
+figure(10); subplot(4,ceil(Es/4),e);  colordef white; set(gcf,'color','w');
     plot(Data_sort(:,1),Data_sort(:,2),'k.'); % check results  
     hold on; 
     errorbar(x,mu(:,1),sigma(:,1),'linestyle','none','linewidth',3,'color','r');
@@ -223,11 +255,11 @@ figure(10); subplot(4,4,e);  colordef white; set(gcf,'color','w');
         hold on; 
         errorbar(x,mu(:,2),sigma(:,2),'linestyle','none','linewidth',3,'color','c');
     end
-    ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
+    ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
     title(['Nuclei = ',num2str(Nnucs)]);
 
 
-figure(11); subplot(4,4,e);  
+figure(11); subplot(4,ceil(Es/4),e);  
 colordef white; set(gcf,'color','w');
 errorbar(x,sigma(:,1)./mu(:,1),bssigma(:,1)./mu(:,1),  'r.','MarkerSize',10); 
 hold on;
@@ -235,7 +267,7 @@ if chns == 2;
     errorbar(x,sigma(:,2)./mu(:,2),bssigma(:,2)./mu(:,2),  'b.','MarkerSize',10); ylim([0,1]);
 end
 plot(x,sqrt(mu(:,1))./mu(:,1),'k.','MarkerSize',10);
-ylabel('CoV'); xlabel('distance (\mum)');
+ylabel('CoV'); xlabel('distance (nm)');
 if chns == 2
     legend('sna CoV','y CoV','Poisson CoV');
 else
@@ -261,7 +293,7 @@ end
 end
 
 
-save([folder,fname,'_graddata','ver'],'data'); 
+save([folder,fname,'_graddata',ver],'data'); 
 
 %%
 

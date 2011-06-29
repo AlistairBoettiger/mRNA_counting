@@ -1,37 +1,40 @@
 
 
 clear all;
-
-
-slides = {'MP10Hz', 'MP06Hz'}
-
+ figure(1); clf;  figure(3); clf;
+folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
+slides = {'MP10Hz', 'MP06Hz'};
+ver = '';
 
 for s = 1:length(slides) 
 switch slides{s}
 
     case 'MP10Hz'
 
-      rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s04_MP10/';% s05_MP06/'   ; %   s07_MP08/'
-      folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
       fname = 's04_MP10Hz';% 's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
-      chns = 2;
-
+      chns = 2; ver = '_v3';
+      skip = 1;   
+      
     case 'MP06Hz'
-      rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s05_MP06/'   ; %   s07_MP08/'
-      folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
       fname =  's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
       chns = 2;
+      ver = '_v2';
+      skip = 10; 
+               
+   case 'MP08Hz'
+        fname =  's07_MP08Hz_snaD_22C';
+        chns = 1; 
 
 end
 
 disp(fname); 
 
-    load([folder,fname,'_graddata','ver'],'data');  
-    Es =  length(data);
+    load([folder,fname,'_graddata',ver],'data');  
+Es = length(data); 
     offsets = zeros(1,Es); 
 
 
- %%  
+ %  
  
  % Get boundary point of first curve as a reference
  e=1;
@@ -81,30 +84,45 @@ for e= 2:Es;
     end
 end
 
-%%
+%
 % offsets(3) = 5E5;
 
-figure(s); clf; 
+figure(1);
+% figure(s); clf; 
 colordef white; set(gcf,'color','w');
 
 for e = 1:Es 
     try
-        
-        mcorr =   data{e}.Nnucs./data{1}.Nnucs;
-        plot(data{e}.Data_sort(:,1) + p1-offsets(e),mcorr*data{e}.Data_sort(:,2),'.','color',[e/Es,0,1-e/Es],'MarkerSize',5); % check results  
+        if isempty(find(e==skip))
+      %   subplot(4,3,e);
+      figure(1); subplot(2,1,s); title(texlabel(fname,'literal'));
+        mcorr =    data{e}.Nnucs./data{1}.Nnucs;
+        plot(data{e}.Data_sort(:,1) + p1-offsets(e),mcorr*data{e}.Data_sort(:,2) - min(mcorr*data{e}.Data_sort(:,2)) ,'.','color',[e/Es,0,1-e/Es],'MarkerSize',1); % check results  
         hold on; 
-        errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,1),mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',1,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
+        plot(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,1) - min(mcorr*data{e}.mu(:,1)),'.','color',[e/Es,0,1-e/Es],'MarkerSize',5);
+
+
+        
+      %  errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,1) - min(mcorr*data{e}.mu(:,1)) ,mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',3,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
         if chns == 2;
-            plot(data{e}.Data_sort(:,1)+  p1-offsets(e),mcorr*data{e}.Data_sort(:,3),'.','color',[0,1-e/Es,e/Es],'MarkerSize',1); 
+            plot(data{e}.Data_sort(:,1)+  p1-offsets(e),mcorr*data{e}.Data_sort(:,3)- min(mcorr*data{e}.Data_sort(:,3)),'.','color',[(s-1)/2,1-e/Es,e/Es],'MarkerSize',1); 
             hold on; 
-            errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,2),mcorr*data{e}.sigma(:,2),'linestyle','none','linewidth',1,'color',[0,1-e/Es,e/Es],'MarkerSize',1);
+         plot(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,2)-min(mcorr*data{e}.mu(:,2)),'.','color',[0,1-e/Es,e/Es],'MarkerSize',5);
+
+        %figure(3); hold on; subplot(2,1,s); 
+       %  plot(data{e}.Data_sort(:,1)+  p1-offsets(e), data{e}.Data_sort(:,3)/data{e}.Data_sort(:,2) ,'.','color',[e/Es,0,1-e/Es],'MarkerSize',5);
+         % errorbar(data{e}.x+  p1-offsets(e),data{e}.sigma(:,2)./data{e}.mu(:,2),data{e}.bssigma(:,2)./data{e}.mu(:,2),'.','color',[e/Es,0,1-e/Es],'MarkerSize',5);
+            % errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,2)-min(mcorr*data{e}.mu(:,2)),mcorr*data{e}.sigma(:,2),'linestyle','none','linewidth',3,'color',[0,1-e/Es,e/Es],'MarkerSize',1);
+        
         end
+        end
+        
     catch
         continue
     end
 end
-        ylabel('number of mRNA transcripts per cell'); xlabel('distance (\mum)');
-        ylim([0,350]);
+        ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
+        ylim([0,250]);
 
     
 end % end loop over slides

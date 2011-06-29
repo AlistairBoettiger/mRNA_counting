@@ -1,51 +1,156 @@
 
 %%                  
 % Alistair Boettiger                                   Date Begun: 06/10/11
-% Levine Lab                                        Last Modified: 06/10/11
+% Levine Lab                                        Last Modified: 06/27/11
 
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
+slides = {'MP01b','MP01','MP02b','MP02','MP09b','MP09c'}; 
+chns = 1; ver = '';
 
+figure(1); clf;
 
+for s = 1:length(slides)
 
-fname = 's02_MP01_Hz_22C'; 
-load([folder,fname,'_graddata'],'hbdata'); 
-MP01 = hbdata;
+switch slides{s}
+
+case 'MP01'
+fname = 's02_MP01_Hz_22C';  ver = '_v2';
+% MP01 = hbdata;
 e=4;% 4; 
 e1=e;
 o1 = 4E4;
 
-fname = 's02_MP01_Hz_22C_b'; 
-load([folder,fname,'_graddata'],'hbdata'); 
-MP01_b = hbdata;
+case 'MP01b'
+fname = 's02_MP01_Hz_22C_b';  ver = '';
+% MP01_b = hbdata;
 
-fname = 's03_MP02_Hz_22C'; 
-load([folder,fname,'_graddata'],'hbdata'); 
-MP02 = hbdata;
+case 'MP02'
+fname = 's03_MP02_Hz_22C';  ver = '';
+% MP02 = hbdata;
 e=1; % 8;
 e2=e;
 o2 = 0;
 
-fname = 's03_MP02_Hz_22C_b'; 
-load([folder,fname,'_graddata'],'hbdata'); 
-MP02_b = hbdata;
+case 'MP02b'
+fname = 's03_MP02_Hz_22C_b';  ver = '_v2'; % little difference
+% MP02_b = hbdata;
 
-
-fname = 's01_MP09_Hz_22C_b'; 
-load([folder,fname,'_graddata'],'hbdata'); 
-MP09 = hbdata;
+case 'MP09b'
+fname = 's01_MP09_Hz_22C_b'; ver = '';
+% MP09 = hbdata;
     e = 5; % 5 9; 
     e9 = e;
     o9 = 4E4;
 
-fname = 's01_MP09_Hz_22C'; 
-load([folder,fname,'_graddata'],'hbdata'); 
-MP09_a = hbdata;
+case 'MP09'
+fname = 's01_MP09_Hz_22C';  ver = '';
+% MP09_a = hbdata;
 
-fname = 's01_MP09_Hz_22C_c'; 
-load([folder,fname,'_graddata'],'hbdata'); 
-MP09_c = hbdata;
+case 'MP09c'
+fname = 's01_MP09_Hz_22C_c'; ver = '_v2';
+% MP09_c = hbdata;
     
+
+end
+load([folder,fname,'_graddata',ver],'hbdata'); 
+
+%
+Es = length(hbdata);
+offsets = zeros(1,Es); 
+% Get boundary point of first curve as a reference
+
+if s == 1;
+    e=1;
+    gx = hbdata{e}.Data_sort(:,1);  
+    grad = hbdata{e}.Data_sort(:,2);  
+ 
+    n = 4; 
+    theta = mean(gx);  
+    A = max(grad);  
+    b=min(grad); 
+    [p,fit] = fxn_fit_sigmoid(gx',grad',[n,theta,A,b],'r');
+    
+    p1 = p(2); 
+    offsets(e) = p1; 
+   
+    figure(20); clf; 
+    plot(gx', grad,'b');
+    hold on; 
+    plot(gx,fit,'r');
+    plot(p(2),A/4,'r*','MarkerSize',20);
+end  
+ 
+for e= 1:Es;
+    try
+     gx = hbdata{e}.Data_sort(:,1);
+     grad = hbdata{e}.Data_sort(:,2);  
+
+    figure(20); clf; plot(gx,grad);
+    n = 3;
+    theta = 2*mean(gx);  
+    A = max(grad); 
+    b=min(grad); 
+    [p,fit] = fxn_fit_sigmoid(gx',grad',[n,theta,A,b],'r');
+
+    offsets(e) = p(2); 
+
+    figure(20); clf; plot(gx', grad,'b');
+    hold on; 
+    plot(gx,fit,'r');
+    plot(p(2),A/4,'r*','MarkerSize',20);
+    catch
+        continue
+    end
+end
+
+%
+% offsets(3) = 5E5;
+
+ figure(s);  clf;
+
+% figure(1);
+colordef white; set(gcf,'color','w');
+i = 1; Nucs = {};
+for e = 1:Es 
+    try
+        if  hbdata{e}.Nnucs > 160;%  &&  hbdata{e}.Nnucs < 300
+            mcorr =    hbdata{e}.Nnucs./hbdata{1}.Nnucs;
+            plot(hbdata{e}.Data_sort(:,1) + p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,2),'.','color',[e/Es,0,1-e/Es],'MarkerSize',5); % check results  
+            hold on; 
+           % errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,1),mcorr*hbdata{e}.sigma(:,1),'linestyle','none','linewidth',1,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
+             Nucs{i} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+            % Nucs{1+2*(i-1)} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+             i = i + 1; 
+            if chns == 2;
+                plot(hbdata{e}.Data_sort(:,1)+  p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,3),'.','color',[0,1-e/Es,e/Es],'MarkerSize',5); 
+                hold on; 
+                errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,2),mcorr*hbdata{e}.sigma(:,2),'linestyle','none','linewidth',1,'color',[0,1-e/Es,e/Es],'MarkerSize',1);
+            end
+        end
+       
+            
+    catch
+        continue
+    end
+    
+end
+        ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
+       legend(Nucs{:});
+        title(texlabel(fname,'literal')); 
+    
+
+
+
+
+
+
+
+
+
+
+end
+
 %%  
 figure(3); clf; figure(4); clf; figure(5); clf;
 
