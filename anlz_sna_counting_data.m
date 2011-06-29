@@ -14,31 +14,31 @@
 
   %% New data-method
   clear all;
-  maternal =0;  ver = '';  Es = 14; cor = 0; % defaults
+  maternal =0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  % defaults
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-02-17/';% 2011-05-22/'; 
   % rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s04_MP10/';%  s21_MP07/';% s05_MP06/'   ; %   s07_MP08/'
-  rawfolder = '/Volumes/GRAID/Lab Data/Raw_Data/2011-02-17/MP10_22C/'; % 
+  rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
 
   % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %'s05_MP06Hz' ; ver = '_v2';%  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
-  fname = 'MP10_22C_sna_y_d'; ver = '_v2'; cor = 1;% 
+  fname = 'MP05_22C_sna_y_c'; ver = '';  %   'MP10_22C_sna_y_d'; ver = '_v2';  %
   
   missG = 1.3; 
   
   
-  nametype = 2; 
+
   chns = 2; % 2; %
  
-   try
-     load([folder,fname,'_slidedata',ver], 'Data'); 
-   catch er
-       nametype = 1; 
-   end
+%    try
+%      load([folder,fname,'_slidedata',ver], 'Data'); 
+%    catch er
+%        nametype = 1; 
+%    end
   
   
   figure(10); clf; figure(11); clf;
   
   data = cell(Es,1); 
-for e = 1:Es %  
+for e = 1: Es %  e = 2
     if e<10
         emb = ['0',num2str(e)];
     else
@@ -55,10 +55,12 @@ for e = 1:Es %
           disp([er.message, ' trying alternate location...']);
            try 
                load([folder,fname,'_',emb,'_nucdata.mat']);  
+               disp(['found file at ', folder,fname,'_',emb,'_nucdata.mat']);
            catch er1
                disp(er1.message);
+               disp(['skipping embryo ', emb]);
+               continue
            end
-         continue
       end
 
       
@@ -71,16 +73,16 @@ for e = 1:Es %
                 mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
               end
           catch er
-
-                  try
-                      load([folder,fname,'_',emb,'_1','_data.mat']); 
-                      mRNAsadj = mRNA_sadj;
-                      load([folder,fname,'_',emb,'_2','_data.mat']); 
-                      mRNAsadj2 = mRNA_sadj;
-                  catch er
-                      disp(er.message);
-                      break
-                  end
+                disp(er.message);
+%                   try
+%                       load([folder,fname,'_',emb,'_1','_data.mat']); 
+%                       mRNAsadj = mRNA_sadj;
+%                       load([folder,fname,'_',emb,'_2','_data.mat']); 
+%                       mRNAsadj2 = mRNA_sadj;
+%                   catch er
+%                       disp(er.message);
+%                       break
+%                   end
           end
           
       else
@@ -89,7 +91,7 @@ for e = 1:Es %
       end
           
     
-              
+%%              
        PlotmRNA = imresize(NucLabeled,.5,'nearest');
        
        if chns == 2; 
@@ -117,8 +119,9 @@ for e = 1:Es %
     
  meanvar = 100;
   rotes = 0; 
+  %%
   try
-  
+ %% 
  while meanvar > 75  && rotes<4;
     
     NucLabel = imrotate(NucLabeled,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
@@ -170,16 +173,18 @@ for e = 1:Es %
  
  
  % show rotated image
-    % figure(2); clf; 
+     figure(2); clf; 
         PlotmRNA_r = imrotate(PlotmRNA,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
     if chns == 2
         PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
         imagesc(PlotmRNA2_r); colormap hot;
     end
  
+    %%
   catch err
       disp(err.message);
-      continue 
+     %  break
+       continue 
  end
  
 
@@ -244,7 +249,8 @@ end
 
 %% Plotting
 
-
+Es/4
+e
 
 figure(10); subplot(4,ceil(Es/4),e);  colordef white; set(gcf,'color','w');
     plot(Data_sort(:,1),Data_sort(:,2),'k.'); % check results  
@@ -289,7 +295,7 @@ data{e}.PlotmRNA = PlotmRNA_r;
 if chns == 2
     data{e}.PlotmRNA2 = PlotmRNA2_r;
 end
-
+%%
 end
 
 
@@ -297,7 +303,7 @@ save([folder,fname,'_graddata',ver],'data');
 
 %%
 
-e =1;
+% e =1;
 % figure(1); clf; imagesc(data{e}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([15,110]); axis off;
 % figure(2); clf; imagesc(data{2}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([15,300]); axis off;
 
