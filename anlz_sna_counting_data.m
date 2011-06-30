@@ -14,19 +14,23 @@
 
   %% New data-method
   clear all;
-  maternal =0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  % defaults
-  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-02-17/';% 2011-05-22/'; 
-  % rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s04_MP10/';%  s21_MP07/';% s05_MP06/'   ; %   s07_MP08/'
-  rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
+  
 
+  
+  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  % defaults
+  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
+   rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';% 2011-05-22/s21_MP07/';%  2011-06-20/MP07Hz/';% 2011-05-22/s04_MP10/';%   s05_MP06/'   ; %   s07_MP08/'
+ % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
   % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %'s05_MP06Hz' ; ver = '_v2';%  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
-  fname = 'MP05_22C_sna_y_c'; ver = '';  %   'MP10_22C_sna_y_d'; ver = '_v2';  %
+  fname =  'MP07het_snaD_22C';% 'MP07Hz_snaD_22C';% 'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
+  slidedate = '2011-05-22/'; 
+  subfolder = 's21_MP07/';  %
   
-  missG = 1.3; 
+  missG = 1.1; 
   
   
 
-  chns = 2; % 2; %
+  chns = 1; % 2; %
  
 %    try
 %      load([folder,fname,'_slidedata',ver], 'Data'); 
@@ -49,13 +53,13 @@ for e = 1: Es %  e = 2
 
 
       try 
-           load([rawfolder,fname,'_',emb,'_nucdata.mat']);  
+           load([rawfolder,slidedate,subfolder,fname,'_',emb,'_nucdata.mat']);  
           
       catch er
           disp([er.message, ' trying alternate location...']);
            try 
-               load([folder,fname,'_',emb,'_nucdata.mat']);  
-               disp(['found file at ', folder,fname,'_',emb,'_nucdata.mat']);
+               load([folder,slidedate,fname,'_',emb,'_nucdata.mat']);  
+               disp(['found file at ', folder,slidedate,fname,'_',emb,'_nucdata.mat']);
            catch er1
                disp(er1.message);
                disp(['skipping embryo ', emb]);
@@ -66,23 +70,18 @@ for e = 1: Es %  e = 2
       
       if nametype == 1 
           try
-              load([folder,fname,'_',emb,'_chn1','_data',ver,'.mat']); 
+             % ver = '_v2';
+              load([folder,slidedate,fname,'_',emb,'_chn1','_data',ver,'.mat']); 
               mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
+              disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
               if chns ==2
-                load([folder,fname,'_',emb,'_chn2','_data',ver,'.mat']); 
+                 % ver = '';
+                load([folder,slidedate,fname,'_',emb,'_chn2','_data',ver,'.mat']);
+                 disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
                 mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
               end
           catch er
                 disp(er.message);
-%                   try
-%                       load([folder,fname,'_',emb,'_1','_data.mat']); 
-%                       mRNAsadj = mRNA_sadj;
-%                       load([folder,fname,'_',emb,'_2','_data.mat']); 
-%                       mRNAsadj2 = mRNA_sadj;
-%                   catch er
-%                       disp(er.message);
-%                       break
-%                   end
           end
           
       else
@@ -249,8 +248,6 @@ end
 
 %% Plotting
 
-Es/4
-e
 
 figure(10); subplot(4,ceil(Es/4),e);  colordef white; set(gcf,'color','w');
     plot(Data_sort(:,1),Data_sort(:,2),'k.'); % check results  
@@ -299,7 +296,7 @@ end
 end
 
 
-save([folder,fname,'_graddata',ver],'data'); 
+save([folder,slidedate,fname,'_graddata',ver],'data'); 
 
 %%
 
