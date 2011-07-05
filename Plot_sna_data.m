@@ -5,12 +5,12 @@ clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
  
 slides = {'MP10Hz', 'MP06Hz' 'MP10het','MP05het'};
+slides = {'MP10Hz', 'MP08Hz','MP07Hz', 'MP07het'};
 ver = '';
 
 for s = 1:length(slides) 
 switch slides{s}
-
-    case 'MP10Hz'
+case 'MP10Hz'
        date = '2011-05-22/';  
       fname = 's04_MP10Hz';% 's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
       chns = 2; ver = '_v3';
@@ -27,19 +27,36 @@ switch slides{s}
         date = '2011-02-17/'; 
         fname = 'MP05_22C_sna_y_c'; 
         ver = '_v2';
+        chns = 2;
         skip = 3;
         
     case 'MP10het'
         date = '2011-02-17/'; 
         fname ='MP10_22C_sna_y_d'; 
-        ver = '_v3';% 
+        ver = '_v3';%
+        chns = 2; 
        skip = 9;
       
    case 'MP08Hz'
+        date = '2011-05-22/'; 
         fname =  's07_MP08Hz_snaD_22C';
+        ver = '';
         chns = 1; 
         skip = 15;
-
+        
+    case 'MP07Hz'
+        date = '2011-06-20/'; 
+        fname = 'MP07Hz_snaD_22C';%
+        ver = '';
+        chns =1;
+        skip =15;
+        
+    case 'MP07het'
+        date = '2011-05-22/'; 
+        fname =  'MP07het_snaD_22C';%
+        ver = '';
+        chns =1;
+        skip =15;
 end
 
 disp(fname); 
@@ -156,8 +173,8 @@ end
 end % end loop over slides
 
 %%
- e=2;
-switch  'MP06het'; % 'MP10het' % e =2;  % 'MP05het'; % e =7;
+ e=1;
+switch 'MP07het'; % 'MP07Hz'; % 'MP06Hz'; % 'MP10het' % e =2;  % 'MP05het'; % e =7;
 
     case 'MP10Hz'
        date = '2011-05-22/';  
@@ -176,27 +193,66 @@ switch  'MP06het'; % 'MP10het' % e =2;  % 'MP05het'; % e =7;
         date = '2011-02-17/'; 
         fname = 'MP05_22C_sna_y_c'; 
         ver = '_v2';
+        chns = 2;
         skip = 3;
         
     case 'MP10het'
         date = '2011-02-17/'; 
         fname ='MP10_22C_sna_y_d'; 
-        ver = '_v3';% 
+        ver = '_v3';%
+        chns = 2; 
        skip = 9;
       
    case 'MP08Hz'
+        date = '2011-05-22/'; 
         fname =  's07_MP08Hz_snaD_22C';
+        ver = '';
         chns = 1; 
         skip = 15;
-
+        
+    case 'MP07Hz'
+        date = '2011-06-20/'; 
+        fname = 'MP07Hz_snaD_22C';%
+         ver = '';
+        chns =1;
+        skip =15;
+        
+    case 'MP07het'
+        date = '2011-05-22/'; 
+        fname =  'MP07het_snaD_22C';%
+         ver = '';
+        chns =1;
+        skip =15;
 end
 
 disp(fname); 
 
     load([folder,date,fname,'_graddata',ver],'data');  
 
-
- figure(3); clf; imagesc(data{e}.PlotmRNA2); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([25,100]); axis off;
+if chns == 2; 
+ figure(3); clf; imagesc(data{e}.PlotmRNA2); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([25,200]); axis off;
+ end
  figure(4); clf; imagesc(data{e}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([25,200]); axis off;
 
 
+%%
+
+folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
+date = '2011-05-22/';
+fname = 's05_MP06Hz_b'; ver = '_v4';
+load([folder,date,fname,'_graddata',ver],'data');  
+
+
+
+
+ figure(1); clf; 
+        plot(data{e}.Data_sort(:,1)  ,data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2)) ,'.','color','k','MarkerSize',5); % check results    [e/Es,0,1-e/Es]
+        hold on; 
+        errorbar(data{e}.x,data{e}.mu(:,1)  - min(data{e}.Data_sort(:,2)), data{e}.sigma(:,1),'linestyle','none','linewidth',3,'color','k','MarkerSize',5); % [e/Es,0,1-e/Es]
+        
+         plot(data{e}.Data_sort(:,1),data{e}.Data_sort(:,3)- min(data{e}.Data_sort(:,3)),'.','color','g','MarkerSize',5); %[(s-1)/2,1-e/Es,e/Es]
+            hold on; 
+         errorbar(data{e}.x,data{e}.mu(:,2)- min(data{e}.Data_sort(:,3)), data{e}.sigma(:,2),'linestyle','none','linewidth',3,'color','g','MarkerSize',5); % [0,1-e/Es,e/Es]
+
+           ylabel('number of mRNA transcripts per cell','Fontsize',14); xlabel('distance (nm)','Fontsize',14);
+         set(gcf,'color','w'); set(gca,'Fontsize',14);
