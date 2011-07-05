@@ -1,16 +1,20 @@
 
 
-  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
+figure(1); clf; set(gcf,'color','w'); colordef white; 
+
+
+
+  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
+  slidedate = '2011-05-22/'; 
   fname = 'MP07het_snaD_22C';
   ver = '';
-  load([folder,fname,'_graddata',ver],'data');  
+  load([folder,slidedate,fname,'_graddata',ver],'data');  
   
   c1 = [.7,0,.3];
   c2 = [.2,0,.8];
   c3 = [.4,0,.6];
   
-  p1 = 0; 
-  MP07 = data;
+
   
     mcorr = 1; e = 1; st =50;
       n = 4; 
@@ -29,21 +33,39 @@
   
   figure(1); clf; 
 
+  e=1
      plot(data{e}.Data_sort(:,1) ,mcorr*data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2))  ,'.','color',c1,'MarkerSize',5); % check results  
         hold on; 
         errorbar(data{e}.x,  mcorr*data{e}.mu(:,1)- min(data{e}.Data_sort(:,2)),mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',2,'color',c1,'MarkerSize',1);
 
-        e=2
-          plot(data{e}.Data_sort(:,1) - 6E4 ,mcorr*data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2))  ,'.','color','r','MarkerSize',5); % check results  
-        hold on; 
-        errorbar(data{e}.x - 6E4,  mcorr*data{e}.mu(:,1)- min(data{e}.Data_sort(:,2)),mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',2,'color',c1,'MarkerSize',1);
+%         e=5
+%           plot(data{e}.Data_sort(:,1) - 6E4 ,mcorr*data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2))  ,'.','color',c1,'MarkerSize',5); % check results  
+%         hold on; 
+%         errorbar(data{e}.x - 6E4,  mcorr*data{e}.mu(:,1)- min(data{e}.Data_sort(:,2)),mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',2,'color',c1,'MarkerSize',1);
 
-        
+
+  
+      
+        slidedate = '2011-06-20/'; 
+        fname = 'MP07Hz_snaD_22C';%
+  ver = '';
+  load([folder,slidedate,fname,'_graddata',ver],'data');  
+          e = 2;
+        plot(data{e}.Data_sort(:,1) -2E4 ,mcorr*data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2))  ,'.','color','r','MarkerSize',5); % check results  
+        hold on; 
+        errorbar(data{e}.x -2E4,  mcorr*data{e}.mu(:,1)- min(data{e}.Data_sort(:,2)),mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',2,'color','r','MarkerSize',1);
+   
+         e = 4; % 4   3,5 > wt
+        plot(data{e}.Data_sort(:,1)  ,mcorr*data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2))  ,'.','color','r','MarkerSize',5); % check results  
+        hold on; 
+        errorbar(data{e}.x ,  mcorr*data{e}.mu(:,1)- min(data{e}.Data_sort(:,2)),mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',2,'color','r','MarkerSize',1);
+   
         
         
 fname = 's07_MP08Hz_snaD_22C';
+  slidedate = '2011-05-22/'; 
   ver = '';
-  load([folder,fname,'_graddata',ver],'data');  
+  load([folder,slidedate,fname,'_graddata',ver],'data');  
   
   
   e = 1; o1= -2.3E4;
@@ -62,8 +84,9 @@ fname = 's07_MP08Hz_snaD_22C';
         
         
  fname = 's04_MP10Hz';
+   slidedate = '2011-05-22/'; 
    ver = '_v3';
-  load([folder,fname,'_graddata',ver],'data');  
+  load([folder,slidedate,fname,'_graddata',ver],'data');  
   % figure(3); clf; hold on;
   
   figure(2); clf; hold on;
@@ -100,5 +123,5 @@ fname = 's07_MP08Hz_snaD_22C';
   figure(1); 
 set(gcf,'color','w'); set(gca,'FontSize',14);
 ylabel('mRNA per cell'); xlim([-1.5E4,12E4]);
-legend('no primary, hets','', 'no primary hets','', 'no shadow, Hz','', 'no shadow Hz','','wt','','wt',''s);
+legend('no primary, hets','','no primary, Hz','', 'no primary Hz','', 'no shadow, Hz','', 'no shadow Hz','','wt','','wt','');
  
