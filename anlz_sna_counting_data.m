@@ -17,20 +17,20 @@
   
 
   
-  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  % defaults
+  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 1; % defaults
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
-   rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';% 2011-05-22/s21_MP07/';%  2011-06-20/MP07Hz/';% 2011-05-22/s04_MP10/';%   s05_MP06/'   ; %   s07_MP08/'
+   rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
  % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
-  % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %'s05_MP06Hz' ; ver = '_v2';%  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
-  fname =  'MP07het_snaD_22C';% 'MP07Hz_snaD_22C';% 'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
-  slidedate = '2011-05-22/'; 
-  subfolder = 's21_MP07/';  %
+  % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
+  slidedate =  '2011-05-22/'; %'2011-06-20/';% 
+  subfolder =  's05_MP06/'   ; %'s06_MP10_sna18/'; % 's11_G4B/'; %  % 's21_MP07/';  %  MP07Hz/';% s04_MP10/';%     s07_MP08/'
+  fname ='s05_MP06Hz_b'; ver = '_v2';  % 's06_MP10_sna18_b';st_channel = 1;   ver = '_v3'; % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';% 'MP07Hz_snaD_22C';% 'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
   
   missG = 1.1; 
   
-  
+  manual_orient =[];%  [-10,-45,-35,45,135,45,-145,-50,-80,65];
 
-  chns = 1; % 2; %
+  chns = 2; % 1 % 2; %
  
 %    try
 %      load([folder,fname,'_slidedata',ver], 'Data'); 
@@ -39,10 +39,10 @@
 %    end
   
   
-  figure(10); clf; figure(11); clf;
+  figure(10); clf; figure(11); clf; figure(12); clf;
   
   data = cell(Es,1); 
-for e = 1: Es %  e = 2
+for e =  1: Es %  e = 7
     if e<10
         emb = ['0',num2str(e)];
     else
@@ -71,12 +71,12 @@ for e = 1: Es %  e = 2
       if nametype == 1 
           try
              % ver = '_v2';
-              load([folder,slidedate,fname,'_',emb,'_chn1','_data',ver,'.mat']); 
+              load([folder,slidedate,fname,'_',emb,'_chn', num2str( st_channel+1),'_data',ver,'.mat']); 
               mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
               disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
               if chns ==2
-                 % ver = '';
-                load([folder,slidedate,fname,'_',emb,'_chn2','_data',ver,'.mat']);
+                %  ver = '_v4';
+                load([folder,slidedate,fname,'_',emb,'_chn',num2str( st_channel+2),'_data',ver,'.mat']);
                  disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
                 mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
               end
@@ -109,25 +109,40 @@ for e = 1: Es %  e = 2
 %% Orient image along major axis     
     bw = imresize(makeuint(PlotmRNA,16),.5,'nearest');  
     thresh = graythresh(bw);
-    
-    bw = im2bw(bw,thresh); 
-    bw = bwareaopen(bw,500);
-   % figure(1); clf; imagesc(bw);
-
+    %  figure(3); clf; imagesc(bw);     
+    bw = im2bw(bw,thresh);   
+   %  figure(3); clf; imagesc(bw);
+    bw = imfill(bw,'holes'); 
+    bw = bwareaopen(bw,1500);
+   % figure(3); clf; imagesc(bw);
+  
+ 
     rprops = regionprops(bwlabel(bw),'MajorAxis','Orientation');
     
  meanvar = 100;
   rotes = 0; 
   %%
-  try
+ try
  %% 
  while meanvar > 75  && rotes<4;
     
-    NucLabel = imrotate(NucLabeled,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
-    figure(1); clf; imagesc(NucLabel);
+     % automatic rotation by aranging major axis of dominant thresholded object along x-axis.  
+     % If this orientation has the max on the left or right extreme variation should be small along the  
+   
+     
+     if isempty(manual_orient)
+    NucLabel = imrotate(NucLabeled,(0+90*rotes)-rprops(1).Orientation,'nearest');  
+    % figure(1); clf; imagesc(NucLabel);
     rotes = rotes + 1; 
-    
-    
+     else
+         meanvar = 0;
+         NucLabel = imrotate(NucLabeled,manual_orient(e),'nearest'); 
+          PlotmRNA_r = imrotate(PlotmRNA,manual_orient(e),'nearest'); 
+          figure(2); clf;  imagesc(PlotmRNA_r); pause(1); 
+          if chns == 2;
+           PlotmRNA2_r = imrotate(missG*PlotmRNA2,manual_orient(e),'nearest'); 
+          end
+     end
 
     
 % convert nucleus centroids to indexed postions
@@ -160,24 +175,33 @@ for e = 1: Es %  e = 2
     nuc_order = NucLabel(c_inds);
     [b,m,n] = unique(nuc_order);
     dists = d(m);
-    figure(1); clf; plot(dists,mRNAsadj ,'g.');  % check results
+    if length(dists) < length(mRNAsadj)
+       break
+    end
+        figure(1); clf; plot(dists,mRNAsadj ,'g.');  % check results
+
     if chns == 2
         Data_notsort = [dists; mRNAsadj ; missG*(mRNAsadj2)]';
     else
         Data_notsort = [dists; mRNAsadj]';
     end
     Data_sort = sortrows(Data_notsort); 
-    meanvar = std(Data_sort(10:20,2));
+    if isempty(manual_orient)
+        meanvar = std(Data_sort(10:20,2));     
+         % show rotated image
+         figure(2); clf; 
+            PlotmRNA_r = imrotate(PlotmRNA,(0+90*rotes)-rprops(1).Orientation,'nearest');
+            imagesc(PlotmRNA_r)
+        if chns == 2
+            PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
+            imagesc(PlotmRNA2_r); colormap hot;
+        end     
+    end
  end
  
  
- % show rotated image
-     figure(2); clf; 
-        PlotmRNA_r = imrotate(PlotmRNA,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
-    if chns == 2
-        PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
-        imagesc(PlotmRNA2_r); colormap hot;
-    end
+
+ 
  
     %%
   catch err
@@ -271,13 +295,18 @@ if chns == 2;
 end
 plot(x,sqrt(mu(:,1))./mu(:,1),'k.','MarkerSize',10);
 ylabel('CoV'); xlabel('distance (nm)');
-if chns == 2
-    legend('sna CoV','y CoV','Poisson CoV');
-else
-  legend('sna CoV','Poisson CoV');  
+
+if legon == 1
+    if chns == 2
+        legend('sna CoV','y CoV','Poisson CoV');
+    else
+      legend('sna CoV','Poisson CoV');  
+    end
 end
 title(['Nuclei = ',num2str(Nnucs)]);
  
+figure(12); subplot(4,ceil(Es/4),e);
+imagesc(PlotmRNA_r); colormap hot; 
 
     
 data{e}.Data_sort = Data_sort;
@@ -295,6 +324,7 @@ end
 %%
 end
 
+figure(12); set(gcf,'color','k');
 
 save([folder,slidedate,fname,'_graddata',ver],'data'); 
 
