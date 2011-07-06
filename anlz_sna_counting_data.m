@@ -17,20 +17,20 @@
   
 
   
-  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 1; % defaults
+  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; % defaults
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
  % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
   % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
-  slidedate =  '2011-05-22/'; %'2011-06-20/';% 
-  subfolder =  's05_MP06/'   ; %'s06_MP10_sna18/'; % 's11_G4B/'; %  % 's21_MP07/';  %  MP07Hz/';% s04_MP10/';%     s07_MP08/'
-  fname ='s05_MP06Hz_b'; ver = '_v2';  % 's06_MP10_sna18_b';st_channel = 1;   ver = '_v3'; % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';% 'MP07Hz_snaD_22C';% 'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
+  slidedate = '2011-06-20/';%  '2011-05-22/'; %
+  subfolder = 'MP07Hz/';%  s06_MP10_sna18/'; %  's05_MP06/'   ; %'s11_G4B/'; %  % 's21_MP07/';  % s04_MP10/';%     s07_MP08/'
+  fname = 'MP07Hz_snaD_22C';% 's06_MP10_sna18_b';st_channel = 1;   ver = '_v3'; %'s05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
   
   missG = 1.1; 
   
   manual_orient =[];%  [-10,-45,-35,45,135,45,-145,-50,-80,65];
 
-  chns = 2; % 1 % 2; %
+  chns = 1; % 1 % 2; %
  
 %    try
 %      load([folder,fname,'_slidedata',ver], 'Data'); 
@@ -176,7 +176,8 @@ for e =  1: Es %  e = 7
     [b,m,n] = unique(nuc_order);
     dists = d(m);
     if length(dists) < length(mRNAsadj)
-       break
+       disp('length dists does not match');
+       dists = [dists,dists(end)]; 
     end
         figure(1); clf; plot(dists,mRNAsadj ,'g.');  % check results
 
@@ -316,6 +317,7 @@ data{e}.sigma = sigma;
 data{e}.bssigma = bssigma;
 data{e}.x = x; 
 data{e}.Nnucs = Nnucs; 
+data{e}.missG = missG; 
 
 data{e}.PlotmRNA = PlotmRNA_r; 
 if chns == 2
