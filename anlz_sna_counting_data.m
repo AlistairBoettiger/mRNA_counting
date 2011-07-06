@@ -18,13 +18,14 @@
 
   
   maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; % defaults
+  cbar = 0; 
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
  % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
   % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
   slidedate ='2011-06-20/';%  '2011-05-22/'; % 
   subfolder =  'sna2.8Hz/';%  's06_MP10_sna18/'; %  'MP07Hz/';%  's05_MP06/'   ; %'s11_G4B/'; %  % 's21_MP07/';  % s04_MP10/';%     s07_MP08/'
-  fname ='sna2.8Hz_snaD_22C';%'s06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % 'MP07Hz_snaD_22C';% 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
+  fname ='sna2.8Hz_snaD_22C';st_channel = 1; %'s06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % 'MP07Hz_snaD_22C';% 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
   
   missG = 1.0; 
   
@@ -313,12 +314,17 @@ end
 title(['Nuclei = ',num2str(Nnucs)]);
  
 figure(12); subplot(3,ceil(Es/3),e);
-imagesc(PlotmRNA_r); colormap hot; caxis([20,max(Data_sort(:,2))]); colorbar;
-
+imagesc(PlotmRNA_r); colormap hot; 
+if cbar == 1
+    caxis([20,max(Data_sort(:,2))]); colorbar;
+end
+    
 if chns == 2
     figure(13); subplot(3,ceil(Es/3),e); set(gcf,'color','k'); colordef black;
-    imagesc(PlotmRNA2_r); colormap hot; caxis([20,max(Data_sort(:,3))]);
-    colorbar; axis off; 
+    imagesc(PlotmRNA2_r); colormap hot; 
+    if cbar == 1 
+        caxis([20,max(Data_sort(:,3))]); colorbar; axis off;
+    end
 end
 
     
@@ -340,7 +346,7 @@ end
 
 figure(12); set(gcf,'color','k');
 
-save([folder,slidedate,fname,'_graddata',ver],'data'); 
+save([folder,slidedate,fname,'_graddata',ver],'data','.mat'); 
 
 %%
 
