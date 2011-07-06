@@ -8,7 +8,8 @@ folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/D
 slides = {'MP01b','MP01','MP02b','MP02','MP09b','MP09c'}; 
 chns = 1; ver = '';
 
-figure(1); clf;
+figure(1); clf; 
+j = 0; NucsT = {};
 
 for s = 1:length(slides)
 
@@ -79,9 +80,12 @@ if s == 1;
     hold on; 
     plot(gx,fit,'r');
     plot(p(2),A/4,'r*','MarkerSize',20);
+    k = 2;
+else
+    k=1;
 end  
  
-for e= 1:Es;
+for e= k:Es;
     try
      gx = hbdata{e}.Data_sort(:,1);
      grad = hbdata{e}.Data_sort(:,2);  
@@ -107,19 +111,22 @@ end
 %
 % offsets(3) = 5E5;
 
- figure(s);  clf;
+  figure(s);  clf;
 
-% figure(1);
+ % figure(1);
 colordef white; set(gcf,'color','w');
 i = 1; Nucs = {};
 for e = 1:Es 
     try
-        if  hbdata{e}.Nnucs > 160;%  &&  hbdata{e}.Nnucs < 300
-            mcorr =    hbdata{e}.Nnucs./hbdata{1}.Nnucs;
+        if  hbdata{e}.Nnucs < 200 &&  hbdata{e}.Nnucs > 160
+            mcorr =  1; %   hbdata{e}.Nnucs./hbdata{1}.Nnucs;
             plot(hbdata{e}.Data_sort(:,1) + p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,2),'.','color',[e/Es,0,1-e/Es],'MarkerSize',5); % check results  
             hold on; 
+            ylim([0,550]); 
            % errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,1),mcorr*hbdata{e}.sigma(:,1),'linestyle','none','linewidth',1,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
              Nucs{i} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+             %NucsT{j} = ['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+            % j = j+1; 
             % Nucs{1+2*(i-1)} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
              i = i + 1; 
             if chns == 2;

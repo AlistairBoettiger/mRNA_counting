@@ -15,7 +15,7 @@ for s = 1:length(slides)
 switch slides{s}
 
 case 'MP01'
-fname = 's02_MP01_Hz_22C';  ver = '';
+fname = 's02_MP01_Hz_22C';  ver = '_v2';
 % MP01 = hbdata;
 e=4;% 4; 
 e1=e;
@@ -79,9 +79,12 @@ if s == 1;
     hold on; 
     plot(gx,fit,'r');
     plot(p(2),A/4,'r*','MarkerSize',20);
+    k = 2;
+else
+    k=1;
 end  
  
-for e= 1:Es;
+for e= k:Es;
     try
      gx = hbdata{e}.Data_sort(:,1);
      grad = hbdata{e}.Data_sort(:,2);  
@@ -107,19 +110,21 @@ end
 %
 % offsets(3) = 5E5;
 
- figure(s);  clf;
+ % figure(s);  clf;
 
-% figure(1);
+ figure(1);
 colordef white; set(gcf,'color','w');
 i = 1; Nucs = {};
 for e = 1:Es 
     try
-        if  hbdata{e}.Nnucs > 160;%  &&  hbdata{e}.Nnucs < 300
-            mcorr =    hbdata{e}.Nnucs./hbdata{1}.Nnucs;
+        if  hbdata{e}.Nnucs < 200 &&  hbdata{e}.Nnucs > 160
+            mcorr =  1; %   hbdata{e}.Nnucs./hbdata{1}.Nnucs;
             plot(hbdata{e}.Data_sort(:,1) + p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,2),'.','color',[e/Es,0,1-e/Es],'MarkerSize',5); % check results  
             hold on; 
+            ylim([0,550]); 
            % errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,1),mcorr*hbdata{e}.sigma(:,1),'linestyle','none','linewidth',1,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
              Nucs{i} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+             Nucs{j} = 
             % Nucs{1+2*(i-1)} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
              i = i + 1; 
             if chns == 2;
