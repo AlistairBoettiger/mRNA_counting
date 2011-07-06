@@ -17,20 +17,20 @@
   
 
   
-  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 1; % defaults
+  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; % defaults
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
  % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
   % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
-  slidedate = '2011-06-20/';%  '2011-05-22/'; %
-  subfolder = 'MP07Hz/';%  s06_MP10_sna18/'; %  's05_MP06/'   ; %'s11_G4B/'; %  % 's21_MP07/';  % s04_MP10/';%     s07_MP08/'
-  fname = 'MP07Hz_snaD_22C';% 's06_MP10_sna18_b';st_channel = 1;   ver = '_v3'; %'s05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
+  slidedate ='2011-05-22/'; % '2011-06-20/';%  
+  subfolder =  's06_MP10_sna18/'; %  'MP07Hz/';%  's05_MP06/'   ; %'s11_G4B/'; %  % 's21_MP07/';  % s04_MP10/';%     s07_MP08/'
+  fname ='s06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % 'MP07Hz_snaD_22C';% 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
   
-  missG = 1.1; 
+  missG = 1.0; 
   
   manual_orient =[];%  [-10,-45,-35,45,135,45,-145,-50,-80,65];
 
-  chns = 1; % 1 % 2; %
+  chns = 2; % 1 % 2; %
  
 %    try
 %      load([folder,fname,'_slidedata',ver], 'Data'); 
@@ -177,7 +177,7 @@ for e =  1: Es %  e = 7
     dists = d(m);
     if length(dists) < length(mRNAsadj)
        disp('length dists does not match');
-       dists = dist
+       dists = [dists,dists(end)]; 
     end
         figure(1); clf; plot(dists,mRNAsadj ,'g.');  % check results
 
@@ -194,13 +194,17 @@ for e =  1: Es %  e = 7
             PlotmRNA_r = imrotate(PlotmRNA,(0+90*rotes)-rprops(1).Orientation,'nearest');
             imagesc(PlotmRNA_r)
         if chns == 2
-            PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops(1).Orientation,'nearest'); 
+            PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops(1).Orientation ,'nearest'); 
             imagesc(PlotmRNA2_r); colormap hot;
         end     
     end
  end
  
- 
+ % arrange A-P orientation
+ PlotmRNA_r = imrotate(PlotmRNA_r,90);
+ if chns == 2
+     PlotmRNA2_r = imrotate(PlotmRNA2_r,90,'nearest');
+ end
 
  
  
@@ -271,10 +275,12 @@ if or<0
    end   
 end
 
+
+
 %% Plotting
 
 
-figure(10); subplot(4,ceil(Es/4),e);  colordef white; set(gcf,'color','w');
+figure(10); subplot(3,ceil(Es/3),e);  colordef white; set(gcf,'color','w');
     plot(Data_sort(:,1),Data_sort(:,2),'k.'); % check results  
     hold on; 
     errorbar(x,mu(:,1),sigma(:,1),'linestyle','none','linewidth',3,'color','r');
@@ -287,7 +293,7 @@ figure(10); subplot(4,ceil(Es/4),e);  colordef white; set(gcf,'color','w');
     title(['Nuclei = ',num2str(Nnucs)]);
 
 
-figure(11); subplot(4,ceil(Es/4),e);  
+figure(11); subplot(3,ceil(Es/3),e);  
 colordef white; set(gcf,'color','w');
 errorbar(x,sigma(:,1)./mu(:,1),bssigma(:,1)./mu(:,1),  'r.','MarkerSize',10); 
 hold on;
@@ -306,8 +312,14 @@ if legon == 1
 end
 title(['Nuclei = ',num2str(Nnucs)]);
  
-figure(12); subplot(4,ceil(Es/4),e);
-imagesc(PlotmRNA_r); colormap hot; 
+figure(12); subplot(3,ceil(Es/3),e);
+imagesc(PlotmRNA_r); colormap hot; caxis([20,max(Data_sort(:,2))]); colorbar;
+
+if chns == 2
+    figure(13); subplot(3,ceil(Es/3),e); set(gcf,'color','k'); colordef black;
+    imagesc(PlotmRNA2_r); colormap hot; caxis([20,max(Data_sort(:,3))]);
+    colorbar; axis off; 
+end
 
     
 data{e}.Data_sort = Data_sort;
