@@ -28,7 +28,7 @@ for s = 1:S
      ave_sna{s} = zeros(20,1); 
      std_sna{s} = zeros(20,1); 
      ave_y{s} = zeros(20,1); 
-     ave_y{s} = zeros(20,1); 
+     std_y{s} = zeros(20,1); 
     
      % Slide label information 
 switch slides{s}
@@ -139,23 +139,27 @@ colordef white; set(gcf,'color','w');
 
 for e = 1:Es 
         if isempty(find(e==skip,1))  && isempty(data{e}) ~= 1;
-       figure(1);
-        mcorr =   1;%   data{e}.Nnucs./data{1}.Nnucs;
-        sna_cnt = mcorr*data{e}.Data_sort(:,2) - min(mcorr*data{e}.Data_sort(:,2));
-        sna_m = mcorr*data{e}.mu(:,1)  - min(mcorr*data{e}.Data_sort(:,2));
-        plot(data{e}.Data_sort(:,1) + p1-offsets(e),sna_cnt ,'.','color','k','MarkerSize',1); % check results    [e/Es,0,1-e/Es]
-        hold on; 
-        plot(data{e}.x+ p1-offsets(e), sna_m,'.','color','k','MarkerSize',5); % [e/Es,0,1-e/Es]
+            
+            mcorr =   1;%   data{e}.Nnucs./data{1}.Nnucs;
+            
+            sna_cnt = mcorr*data{e}.Data_sort(:,2) - min(mcorr*data{e}.Data_sort(:,2));
+            sna_m = mcorr*data{e}.mu(:,1)  - min(mcorr*data{e}.Data_sort(:,2));
+            
+            figure(1);
+            plot(data{e}.Data_sort(:,1) + p1-offsets(e),sna_cnt ,'.','color','k','MarkerSize',1); % check results    [e/Es,0,1-e/Es]
+            hold on; 
+            plot(data{e}.x+ p1-offsets(e), sna_m,'.','color','k','MarkerSize',5); % [e/Es,0,1-e/Es]
 
-      ave_sna{s}(e) = mean(sna_cnt(sna_cnt>max(sna_m)/2)) ;
-      std_sna{s}(e) = std(sna_cnt(sna_cnt>max(sna_m)/2)) ;
-        
+            ave_sna{s}(e) = mean(sna_cnt(sna_cnt>max(sna_m)/2)) ;
+            std_sna{s}(e) = std(sna_cnt(sna_cnt>max(sna_m)/2)) ;
+
         
       %  errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,1) - min(mcorr*data{e}.mu(:,1)) ,mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',3,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
-            if chns == 2;
-
+           if chns == 2;
                 y_cnt = mcorr*data{e}.Data_sort(:,3)- min(mcorr*data{e}.Data_sort(:,3));
                 y_m = mcorr*data{e}.mu(:,2)- min(mcorr*data{e}.Data_sort(:,3));
+                
+                figure(1); 
                 plot(data{e}.Data_sort(:,1)+  p1-offsets(e),y_cnt,'.','color',[s/4,0,1-s/4],'MarkerSize',1); %[(s-1)/2,1-e/Es,e/Es]
                 hold on; 
                 plot(data{e}.x+ p1-offsets(e),y_m,'o','color',[s/4,0,1-s/4],'MarkerSize',5); % [0,1-e/Es,e/Es]
@@ -165,7 +169,7 @@ for e = 1:Es
 
                 figure(3); hold on; 
             % plot(data{e}.Data_sort(:,1)+  p1-offsets(e), data{e}.Data_sort(:,3)./data{e}.Data_sort(:,2) ,'.','color',[e/Es,0,1-e/Es],'MarkerSize',5); ylim([0,2]); 
-             % plot(mean(data{e}.Data_sort(:,3)./data{e}.Data_sort(:,2)),'.','color',[e/Es,0,1-e/Es]);
+            % plot(mean(data{e}.Data_sort(:,3)./data{e}.Data_sort(:,2)),'.','color',[e/Es,0,1-e/Es]);
 
               errorbar(data{e}.x+  p1-offsets(e),data{e}.sigma(:,2)./data{e}.mu(:,2),data{e}.bssigma(:,2)./data{e}.mu(:,2),'o','color',[s/4,0,1-s/4],'MarkerSize',5);
                 % errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,2)-min(mcorr*data{e}.mu(:,2)),mcorr*data{e}.sigma(:,2),'linestyle','none','linewidth',3,'color',[0,1-e/Es,e/Es],'MarkerSize',1);          
@@ -177,6 +181,35 @@ end
 
     
 end % end loop over slides
+
+%%
+D = zeros(20,S);
+ybox = zeros(20,2*S);
+yvar = zeros(20,2*S); 
+for s = 1:S
+    D(1:20,s) = ave_y{s}./ave_sna{s};
+    ave_y{s}(ave_y{s}<1) = NaN; 
+    ave_sna{s}(ave_sna{s}<1) = NaN; 
+    ybox(1:20,2*s) = ave_y{s};
+    ybox(1:20,2*s-1) = ave_sna{s};
+    
+    std_y{s}(std_y{s}<1) = NaN; 
+    std_sna{s}(std_sna{s}<1) = NaN; 
+    yvar(1:20,2*s) = std_y{s}./ave_y{s};
+    yvar(1:20,2*s-1) = std_sna{s}./ave_sna{s};  
+end
+figure(2); clf; boxplot(D); ylim([0,1]);
+
+figure(2); clf; boxplot(ybox,'colors',[1,0,0;0,1,0],'width',.8,...
+    'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','1x y-cntrl','wt','1x no-prox'});
+ylim([0,250]);
+set(gcf,'color','w'); ylabel('mRNA counts');
+
+figure(3); clf; boxplot(yvar,'colors',[1,0,0;0,1,0],'width',.8,...
+    'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','1x y-cntrl','wt','1x no-prox'});
+set(gcf,'color','w'); ylabel('CoV for mRNA counts'); 
+ylim([0,.25]);
+
 
 %% For rescues... (not developed yet -- 7/5/11).  
  e=1;
