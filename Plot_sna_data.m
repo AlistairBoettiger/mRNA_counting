@@ -10,7 +10,7 @@
 %  same slide into a common dataset).  
 
 clear all;
- figure(1); clf;  figure(3); clf;
+ figure(1); clf;  figure(3); clf;  figure(4); clf;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
  
 slides = {'MP10Hz', 'MP06Hz' 'MP10het','MP05het'};
@@ -24,11 +24,13 @@ std_sna = cell(S,1);
 ave_y = cell(S,1); 
 std_y = cell(S,1); 
 
+Tembs  = 40; 
+
 for s = 1:S 
-     ave_sna{s} = zeros(20,1); 
-     std_sna{s} = zeros(20,1); 
-     ave_y{s} = zeros(20,1); 
-     std_y{s} = zeros(20,1); 
+     ave_sna{s} = zeros(Tembs,1); 
+     std_sna{s} = zeros(Tembs,1); 
+     ave_y{s} = zeros(Tembs,1); 
+     std_y{s} = zeros(Tembs,1); 
     
      % Slide label information 
 switch slides{s}
@@ -36,7 +38,7 @@ case 'MP10Hz'
        date = '2011-05-22/';  
       fname = 's04_MP10Hz';% 's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
       chns = 2; ver = '_v3';
-      skip = 3;   
+      skip = [1,3];   
       
     case 'MP06Hz'
         date = '2011-05-22/'; 
@@ -150,10 +152,14 @@ for e = 1:Es
             hold on; 
             plot(data{e}.x+ p1-offsets(e), sna_m,'.','color','k','MarkerSize',5); % [e/Es,0,1-e/Es]
 
+            
+       %     cnt_dist{s}{e} = sna_cnt(sna_cnt>max(sna_m)/2);
             ave_sna{s}(e) = mean(sna_cnt(sna_cnt>max(sna_m)/2)) ;
             std_sna{s}(e) = std(sna_cnt(sna_cnt>max(sna_m)/2)) ;
 
-        
+%             sna_hist  =  hist(sna_cnt(sna_cnt>max(sna_m)/2),0:10:260); 
+%         figure(4); hold on; plot(0:10:260,sna_hist,'color',[s/4,0,1-s/4]);
+            
       %  errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,1) - min(mcorr*data{e}.mu(:,1)) ,mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',3,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
            if chns == 2;
                 y_cnt = mcorr*data{e}.Data_sort(:,3)- min(mcorr*data{e}.Data_sort(:,3));
@@ -164,39 +170,51 @@ for e = 1:Es
                 hold on; 
                 plot(data{e}.x+ p1-offsets(e),y_m,'o','color',[s/4,0,1-s/4],'MarkerSize',5); % [0,1-e/Es,e/Es]
 
-                ave_y{s}(e) = mean(y_cnt(y_cnt>max(y_m)/2)) ;
-                std_y{s}(e) = std(y_cnt(y_cnt>max(y_m)/2)) ;
+                ave_y{s}(e) = mean(y_cnt(sna_cnt>max(sna_m)/2)) ;
+                std_y{s}(e) = std(y_cnt(sna_cnt>max(sna_m)/2)) ;
 
-                figure(3); hold on; 
+            %    figure(3); hold on; 
             % plot(data{e}.Data_sort(:,1)+  p1-offsets(e), data{e}.Data_sort(:,3)./data{e}.Data_sort(:,2) ,'.','color',[e/Es,0,1-e/Es],'MarkerSize',5); ylim([0,2]); 
             % plot(mean(data{e}.Data_sort(:,3)./data{e}.Data_sort(:,2)),'.','color',[e/Es,0,1-e/Es]);
 
-              errorbar(data{e}.x+  p1-offsets(e),data{e}.sigma(:,2)./data{e}.mu(:,2),data{e}.bssigma(:,2)./data{e}.mu(:,2),'o','color',[s/4,0,1-s/4],'MarkerSize',5);
-                % errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,2)-min(mcorr*data{e}.mu(:,2)),mcorr*data{e}.sigma(:,2),'linestyle','none','linewidth',3,'color',[0,1-e/Es,e/Es],'MarkerSize',1);          
+            %  errorbar(data{e}.x+  p1-offsets(e),data{e}.sigma(:,2)./data{e}.mu(:,2),data{e}.bssigma(:,2)./data{e}.mu(:,2),'o','color',[s/4,0,1-s/4],'MarkerSize',5);
+          %       ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
+           %   ylim([0,250]);
+            
+           if e == 2;% 2
+            y_hist  =  hist(y_cnt(sna_cnt>max(sna_m)/2),0:5:250); 
+            figure(4); hold on; plot(0:5:250,y_hist,'color',[s/4,0,1-s/4],'linewidth',4);
+           end
+           
+              % errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,2)-min(mcorr*data{e}.mu(:,2)),mcorr*data{e}.sigma(:,2),'linestyle','none','linewidth',3,'color',[0,1-e/Es,e/Es],'MarkerSize',1);          
           end
         end
 end
-        ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
-        ylim([0,250]);
+   
 
     
 end % end loop over slides
 
 %%
-D = zeros(20,S);
-ybox = zeros(20,2*S);
-yvar = zeros(20,2*S); 
+
+wt_sna = [];
+
+D = zeros(Tembs,S);
+ybox = zeros(Tembs,2*S);
+yvar = zeros(Tembs,2*S); 
 for s = 1:S
-    D(1:20,s) = ave_y{s}./ave_sna{s};
+    D(1:Tembs,s) = ave_y{s}./ave_sna{s};
     ave_y{s}(ave_y{s}<1) = NaN; 
     ave_sna{s}(ave_sna{s}<1) = NaN; 
-    ybox(1:20,2*s) = ave_y{s};
-    ybox(1:20,2*s-1) = ave_sna{s};
+    ybox(:,2*s) = ave_y{s};
+    ybox(:,2*s-1) = ave_sna{s};
     
     std_y{s}(std_y{s}<1) = NaN; 
     std_sna{s}(std_sna{s}<1) = NaN; 
-    yvar(1:20,2*s) = std_y{s}./ave_y{s};
-    yvar(1:20,2*s-1) = std_sna{s}./ave_sna{s};  
+    yvar(:,2*s) = std_y{s}./ave_y{s};
+    yvar(:,2*s-1) = std_sna{s}./ave_sna{s};  
+    
+    wt_sna = [wt_sna; ave_sna{s}];
 end
 figure(2); clf; boxplot(D); ylim([0,1]);
 
@@ -205,12 +223,21 @@ figure(2); clf; boxplot(ybox,'colors',[1,0,0;0,1,0],'width',.8,...
 ylim([0,250]);
 set(gcf,'color','w'); ylabel('mRNA counts');
 
-figure(3); clf; boxplot(yvar,'colors',[1,0,0;0,1,0],'width',.8,...
+figure(3); clf; boxplot(yvar,'colors',[0,0,1;0,1,0],'width',.8,'whisker',0,...
     'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','1x y-cntrl','wt','1x no-prox'});
 set(gcf,'color','w'); ylabel('CoV for mRNA counts'); 
-ylim([0,.25]);
+ylim([0,.3]);
 
 
+wt_sna = wt_sna(logical(1-isnan(wt_sna)));
+wt_sna = [wt_sna; NaN*zeros(Tembs-length(wt_sna),1)];
+
+figure(2); clf; boxplot( [wt_sna,1.15*ybox(:,2:2:end)],'whisker',0,...
+'labels',{'wt','2x y-cntrl','2x no-shadow','1x y-cntrl','1x no-prox'});
+ ylim([0,200]);
+ 
+
+ 
 %% For rescues... (not developed yet -- 7/5/11).  
  e=1;
 switch 'MP07het'; % 'MP07Hz'; % 'MP06Hz'; % 'MP10het' % e =2;  % 'MP05het'; % e =7;
@@ -243,9 +270,9 @@ disp(fname);
     load([folder,date,fname,'_graddata',ver],'data');  
 
 if chns == 2; 
- figure(3); clf; imagesc(data{e}.PlotmRNA2); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([25,200]); axis off;
+ figure(5); clf; imagesc(data{e}.PlotmRNA2); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([25,200]); axis off;
  end
- figure(4); clf; imagesc(data{e}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([25,200]); axis off;
+ figure(6); clf; imagesc(data{e}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([25,200]); axis off;
 
 
 %%
@@ -258,7 +285,7 @@ load([folder,date,fname,'_graddata',ver],'data');
 
 e = 10;
 
- figure(3); clf; colordef white; set(gcf,'color','w'); 
+ figure(7); clf; colordef white; set(gcf,'color','w'); 
         plot(data{e}.Data_sort(:,1)  ,data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2)) ,'.','color','k','MarkerSize',5); % check results    [e/Es,0,1-e/Es]
         hold on; 
         errorbar(data{e}.x,data{e}.mu(:,1)  - min(data{e}.Data_sort(:,2)), data{e}.sigma(:,1),'linestyle','none','linewidth',3,'color','k','MarkerSize',5); % [e/Es,0,1-e/Es]
