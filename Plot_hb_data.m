@@ -6,158 +6,171 @@
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
 slides = {'MP01b','MP01','MP02b','MP02','MP09b','MP09c'}; 
-chns = 1; ver = '';
 
-figure(1); clf; 
+ slides = {'MP09b','MP09c'}; 
+ slides = {'MP01b','MP01'}
+
+chns = 2; ver = '';
+
+figure(1); clf; figure(21); clf; figure(22); clf; set(gcf,'color','w');
 j = 0; NucsT = {};
 
-for s = 1:length(slides)
+S = length(slides);
 
-switch slides{s}
+pars = cell(1,S);
 
-case 'MP01'
-fname = 's02_MP01_Hz_22C';  ver = '_v2';
-% MP01 = hbdata;
-e=4;% 4; 
-e1=e;
-o1 = 4E4;
 
-case 'MP01b'
-fname = 's02_MP01_Hz_22C_b';  ver = '';
-% MP01_b = hbdata;
+for s = 1:S
 
-case 'MP02'
-fname = 's03_MP02_Hz_22C';  ver = '';
-% MP02 = hbdata;
-e=1; % 8;
-e2=e;
-o2 = 0;
+    switch slides{s}
+        case 'MP01'
+        fname = 's02_MP01_Hz_22C';  ver = '_v2';
+        % MP01 = hbdata;
+        e=4;% 4; 
+        e1=e;
+      %  o1 = 4E4;
 
-case 'MP02b'
-fname = 's03_MP02_Hz_22C_b';  ver = '_v2'; % little difference
-% MP02_b = hbdata;
+        case 'MP01b'
+        fname = 's02_MP01_Hz_22C_b';  ver = '';
+        % MP01_b = hbdata;
 
-case 'MP09b'
-fname = 's01_MP09_Hz_22C_b'; ver = '';
-% MP09 = hbdata;
-    e = 5; % 5 9; 
-    e9 = e;
-    o9 = 4E4;
+        case 'MP02'
+        fname = 's03_MP02_Hz_22C';  ver = '';
+        % MP02 = hbdata;
+        e=1; % 8;
+        e2=e;
+       %  o2 = 0;
 
-case 'MP09'
-fname = 's01_MP09_Hz_22C';  ver = '';
-% MP09_a = hbdata;
+        case 'MP02b'
+        fname = 's03_MP02_Hz_22C_b';  ver = '_v2'; % little difference
+        % MP02_b = hbdata;
 
-case 'MP09c'
-fname = 's01_MP09_Hz_22C_c'; ver = '_v2';
-% MP09_c = hbdata;
-    
+        case 'MP09b'
+        fname = 's01_MP09_Hz_22C_b'; ver = '_v2';
+        % MP09 = hbdata;
+            e = 5; % 5 9; 
+            e9 = e;
+         %   o9 = 4E4;
 
-end
-load([folder,fname,'_graddata',ver],'hbdata'); 
+        case 'MP09'
+        fname = 's01_MP09_Hz_22C';  ver = '_v2';
+        % MP09_a = hbdata;
 
-%
-Es = length(hbdata);
-offsets = zeros(1,Es); 
-% Get boundary point of first curve as a reference
-
-if s == 1;
-    e=1;
-    gx = hbdata{e}.Data_sort(:,1);  
-    grad = hbdata{e}.Data_sort(:,2);  
- 
-    n = 4; 
-    theta = mean(gx);  
-    A = max(grad);  
-    b=min(grad); 
-    [p,fit] = fxn_fit_sigmoid(gx',grad',[n,theta,A,b],'r');
-    
-    p1 = p(2); 
-    offsets(e) = p1; 
-   
-    figure(20); clf; 
-    plot(gx', grad,'b');
-    hold on; 
-    plot(gx,fit,'r');
-    plot(p(2),A/4,'r*','MarkerSize',20);
-    k = 2;
-else
-    k=1;
-end  
- 
-for e= k:Es;
-    try
-     gx = hbdata{e}.Data_sort(:,1);
-     grad = hbdata{e}.Data_sort(:,2);  
-
-    figure(20); clf; plot(gx,grad);
-    n = 3;
-    theta = 2*mean(gx);  
-    A = max(grad); 
-    b=min(grad); 
-    [p,fit] = fxn_fit_sigmoid(gx',grad',[n,theta,A,b],'r');
-
-    offsets(e) = p(2); 
-
-    figure(20); clf; plot(gx', grad,'b');
-    hold on; 
-    plot(gx,fit,'r');
-    plot(p(2),A/4,'r*','MarkerSize',20);
-    catch
-        continue
+        case 'MP09c'
+        fname = 's01_MP09_Hz_22C_c'; ver = '_v2';
+        % MP09_c = hbdata;
     end
-end
-
-%
-% offsets(3) = 5E5;
-
-  figure(s);  clf;
-
- % figure(1);
-colordef white; set(gcf,'color','w');
-i = 1; Nucs = {};
-for e = 1:Es 
+    
+    
+    load([folder,fname,'_graddata',ver],'hbdata'); 
+    % Show what were working on
+    disp(fname);
+    disp(['# embryos in dataset = ',num2str(sum(1-cellfun('isempty',hbdata)))])
     try
-        if  hbdata{e}.Nnucs < 200 &&  hbdata{e}.Nnucs > 160
-            mcorr =  1; %   hbdata{e}.Nnucs./hbdata{1}.Nnucs;
-            plot(hbdata{e}.Data_sort(:,1) + p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,2),'.','color',[e/Es,0,1-e/Es],'MarkerSize',5); % check results  
+        disp(['chn1 thresh: ', num2str(hbdata{e}.ipars{1}.min_int)])
+        disp(['chn2 thresh: ', num2str(hbdata{e}.ipars{2}.min_int)])
+        disp(['missG: ', num2str(hbdata{e}.ipars{3})])
+    catch er
+        disp('processing parameter data not available'); 
+    end
+    
+    %
+    Es = length(hbdata);
+    offsets = zeros(1,Es); 
+    pars{s} = zeros(Es,4); % store curve fit parameters for alignment.  
+
+    % Get boundary point of first curve as a reference
+    if s == 1;
+        e=1;
+        gx = hbdata{e}.Data_sort(:,1);  
+        grad = hbdata{e}.Data_sort(:,2);  
+
+        [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',grad',[4,mean(gx),max(grad),min(grad)],'r');
+        offsets(e) = pars{s}(e,2); 
+        p1 = pars{s}(e,2);
+
+        figure(20); clf; 
+        plot(gx', grad,'b');
+        hold on;  
+        plot(gx,fit,'r');
+        plot(p1,max(grad)/4,'r*','MarkerSize',20);
+        k = 2;
+    else
+        k=1;
+    end  
+
+    for e= k:Es;  % Get curve fit parameters for the rest of the curves
+        try
+             gx = hbdata{e}.Data_sort(:,1);
+             grad = hbdata{e}.Data_sort(:,2);  
+
+            figure(20); clf; plot(gx,grad);
+            [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',grad',[4,mean(gx),max(grad),min(grad)],'r');
+            offsets(e) = pars{s}(e,2); 
+
+            figure(20); clf; plot(gx', grad,'b');
             hold on; 
-            ylim([0,550]); 
-           % errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,1),mcorr*hbdata{e}.sigma(:,1),'linestyle','none','linewidth',1,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
-             Nucs{i} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
-             %NucsT{j} = ['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
-            % j = j+1; 
-            % Nucs{1+2*(i-1)} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
-             i = i + 1; 
-            if chns == 2;
-                plot(hbdata{e}.Data_sort(:,1)+  p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,3),'.','color',[0,1-e/Es,e/Es],'MarkerSize',5); 
-                hold on; 
-                errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,2),mcorr*hbdata{e}.sigma(:,2),'linestyle','none','linewidth',1,'color',[0,1-e/Es,e/Es],'MarkerSize',1);
-            end
-        end
-       
+            plot(gx,fit,'r');
+            plot(offsets(e),max(grad)/4,'r*','MarkerSize',20);
             
-    catch
-        continue
+      if  pars{s}(e,3)+ pars{s}(e,4) < 370 &&  pars{s}(e,3)+ pars{s}(e,4) > 210 && pars{s}(e,1) > 3.5 && pars{s}(e,1) < 6  % 
+          % pars{s}(e,3)+ pars{s}(e,4) < 250 &&  pars{s}(e,3)+ pars{s}(e,4) > 150 && pars{s}(e,1) > 3.5  && pars{s}(e,1) < 6
+          %
+          figure(21); hold on;
+               plot(gx+ p1-offsets(e),fit,'r');
+               disp(pars{s}(e,3))           
+      end
+            
+        catch er
+            disp(er.message); 
+            continue
+        end
     end
-    
+
+
+   %   figure(s);  clf;
+
+     % figure(1);
+    colordef white; set(gcf,'color','w');
+   % i = 1; Nucs = {};
+    for e = 1:Es 
+       % if  isempty(hbdata{e}) ~= 1;
+            if  pars{s}(e,3)+ pars{s}(e,4) < 370 &&  pars{s}(e,3)+ pars{s}(e,4) > 210 && pars{s}(e,1) > 3.5 && pars{s}(e,1) < 6  % pars{s}(e,3)+ pars{s}(e,4) < 390 &&  pars{s}(e,3)+ pars{s}(e,4) > 310 && pars{s}(e,1) > 3.5  && pars{s}(e,1) < 6
+
+                % pars{s}(e,3)+ pars{s}(e,4) < 250 &&  pars{s}(e,3)+ pars{s}(e,4) > 150 && pars{s}(e,1) > 3.5  && pars{s}(e,1) < 6
+
+                j = j+1;     
+               figure(22); hold on; 
+               mcorr =  1; %   hbdata{e}.Nnucs./hbdata{1}.Nnucs;
+               plot(hbdata{e}.Data_sort(:,1) + p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,2),'.','color',[1-e/Es,0,e/(2*Es)],'MarkerSize',5); % check results  
+               hold on; 
+               ylim([0,550]); 
+               % errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,1),mcorr*hbdata{e}.sigma(:,1),'linestyle','none','linewidth',1,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
+              % Nucs{i} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+                 NucsT{j} = ['wt',' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+
+                % Nucs{1+2*(i-1)} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+                % i = i + 1; 
+                if chns == 2;
+                     figure(22); hold on; 
+                    plot(hbdata{e}.Data_sort(:,1)+  p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,3),'.','color',[s/S,1-e/Es,e/(s*Es)],'MarkerSize',5); 
+                    hold on; 
+               %     errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,2),mcorr*hbdata{e}.sigma(:,2),'linestyle','none','linewidth',1,'color',[s/S,1-e/Es,e/(s*Es)],'MarkerSize',1);
+                    j = j+1;
+                    NucsT{j} = [slides{s},' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+                end
+            end
+      %  end
+    end
+%             ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
+%            legend(Nucs{:});
+%             title(texlabel(fname,'literal')); 
+
 end
-        ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
-       legend(Nucs{:});
-        title(texlabel(fname,'literal')); 
-    
-
-
-
-
-
-
-
-
-
-
-end
-
+            figure(22); 
+            ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
+           legend(NucsT{:});
+            title(texlabel(fname,'literal')); 
 %%  
 figure(3); clf; figure(4); clf; figure(5); clf;
 
