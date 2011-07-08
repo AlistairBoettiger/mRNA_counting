@@ -24,14 +24,15 @@
  % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
   % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
   slidedate ='2011-06-20/';%  '2011-05-22/'; % 
-  subfolder =  'sna2.8Hz/';%  's06_MP10_sna18/'; %  'MP07Hz/';%  's05_MP06/'   ; %'s11_G4B/'; %  % 's21_MP07/';  % s04_MP10/';%     s07_MP08/'
-  fname ='sna2.8Hz_snaD_22C';st_channel = 1; %'s06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % 'MP07Hz_snaD_22C';% 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
+  subfolder =  's07_MP05Hz/';% 'sna2.8Hz/';%  's06_MP10_sna18/'; %  'MP07Hz/';%  's05_MP06/'   ; %'s11_G4B/'; %  % 's21_MP07/';  % s04_MP10/';%     s07_MP08/'
+  fname ='s07_MP05Hz_22C';% 'sna2.8Hz_snaD_22C';st_channel = 1; %'s06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % 'MP07Hz_snaD_22C';% 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
   
   missG = 1.0; 
+  ipars{3} = missG; 
   
   manual_orient =[];%  [-10,-45,-35,45,135,45,-145,-50,-80,65];
 
-  chns = 1; % 1 % 2; %
+  chns = 2; % 1 % 2; %
  
 %    try
 %      load([folder,fname,'_slidedata',ver], 'Data'); 
@@ -75,11 +76,13 @@ for e =  1: Es %  e = 7
               load([folder,slidedate,fname,'_',emb,'_chn', num2str( st_channel+1),'_data',ver,'.mat']); 
               mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
               disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
+              ipars{1} = Rpars; 
               if chns ==2
                 %  ver = '_v4';
                 load([folder,slidedate,fname,'_',emb,'_chn',num2str( st_channel+2),'_data',ver,'.mat']);
                  disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
                 mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
+                ipars{2} = Rpars; 
               end
           catch er
                 disp(er.message);
@@ -346,7 +349,7 @@ end
 
 figure(12); set(gcf,'color','k');
 
-save([folder,slidedate,fname,'_graddata',ver],'data','.mat'); 
+save([folder,slidedate,fname,'_graddata',ver,'.mat'],'data'); 
 
 %%
 

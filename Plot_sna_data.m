@@ -12,8 +12,9 @@
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
  
- slides = {'MP10Hz', 'MP06Hz' 'MP10het','MP05het'};
-% slides = {'primary alone','shadow removed', 'primary removed', 'wt'}; % { 'sna2.8Hz', 'MP08Hz','MP07Hz', 'wt'};
+% slides = {'y control'; 'y no distal'; 'y no proximal';'y control het'; 'y no proximal het'};
+% slides = {'MP10Hz', 'MP06Hz' 'MP10het','MP05het'};
+ slides = {'primary alone','shadow removed', 'primary removed', 'wt'}; % { 'sna2.8Hz', 'MP08Hz','MP07Hz', 'wt'};
 %slides = {'sna2.8Hz','wt'};
 ver = '';
 
@@ -51,27 +52,35 @@ for s = 1:S
     
      % Slide label information 
 switch slides{s}
-case 'MP10Hz'
+    case 'y control' % 'MP10Hz'
        date = '2011-05-22/';  
       fname = 's04_MP10Hz';% 's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
       chns = 2; ver = '_v3';
       skip = [1,3];   
       
-    case 'MP06Hz'
+    case 'y no distal' % 'MP06Hz'
         date = '2011-05-22/'; 
       fname =  's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
       chns = 2;
       ver = '_v2';
       skip = 10;% 
-               
-    case 'MP10het'
+ 
+    case 'y no proximal' % 'MP05Hz'
+        date ='2011-06-20/';%  
+        fname ='s07_MP05Hz_22C';
+          ver = '';
+        chns = 2;
+        skip = 7;
+      
+      
+    case 'y control het' % 'MP10het'
         date = '2011-02-17/'; 
         fname ='MP10_22C_sna_y_d'; 
         ver = '_v3';%
         chns = 2; 
        skip = 9;    
       
-    case 'MP05het'
+    case 'y no proximal het' % 'MP05het'
         date = '2011-02-17/'; 
         fname = 'MP05_22C_sna_y_c'; 
         ver = '_v2';
@@ -133,7 +142,13 @@ end
     % Show what were working on
     disp(fname);
     disp(['# embryos in dataset = ',num2str(sum(1-cellfun('isempty',data)))])
-
+    try
+        disp(['chn1 thresh: ', num2str(data{e}.ipars{1}.min_int)])
+        disp(['chn2 thresh: ', num2str(data{e}.ipars{2}.min_int)])
+        disp(['missG: ', num2str(data{e}.ipars{3})])
+    catch er
+        disp('processing parameter data not available'); 
+    end
 
 
  % Get boundary point of first curve (from embryo 1 on slide 1)
@@ -323,27 +338,33 @@ if chns == 2
 
         wt_sna = [wt_sna; ave_sna{s}];
     end
-    figure(2); clf; boxplot(D); ylim([0,1]);
+%     figure(2); clf; boxplot(D); ylim([0,1]);
+% 
+%     figure(2); clf; boxplot(ybox,'colors',[1,0,0;0,1,0],'width',.8,...
+%         'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','1x y-cntrl','wt','1x no-prox'});
+%         ylim([0,250]);
+%         set(gcf,'color','w'); ylabel('mRNA counts');
 
-    figure(2); clf; boxplot(ybox,'colors',[1,0,0;0,1,0],'width',.8,...
-        'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','1x y-cntrl','wt','1x no-prox'});
+%     figure(6); clf; boxplot(yvar,'colors',[0,0,1;0,1,0],'width',.8,'whisker',0,...
+%         'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','1x y-cntrl','wt','1x no-prox'});
+%         set(gcf,'color','w'); ylabel('CoV for mRNA counts'); 
+%         ylim([0,.3]);
+
+    figure(2); clf; boxplot(ybox,'colors',[1,0,0;0,1,0],'width',.8);
         ylim([0,250]);
         set(gcf,'color','w'); ylabel('mRNA counts');
-
-    figure(6); clf; boxplot(yvar,'colors',[0,0,1;0,1,0],'width',.8,'whisker',0,...
-        'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','1x y-cntrl','wt','1x no-prox'});
-        set(gcf,'color','w'); ylabel('CoV for mRNA counts'); 
-        ylim([0,.3]);
 
     wt_sna = wt_sna(logical(1-isnan(wt_sna)));
     wt_sna = [wt_sna; NaN*zeros(Tembs-length(wt_sna),1)];
 
-    figure(2); clf; boxplot( [wt_sna,1.15*ybox(:,2:2:end)],'whisker',0,...
-    'labels',{'wt','2x y-cntrl','2x no-shadow','1x y-cntrl','1x no-prox'});
-     ylim([0,200]);
+    labs = ['wt'; slides(:)];
+    
+    figure(2); clf; boxplot( [wt_sna,ybox(:,2:2:end)],'whisker',0,...
+    'labels',labs);
+     ylim([0,250]);
  
      figure(5); clf; boxplot(ycov,'colors',[1,0,0;0,1,0],'width',.8,...
-        'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','1x y-cntrl','wt','1x no-prox'});
+        'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','2x no-prox','wt','1x y-cntrl','wt','1x no-prox'});
         ylim([0,0.3]);
         set(gcf,'color','w'); ylabel('CoV for mRNA counts');
      
