@@ -5,60 +5,60 @@
 
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
-slides = {'MP01b','MP01','MP02b','MP02','MP09b','MP09c'}; 
+slides = {'No prox A'; 'No prox B';'No distal A'; 'No distal B';  'cntrl A'; 'cntrl B'; 'cntrl C'}; %  {'MP01b';'MP01';'MP02b';'MP02';'MP09';'MP09b';'MP09c'}; 
 
- slides = {'MP09b','MP09c'}; 
- slides = {'MP01b','MP01'}
+% slides = {'No prox A', 'No prox B'}
 
 chns = 2; ver = '';
+min_hb = 35;
+plot_grads =0; 
 
-figure(1); clf; figure(21); clf; figure(22); clf; set(gcf,'color','w');
+if plot_grads == 1
+    figure(21); clf; set(gcf,'color','w');
+    figure(22); clf; set(gcf,'color','w');
+    figure(23); clf; set(gcf,'color','w');
+end
 j = 0; NucsT = {};
 
 S = length(slides);
+Tembs = 40; 
 
 pars = cell(1,S);
 
+y_med_cov = NaN*zeros(Tembs,S);
+hb_med_cov = NaN*zeros(Tembs,S);
+yhb_ave = NaN*zeros(Tembs,S); 
+yhb_std = NaN*zeros(Tembs,S);
 
 for s = 1:S
-
     switch slides{s}
-        case 'MP01'
+        case 'No prox A'  % 'MP01'
         fname = 's02_MP01_Hz_22C';  ver = '_v2';
-        % MP01 = hbdata;
-        e=4;% 4; 
-        e1=e;
-      %  o1 = 4E4;
+        skip = 25;
 
-        case 'MP01b'
-        fname = 's02_MP01_Hz_22C_b';  ver = '';
-        % MP01_b = hbdata;
+        case 'No prox B' % 'MP01b'
+        fname = 's02_MP01_Hz_22C_b';  ver = '_v2';
+         skip = 25;
 
-        case 'MP02'
+        case 'No distal A' % 'MP02'
         fname = 's03_MP02_Hz_22C';  ver = '';
-        % MP02 = hbdata;
-        e=1; % 8;
-        e2=e;
-       %  o2 = 0;
+        skip = 25;
 
-        case 'MP02b'
-        fname = 's03_MP02_Hz_22C_b';  ver = '_v2'; % little difference
-        % MP02_b = hbdata;
+        case 'No distal B' % 'MP02b'
+        fname = 's03_MP02_Hz_22C_b';  ver = ''; % _v2 little difference
+        skip = 25;
 
-        case 'MP09b'
+        case 'cntrl A' % 'MP09'
+        fname = 's01_MP09_Hz_22C';  ver = '_v3';
+        skip = 10;
+        
+        case 'cntrl B' %'MP09b'
         fname = 's01_MP09_Hz_22C_b'; ver = '_v2';
-        % MP09 = hbdata;
-            e = 5; % 5 9; 
-            e9 = e;
-         %   o9 = 4E4;
+        skip = 25;
 
-        case 'MP09'
-        fname = 's01_MP09_Hz_22C';  ver = '_v2';
-        % MP09_a = hbdata;
-
-        case 'MP09c'
+        case 'cntrl C' % 'MP09c'
         fname = 's01_MP09_Hz_22C_c'; ver = '_v2';
-        % MP09_c = hbdata;
+        skip = 25;
     end
     
     
@@ -81,7 +81,7 @@ for s = 1:S
 
     % Get boundary point of first curve as a reference
     if s == 1;
-        e=1;
+        e=1;     
         gx = hbdata{e}.Data_sort(:,1);  
         grad = hbdata{e}.Data_sort(:,2);  
 
@@ -89,75 +89,97 @@ for s = 1:S
         offsets(e) = pars{s}(e,2); 
         p1 = pars{s}(e,2);
 
-        figure(20); clf; 
-        plot(gx', grad,'b');
-        hold on;  
-        plot(gx,fit,'r');
-        plot(p1,max(grad)/4,'r*','MarkerSize',20);
-        k = 2;
-    else
-        k=1;
+        if plotgrads == 1
+            figure(20); clf; 
+            plot(gx', grad,'b');
+            hold on;  
+            plot(gx,fit,'r');
+            plot(p1,max(grad)/4,'r*','MarkerSize',20);
+        end
     end  
 
-    for e= k:Es;  % Get curve fit parameters for the rest of the curves
+    cond = zeros(1,Es);
+    
+    for e= 1:Es;  % Get curve fit parameters for the rest of the curves
         try
+             mcorr =   1; %  hbdata{e}.Nnucs./hbdata{1}.Nnucs;
+             hb_cnt = mcorr*hbdata{e}.Data_sort(:,2) - min(mcorr*hbdata{e}.Data_sort(:,2)) ; % hbdata{e}.Data_sort(:,2);    
+             hb_m = mcorr*hbdata{e}.mu(:,1)  - min(mcorr*hbdata{e}.Data_sort(:,2));
              gx = hbdata{e}.Data_sort(:,1);
-             grad = hbdata{e}.Data_sort(:,2);  
 
-            figure(20); clf; plot(gx,grad);
-            [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',grad',[4,mean(gx),max(grad),min(grad)],'r');
+
+            [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',hb_cnt',[4,mean(gx),max(hb_cnt),min(hb_cnt)],'r');
             offsets(e) = pars{s}(e,2); 
 
-            figure(20); clf; plot(gx', grad,'b');
-            hold on; 
-            plot(gx,fit,'r');
-            plot(offsets(e),max(grad)/4,'r*','MarkerSize',20);
+            if plot_grads ==1
+                figure(20); clf; plot(gx',hb_cnt,'b');
+                hold on; 
+                plot(gx,fit,'r');
+                plot(offsets(e),max(hb_cnt)/4,'r*','MarkerSize',20);
+            end
             
-      if  pars{s}(e,3)+ pars{s}(e,4) < 370 &&  pars{s}(e,3)+ pars{s}(e,4) > 210 && pars{s}(e,1) > 3.5 && pars{s}(e,1) < 6  % 
-          % pars{s}(e,3)+ pars{s}(e,4) < 250 &&  pars{s}(e,3)+ pars{s}(e,4) > 150 && pars{s}(e,1) > 3.5  && pars{s}(e,1) < 6
-          %
-          figure(21); hold on;
-               plot(gx+ p1-offsets(e),fit,'r');
-               disp(pars{s}(e,3))           
-      end
+            cond =hbdata{e}.Nnucs>150 && pars{s}(e,1) > 3.75 ;  
+            %pars{s}(e,3)+ pars{s}(e,4) < 300 &&  pars{s}(e,3)+ pars{s}(e,4) > 100  && hbdata{e}.Nnucs>120;
+            xdata = hbdata{e}.Data_sort(:,1) + p1-offsets(e);
             
         catch er
             disp(er.message); 
             continue
         end
-    end
+   
+            if  isempty(find(e==skip,1))  && cond;%  
 
-
-   %   figure(s);  clf;
-
-     % figure(1);
-    colordef white; set(gcf,'color','w');
-   % i = 1; Nucs = {};
-    for e = 1:Es 
-       % if  isempty(hbdata{e}) ~= 1;
-            if  pars{s}(e,3)+ pars{s}(e,4) < 370 &&  pars{s}(e,3)+ pars{s}(e,4) > 210 && pars{s}(e,1) > 3.5 && pars{s}(e,1) < 6  % pars{s}(e,3)+ pars{s}(e,4) < 390 &&  pars{s}(e,3)+ pars{s}(e,4) > 310 && pars{s}(e,1) > 3.5  && pars{s}(e,1) < 6
-
-                % pars{s}(e,3)+ pars{s}(e,4) < 250 &&  pars{s}(e,3)+ pars{s}(e,4) > 150 && pars{s}(e,1) > 3.5  && pars{s}(e,1) < 6
-
-                j = j+1;     
-               figure(22); hold on; 
-               mcorr =  1; %   hbdata{e}.Nnucs./hbdata{1}.Nnucs;
-               plot(hbdata{e}.Data_sort(:,1) + p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,2),'.','color',[1-e/Es,0,e/(2*Es)],'MarkerSize',5); % check results  
-               hold on; 
-               ylim([0,550]); 
-               % errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,1),mcorr*hbdata{e}.sigma(:,1),'linestyle','none','linewidth',1,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
-              % Nucs{i} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
-                 NucsT{j} = ['wt',' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
-
-                % Nucs{1+2*(i-1)} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
-                % i = i + 1; 
+                if plot_grads == 1
+                   figure(21); hold on;
+                   plot(gx+ p1-offsets(e),fit,'r');
+                   disp(pars{s}(e,3))   
+                end
+                
+                
+               
+               mcorr =    hbdata{e}.Nnucs./hbdata{1}.Nnucs;
+               hb_cnt = mcorr*hbdata{e}.Data_sort(:,2) - min(mcorr*hbdata{e}.Data_sort(:,2)) ; 
+               hb_m = mcorr*hbdata{e}.mu(:,1)  - min(mcorr*hbdata{e}.Data_sort(:,2));
+               xdata = hbdata{e}.Data_sort(:,1) + p1-offsets(e);
+                
+               if plot_grads == 1
+                    j = j+1;    
+                   figure(22); hold on; 
+                   plot(xdata,hb_cnt ,'.','color',[1-s*e/(S*Es),0,s*e/(S*Es)],'MarkerSize',5); % check results  
+                   ylim([0,450]); 
+                 % errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,1),mcorr*hbdata{e}.sigma(:,1),'linestyle','none','linewidth',1,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
+                 % Nucs{i} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+                  NucsT{j} = ['wt',' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+               end
+   
                 if chns == 2;
-                     figure(22); hold on; 
-                    plot(hbdata{e}.Data_sort(:,1)+  p1-offsets(e),mcorr*hbdata{e}.Data_sort(:,3),'.','color',[s/S,1-e/Es,e/(s*Es)],'MarkerSize',5); 
-                    hold on; 
-               %     errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,2),mcorr*hbdata{e}.sigma(:,2),'linestyle','none','linewidth',1,'color',[s/S,1-e/Es,e/(s*Es)],'MarkerSize',1);
-                    j = j+1;
-                    NucsT{j} = [slides{s},' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+                    y_cnt =  mcorr*hbdata{e}.Data_sort(:,3) - min(mcorr*hbdata{e}.Data_sort(:,3));
+                    y_m = mcorr*hbdata{e}.mu(:,2)  - min(mcorr*hbdata{e}.Data_sort(:,3));
+                    yhb = y_cnt./hb_cnt;
+                    
+                    if plot_grads == 1
+                        figure(23); hold on; 
+                        plot(xdata,yhb,'o','color',[s/S,1-e/(Es),0],'MarkerSize',5); 
+                        ylim([0,2]); 
+                    end
+
+                    yhb_ave(e,s) = nanmean(y_cnt(hb_cnt>min_hb)./hb_cnt(hb_cnt>min_hb));
+                    yhb_std(e,s) = nanstd(y_cnt(hb_cnt>min_hb)./hb_cnt(hb_cnt>min_hb));
+                    
+                    cov = hbdata{e}.sigma(:,1)./hbdata{e}.mu(:,1); % hb
+                    hb_med_cov(e,s) = median(cov(hb_m>min_hb));
+                    
+                    cov = hbdata{e}.sigma(:,2)./hbdata{e}.mu(:,2); % y
+                    y_med_cov(e,s) = median(cov(hb_m>min_hb));
+                    
+                    if plot_grads == 1         
+                        figure(22); hold on; 
+                        plot(xdata,y_cnt,'o','color',[s/S,1-e/(Es),0],'MarkerSize',5); 
+                        hold on; 
+               %        errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,2),mcorr*hbdata{e}.sigma(:,2),'linestyle','none','linewidth',1,'color',[s/S,1-e/Es,e/(s*Es)],'MarkerSize',1);
+                        j = j+1;
+                        NucsT{j} = [slides{s},' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+                    end
                 end
             end
       %  end
@@ -167,11 +189,37 @@ for s = 1:S
 %             title(texlabel(fname,'literal')); 
 
 end
+          if plot_grads == 1
             figure(22); 
-            ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
-           legend(NucsT{:});
-            title(texlabel(fname,'literal')); 
-%%  
+             ylabel('number of mRNA transcripts per cell');
+             xlabel('distance (nm)');
+            legend(NucsT{:});
+            % title(texlabel(fname,'literal')); 
+          end
+            
+            
+
+figure(1); clf; boxplot(yhb_ave,'labels',slides);
+ylabel('y:hb ratio'); set(gcf,'color','w');
+
+figure(2); clf; boxplot(yhb_std./yhb_ave,'labels',slides);
+ylabel('cov of y:hb ratio');  set(gcf,'color','w');
+
+
+figure(3); clf; boxplot([y_med_cov,hb_med_cov]); 
+ylabel('cov of mRNA counts'); set(gcf,'color','w');
+
+hb_med_com = reshape(hb_med_cov,S*Tembs,1);
+hb_med_com = hb_med_com(logical(1-isnan(hb_med_com)));
+hb_med_com = [hb_med_com; NaN*ones(Tembs-length(hb_med_com),1)];
+
+figure(3); clf; boxplot([y_med_cov,hb_med_com],'labels',[slides(:); 'wt']); 
+ylabel('cov of mRNA counts'); ylim([0,.3]); set(gcf,'color','w');
+
+figure(4); clf; boxplot([y_med_cov./hb_med_cov],'labels',slides);
+ylabel('ratio of cov of mRNA counts');  set(gcf,'color','w');
+
+%%
 figure(3); clf; figure(4); clf; figure(5); clf;
 
 F = 14;
@@ -373,4 +421,38 @@ subplot(2,3,6);  imagesc(MP09{e9}.PlotmRNA); colormap hot; colorbar; axis off;ca
 % 
 % figure(6); clf; imagesc(hb_map); colormap(C); %colorbar;
 % axis off; colordef black; set(gcf,'color','k');
+
+%%
+     fname = 's03_MP02_Hz_22C';  ver = '';
+         
+    load([folder,fname,'_graddata',ver],'hbdata'); 
+    figure(1); clf; set(gcf,'color','k');
+    imagesc(hbdata{3}.PlotmRNA2); colormap hot; colorbar; axis off; caxis([20,275]);
+    
+    Hb = makeuint(hbdata{3}.PlotmRNA2,8);
+    mask = im2bw(Hb,.0001); 
+    Kr = 1-im2bw(Hb,.55);
+    
+    HbKr = (double(Hb) + 400*Kr).*mask;
+    
+    figure(2); clf; set(gcf,'color','k');
+    imagesc(HbKr);  colormap hot; colorbar; axis off; caxis([20,275]);
+    
+    %%
+      figure(1); clf; set(gcf,'color','k');
+      
+       Hb = makeuint(hbdata{3}.PlotmRNA,8);
+      
+    imagesc(Hb); colormap hot; colorbar; axis off; caxis([20,275]);
+    
+   
+    mask = im2bw(Hb,.0001); 
+    Kr = 1-im2bw(Hb,.6);
+    
+    HbKr = (double(Hb) + 400*Kr).*mask;
+    
+    figure(2); clf; set(gcf,'color','k');
+    imagesc(HbKr);  colormap hot; colorbar; axis off; caxis([20,275]);
+    
+     
 
