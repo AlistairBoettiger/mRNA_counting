@@ -14,11 +14,12 @@
 
   %% New data-method
   clear all;
-  maternal =0;  ver = '';  Es = 14; cor = 0; leg = 0 ; % defaults
-  rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s02_MP01/';%   2011-06-20/s01_MP09/' %       2011-05-22/s01_MP09/'; % 2011-05-22/s03_MP02/';%   
+  maternal =0;  ver = '';  Es = 14; cor = 0; leg = 0 ; vout = ''; % defaults
+  rawfolder = '/Volumes/Data/Lab Data/Raw_Data/2011-05-22/s03_MP02/';%    2011-05-22/s02_MP01/';%   2011-05-22/s01_MP09/'; %   2011-06-20/s01_MP09/' %        
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/';   %   2011-06-20/';  %    
-  fname ='s02_MP01_Hz_22C_b' ; ver = '_v2'; % 's02_MP01_Hz_22C' ; ver = '_v2' % 's01_MP09_cflip'; Es = 6; %  's01_MP09_Hz_22C'; ver = ''; % 's03_MP02_Hz_22C_b' ; ver =  '_v2';%   's02_MP01_Hz_22C'; ver ='_v2' ;%'s03_MP02_Hz_22C' ;% 's01_MP09_Hz_22C_b'; % ; %  's01_MP09_Hz_22C_b';  %    's01_MP09_Hz_22C_b';   %'MP01_22C_hb_y_f'; Es = 12;  cor = 1;  %'MP09_22C_hb_y_f'; Es = 7;  cor = 1;  %  'MP09_22C_hb_y_e'; Es =12;  cor = 1; % 'MP09_22C_hb_y_d'; Es =12;  cor = 1; % 'MP02_22C_hb_y'; Es = 12; cor = 1;  %'MP02_22C_hb_y_b';  cor = 1; Es = 10; %    'MP01_22C_hb_y_c';  cor = 1; Es = 4; %   'MP01_22C_hb_y';  cor = 1; Es = 13; % 
+  fname ='s03_MP02_Hz_22C' ; ver =  '_v2';% 's02_MP01_Hz_22C_b' ; ver = ''; %'s01_MP09_Hz_22C_c'; ver = '_v2'; % 's02_MP01_Hz_22C' ; ver = '_v2' % 's01_MP09_cflip'; Es = 6; %  's01_MP09_Hz_22C'; ver = ''; %    's02_MP01_Hz_22C'; ver ='_v2' ;%'s03_MP02_Hz_22C' ;%  ; %  's01_MP09_Hz_22C_b';  %    's01_MP09_Hz_22C_b';   %'MP01_22C_hb_y_f'; Es = 12;  cor = 1;  %'MP09_22C_hb_y_f'; Es = 7;  cor = 1;  %  'MP09_22C_hb_y_e'; Es =12;  cor = 1; % 'MP09_22C_hb_y_d'; Es =12;  cor = 1; % 'MP02_22C_hb_y'; Es = 12; cor = 1;  %'MP02_22C_hb_y_b';  cor = 1; Es = 10; %    'MP01_22C_hb_y_c';  cor = 1; Es = 4; %   'MP01_22C_hb_y';  cor = 1; Es = 13; % 
   missG = 1; %1.3;
+  vout = '';
   
   ipars = cell(3,1); % store image-processing parameters
   ipars{3} = missG; 
@@ -70,12 +71,12 @@ for e = 1:Es %  [5,7,8]; %  % 8;%
           slidedata_type = 3;      
           try
               load([folder,fname,'_',emb,'_chn1','_data',ver,'.mat']); 
-              mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
+              mRNAsadj =mRNA_cnt./nuc_area;  %  mRNA_sadj; % 
               disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
               ipars{1} = Rpars; 
               load([folder,fname,'_',emb,'_chn2','_data',ver,'.mat']); 
               disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
-              mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  %
+              mRNAsadj2 = mRNA_cnt./nuc_area;  %  mRNA_sadj; %
               ipars{2} = Rpars; 
           catch er
               disp(er.message);
@@ -289,6 +290,6 @@ hbdata{e}.ipars = ipars;
 end
 
 
-save([folder,fname,'_graddata',ver],'hbdata'); 
+save([folder,fname,ver,'_slidedata',vout],'hbdata'); 
 
 

@@ -10,9 +10,15 @@ slides = {'No prox A'; 'No prox B';'No distal A'; 'No distal B';  'cntrl A'; 'cn
 % slides = {'No prox A', 'No prox B'}
 
 chns = 2; 
-ver = '';
-min_hb = 35;
+ver = ''; vout = '';
+
+min_hb = .001; % 35;
+max_hb = .05;
+subtract_maternal = 0; 
+
+
 plot_grads = 0; 
+other_plots = 0; 
 
 if plot_grads == 1
     figure(21); clf; set(gcf,'color','w');
@@ -38,7 +44,7 @@ for s = 1:S
         skip = 25;
 
         case 'No prox B' % 'MP01b'
-        fname = 's02_MP01_Hz_22C_b';  ver = '_v2';
+        fname = 's02_MP01_Hz_22C_b';  ver = '_v2'; % 
          skip = 25;
 
         case 'No distal A' % 'MP02'
@@ -62,8 +68,10 @@ for s = 1:S
         skip = 25;
     end
     
+    load([folder,fname,ver,'_slidedata',vout],'hbdata'); 
+    % load([folder,fname,'_graddata',ver],'hbdata'); 
     
-    load([folder,fname,'_graddata',ver],'hbdata'); 
+    
     % Show what were working on
     disp(fname);
     disp(['# embryos in dataset = ',num2str(sum(1-cellfun('isempty',hbdata)))])
@@ -84,27 +92,36 @@ for s = 1:S
     if s == 1;
         e=1;     
         gx = hbdata{e}.Data_sort(:,1);  
-        grad = hbdata{e}.Data_sort(:,2);  
+        mcorr =   1; %  hbdata{e}.Nnucs./hbdata{1}.Nnucs;
+        
+        if subtract_maternal == 1; 
+            hb_cnt = mcorr*hbdata{e}.Data_sort(:,2) - min(mcorr*hbdata{e}.Data_sort(:,2)) ;  
+        else
+             hb_cnt = mcorr*hbdata{e}.Data_sort(:,2);
+        end
 
-        [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',grad',[4,mean(gx),max(grad),min(grad)],'r');
+        [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',hb_cnt',[4,mean(gx),max(hb_cnt),min(hb_cnt)],'r');
         offsets(e) = pars{s}(e,2); 
         p1 = pars{s}(e,2);
 
-        if plotgrads == 1
+        if plot_grads == 1
             figure(20); clf; 
-            plot(gx', grad,'b');
+            plot(gx', hb_cnt,'b');
             hold on;  
             plot(gx,fit,'r');
-            plot(p1,max(grad)/4,'r*','MarkerSize',20);
+            plot(p1,max(hb_cnt)/4,'r*','MarkerSize',20);
         end
     end  
 
-    cond = zeros(1,Es);
-    
+      
     for e= 1:Es;  % Get curve fit parameters for the rest of the curves
         try
              mcorr =   1; %  hbdata{e}.Nnucs./hbdata{1}.Nnucs;
-             hb_cnt = mcorr*hbdata{e}.Data_sort(:,2) - min(mcorr*hbdata{e}.Data_sort(:,2)) ; % hbdata{e}.Data_sort(:,2);    
+             if subtract_maternal == 1; 
+                hb_cnt = mcorr*hbdata{e}.Data_sort(:,2) - min(mcorr*hbdata{e}.Data_sort(:,2)) ;  
+            else
+                 hb_cnt = mcorr*hbdata{e}.Data_sort(:,2);
+            end   
              hb_m = mcorr*hbdata{e}.mu(:,1)  - min(mcorr*hbdata{e}.Data_sort(:,2));
              gx = hbdata{e}.Data_sort(:,1);
 
@@ -121,7 +138,7 @@ for s = 1:S
                 plot(offsets(e),max(hb_cnt)/4,'r*','MarkerSize',20);
             end
             
-            cond =hbdata{e}.Nnucs>150 && pars{s}(e,1) > 3.75 ;  
+            cond =hbdata{e}.Nnucs>150 && pars{s}(e,1) > 3.75 ; % && pars{s}(e,3)+ pars{s}(e,4) > .01 ;  
             %pars{s}(e,3)+ pars{s}(e,4) < 300 &&  pars{s}(e,3)+ pars{s}(e,4) > 100  && hbdata{e}.Nnucs>120;
             xdata = hbdata{e}.Data_sort(:,1) + p1-offsets(e);
             
@@ -149,7 +166,7 @@ for s = 1:S
                     j = j+1;    
                    figure(22); hold on; 
                    plot(xdata,hb_cnt ,'.','color',[1-s*e/(S*Es),0,s*e/(S*Es)],'MarkerSize',5); % check results  
-                   ylim([0,450]); 
+                   ylim([0,max_hb]); 
                  % errorbar(hbdata{e}.x+ p1-offsets(e),mcorr*hbdata{e}.mu(:,1),mcorr*hbdata{e}.sigma(:,1),'linestyle','none','linewidth',1,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
                  % Nucs{i} =['wt',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
                   NucsT{j} = ['wt',' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
@@ -223,6 +240,9 @@ figure(4); clf; boxplot([y_med_cov./hb_med_cov],'labels',slides);
 ylabel('ratio of cov of mRNA counts');  set(gcf,'color','w');
 
 %%
+
+if other_plots == 1;
+
 figure(3); clf; figure(4); clf; figure(5); clf;
 
 F = 14;
@@ -457,5 +477,5 @@ subplot(2,3,6);  imagesc(MP09{e9}.PlotmRNA); colormap hot; colorbar; axis off;ca
     figure(2); clf; set(gcf,'color','k');
     imagesc(HbKr);  colormap hot; colorbar; axis off; caxis([20,275]);
     
-     
+end     
 
