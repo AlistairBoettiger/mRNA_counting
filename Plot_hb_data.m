@@ -14,10 +14,10 @@ ver = ''; vout = '';
 
 min_hb = .001; % 35;
 max_hb = .05;
-subtract_maternal = 0; 
+subtract_maternal = 1; 
 
 
-plot_grads = 0; 
+plot_grads = 1; 
 other_plots = 0; 
 
 if plot_grads == 1
@@ -127,7 +127,8 @@ for s = 1:S
 
 
             [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',hb_cnt',[4,mean(gx),max(hb_cnt),min(hb_cnt)],'r');
-            if s ~=1
+            if s ==1 && e == 1
+            else
                 offsets(e) = pars{s}(e,2); 
             end
             
@@ -138,7 +139,7 @@ for s = 1:S
                 plot(offsets(e),max(hb_cnt)/4,'r*','MarkerSize',20);
             end
             
-            cond =hbdata{e}.Nnucs>150 && pars{s}(e,1) > 3.75 ; % && pars{s}(e,3)+ pars{s}(e,4) > .01 ;  
+            cond =hbdata{e}.Nnucs>150 && pars{s}(e,1) > 3.75 && pars{s}(e,3)+ pars{s}(e,4) <15E-3 && pars{s}(e,3)+ pars{s}(e,4) >8E-3 ;  
             %pars{s}(e,3)+ pars{s}(e,4) < 300 &&  pars{s}(e,3)+ pars{s}(e,4) > 100  && hbdata{e}.Nnucs>120;
             xdata = hbdata{e}.Data_sort(:,1) + p1-offsets(e);
             
@@ -157,8 +158,8 @@ for s = 1:S
                 
                 
                
-               mcorr =    hbdata{e}.Nnucs./hbdata{1}.Nnucs;
-               hb_cnt = mcorr*hbdata{e}.Data_sort(:,2) - min(mcorr*hbdata{e}.Data_sort(:,2)) ; 
+%                mcorr =    hbdata{e}.Nnucs./hbdata{1}.Nnucs;
+%                hb_cnt = mcorr*hbdata{e}.Data_sort(:,2) - min(mcorr*hbdata{e}.Data_sort(:,2)) ; 
                hb_m = mcorr*hbdata{e}.mu(:,1)  - min(mcorr*hbdata{e}.Data_sort(:,2));
                xdata = hbdata{e}.Data_sort(:,1) + p1-offsets(e);
                 
