@@ -12,10 +12,11 @@
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
  
-% slides = {'y control'; 'y no distal'; 'y no proximal';'y control het'; 'y no proximal het'};
-% slides = {'MP10Hz', 'MP06Hz' 'MP10het','MP05het'};
- slides = {'primary alone','shadow removed', 'primary removed', 'wt'}; % { 'sna2.8Hz', 'MP08Hz','MP07Hz', 'wt'};
-%slides = {'sna2.8Hz','wt'};
+ slides = {'y control'; 'y no distal'; 'y no proximal';'y control het'; 'y no proximal het'};
+
+% slides = {'primary alone','shadow removed', 'primary removed', 'wt'}; % { 'sna2.8Hz', 'MP08Hz','MP07Hz', 'wt'};
+%slides = {'sna2.8Hz','wt'};   % slides = {'MP10Hz', 'MP06Hz'
+%'MP10het','MP05het'};
 ver = '';
 
 % record stats
@@ -367,7 +368,19 @@ if chns == 2
         'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','2x no-prox','wt','1x y-cntrl','wt','1x no-prox'});
         ylim([0,0.3]);
         set(gcf,'color','w'); ylabel('CoV for mRNA counts');
+        
+        
+        
+    figure(2); clf; 
+    boxplot([ybox(:,2)./ybox(:,1),ybox(:,4)./ybox(:,3),ybox(:,6)./ybox(:,5),ybox(:,8)./ybox(:,7),ybox(:,10)./ybox(:,9)],...
+        'width',.8,'labels',slides)
+    ylabel('ratio, y / hb');
      
+      figure(3); clf; 
+    boxplot([ycov(:,2)./ycov(:,1),ycov(:,4)./ycov(:,3),ycov(:,6)./ycov(:,5),ycov(:,8)./ycov(:,7),ycov(:,10)./ycov(:,9)],...
+        'width',.8,'labels',slides)
+    ylabel('cov ratio, y / hb');
+    
 end
  
 
