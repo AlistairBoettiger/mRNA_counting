@@ -1,7 +1,7 @@
 
 %%                  
 % Alistair Boettiger                                   Date Begun: 06/10/11
-% Levine Lab                                        Last Modified: 06/27/11
+% Levine Lab                                        Last Modified: 07/12/11
 
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/2011-05-22/'; 
@@ -14,26 +14,26 @@ slides = {'No prox A'; 'No prox B';'No distal A'; 'No distal B';  'cntrl A'; 'cn
 chns = 2; 
 ver = ''; vout = '';
 
+% OPTIONS
+Ndatasets = 5; 
 min_hb = .001; % 35;
 max_hb = .025;
+max_curves = 50;
 subtract_maternal = 1; 
-
-
 plot_grads = 1; 
 plot_fits = 0; % plot curve fitting results
 other_plots = 0; 
 
-if plot_grads == 1
-    figure(21); clf; set(gcf,'color','w');
-    figure(22); clf; set(gcf,'color','w');
-    figure(23); clf; set(gcf,'color','w');
-    figure(24); clf; set(gcf,'color','w');
-end
-j = 0; NucsT = {};
-
+% ~~~~~~~~~~ INITIALIZE DATA STRUCTURES  ~~~~~~~~~~~~~~~~~ %
 S = length(slides);
 Tembs = 40; 
+j = 0; 
+emb = 0; 
 
+NucsT = cell(max_curves,1);
+pcurve = cell(Tembs,Ndatasets);
+pcurve_hb = cell(Tembs,S);
+pxdata = cell(Tembs,S); 
 pars = cell(1,S);
 
 y_med_cov = NaN*zeros(Tembs,S);
@@ -41,35 +41,50 @@ hb_med_cov = NaN*zeros(Tembs,S);
 yhb_ave = NaN*zeros(Tembs,S); 
 yhb_std = NaN*zeros(Tembs,S);
 
+if plot_grads == 1
+    figure(21); clf; set(gcf,'color','w'); colordef white;
+    figure(22); clf; set(gcf,'color','w'); colordef white;
+    figure(23); clf; set(gcf,'color','w'); colordef white;
+    figure(24); clf; set(gcf,'color','w'); colordef white;
+end
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ %
+
 for s = 1:S
     switch slides{s}
         case 'No prox A'  % 'MP01'
         fname = 's02_MP01_Hz_22C';  ver = '_v2';
         skip = 9;
+        dataset = 1;
 
         case 'No prox B' % 'MP01b'
         fname = 's02_MP01_Hz_22C_b';  ver = '_v2'; % 
-         skip = 25;
+        skip = 25;
+        dataset = 1;
 
         case 'No distal A' % 'MP02'
         fname = 's03_MP02_Hz_22C';  ver = '';
         skip = 25;
+        dataset = 2;
 
         case 'No distal B' % 'MP02b'
         fname = 's03_MP02_Hz_22C_b';  ver = ''; % _v2 little difference
         skip = 25;
+        dataset = 2;
 
         case 'cntrl A' % 'MP09'
         fname = 's01_MP09_Hz_22C';  ver = '_v3';
         skip = 10;
+        dataset = 3;
         
         case 'cntrl B' %'MP09b'
         fname = 's01_MP09_Hz_22C_b'; ver = '_v2';
         skip = 7;
+        dataset = 3;
 
         case 'cntrl C' % 'MP09c'
         fname = 's01_MP09_Hz_22C_c'; ver = '_v2';
         skip = 25;
+        dataset = 3;
         
         case '6x bcd'
             
@@ -99,7 +114,7 @@ for s = 1:S
 
     % Get boundary point of first curve as a reference
     if s == 1;
-        e=1;     
+        e = 1;     
         gx = hbdata{e}.Data_sort(:,1);  
         mcorr =   1; %  hbdata{e}.Nnucs./hbdata{1}.Nnucs;
         
@@ -134,15 +149,14 @@ for s = 1:S
                  hb_m = mcorr*hbdata{e}.mu(:,1);
             end   
              gx = hbdata{e}.Data_sort(:,1);
-
-
             [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',hb_cnt',[4,mean(gx),max(hb_cnt),min(hb_cnt)],'r');
             if s ==1 && e == 1
             else
                 offsets(e) = pars{s}(e,2); % s = 1; e=7
+ 
+                
+              % % % % Manual work around for bug at the moment.    
                 if pars{s}(e,2) > 2E5
-%                     y_cnt =  mcorr*hbdata{e}.Data_sort(:,3) - min(mcorr*hbdata{e}.Data_sort(:,3));
-%                      [temp,fit] = fxn_fit_sigmoid(gx',y_cnt',[7,mean(gx),max(y_cnt),min(y_cnt)],'r'); 
                    offsets(e) = pars{s}(e,2) -4.2E5;
                    disp('offset error');
                 end
@@ -164,52 +178,55 @@ for s = 1:S
         end
    
             if  isempty(find(e==skip,1))  && cond;%  
-                if plot_grads == 1
-                   figure(21); hold on;
-                   plot(gx+ p1-offsets(e),fit,'r');
-                   disp(pars{s}(e,3))   
-                end             
-               
-               xdata = hbdata{e}.Data_sort(:,1) + p1-offsets(e);
-                
-               if plot_grads == 1
-                    j = j+1;    
-                   figure(22); hold on; 
-                   plot(xdata,hb_cnt ,'.','color','k','MarkerSize',5); % check results    % Alt color: [1-s*e/(S*Es),0,s*e/(S*Es)]
-                   ylim([0,max_hb]); 
-                   NucsT{j} = ['wt',' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
-                   
-                   figure(24); hold on;
-                   hb_e = mcorr*hbdata{e}.sigma(:,1);
-                   errorbar(hbdata{e}.x+ p1-offsets(e),hb_m,hb_e,'linestyle','--','linewidth',1,'color','k','MarkerSize',1); 
-                   errorbar(hbdata{e}.x+ p1-offsets(e),hb_m,hb_e,'linestyle','none','linewidth',1,'color','k','MarkerSize',1); 
-                       hold on; plot(xdata,fit,'--','color',[s/S,0,1-s/S]);
-                   ylim([0,max_hb]);
-               end
+                j = j+1; 
+                emb = emb+1;
+                NucsT{j} = ['wt',' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
+                xdata = hbdata{e}.Data_sort(:,1) + p1-offsets(e);
+               pxdata{emb,dataset} = xdata;
+               pcurve{emb,dataset,1} = hb_cnt;
+                           
+                       if plot_grads == 1
+                           figure(21); hold on;
+                           plot(gx+ p1-offsets(e),fit,'r');
+                           disp(pars{s}(e,3))   
+
+                           figure(22); hold on; 
+                           plot(xdata,hb_cnt ,'.','color','k','MarkerSize',5); % check results    % Alt color: [1-s*e/(S*Es),0,s*e/(S*Es)]
+                           ylim([0,max_hb]); 
+
+
+                           figure(24); hold on;
+                           hb_e = mcorr*hbdata{e}.sigma(:,1);
+                           errorbar(hbdata{e}.x+ p1-offsets(e),hb_m,hb_e,'linestyle','--','linewidth',1,'color','k','MarkerSize',1); 
+                           errorbar(hbdata{e}.x+ p1-offsets(e),hb_m,hb_e,'linestyle','none','linewidth',1,'color','k','MarkerSize',1); 
+                           hold on; plot(xdata,fit,'--','color',[s/S,0,1-s/S]);
+                           ylim([0,max_hb]);
+                       end
    
                 if chns == 2;
+                    j = j+1;
+                    NucsT{j} = [slides{s},' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs)];
+                    
                     y_cnt =  mcorr*hbdata{e}.Data_sort(:,3) - min(mcorr*hbdata{e}.Data_sort(:,3));
                     y_m = mcorr*hbdata{e}.mu(:,2)  - min(mcorr*hbdata{e}.Data_sort(:,3));
                     y_e =  mcorr*hbdata{e}.sigma(:,2); 
                     yhb = y_cnt./hb_cnt;
-                    
-                    if plot_grads == 1
-             
-                        figure(22); hold on; 
-                        plot(xdata,y_cnt,'o','color',[s/S,0,1-s/S],'MarkerSize',5); 
-                        hold on; 
-                        j = j+1;
-                        NucsT{j} = [slides{s},' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
-                        
-                        figure(23); hold on; 
-                        plot(xdata,yhb,'o','color',[s/S,0,1-s/S],'MarkerSize',5);  % Alt color
-                        ylim([0,2]); 
-                        
-                        figure(24); hold on;
-                     %   errorbar(hbdata{e}.x+ p1-offsets(e),y_m,y_e,'linestyle','-','linewidth',1,'color',[s/S,0,1-s/S],'MarkerSize',1); 
-                 errorbar(hbdata{e}.x+ p1-offsets(e),y_m,y_e,'linestyle','none','linewidth',1,'color',[s/S,0,1-s/S],'MarkerSize',1); 
-                hold on; plot(xdata,fit,'color',[s/S,0,1-s/S]);
-                    end
+                    pcurve{emb,dataset,2} = y_cnt;        
+
+                            if plot_grads == 1
+                                figure(22); hold on; 
+                                plot(xdata,y_cnt,'o','color',[s/S,0,1-s/S],'MarkerSize',5); 
+                                hold on; 
+
+                                figure(23); hold on; 
+                                plot(xdata,yhb,'o','color',[s/S,0,1-s/S],'MarkerSize',5);  % Alt color
+                                ylim([0,2]); 
+
+                                figure(24); hold on;
+                                  %   errorbar(hbdata{e}.x+ p1-offsets(e),y_m,y_e,'linestyle','-','linewidth',1,'color',[s/S,0,1-s/S],'MarkerSize',1); 
+                                errorbar(hbdata{e}.x+ p1-offsets(e),y_m,y_e,'linestyle','none','linewidth',1,'color',[s/S,0,1-s/S],'MarkerSize',1); 
+                                hold on; plot(xdata,fit,'color',[s/S,0,1-s/S]);
+                            end
 
                     % Summary statistics
                     yhb_ave(e,s) = nanmean(y_cnt(hb_cnt>min_hb)./hb_cnt(hb_cnt>min_hb));
@@ -226,6 +243,10 @@ for s = 1:S
             
     end % loop over embryos
 end % loop of slides
+
+% get rid of unused, pre-allocated cells;
+NucsT = NucsT(1:j);
+
 
           if plot_grads == 1
             figure(22); 
@@ -263,10 +284,90 @@ ylabel('cov of mRNA counts'); ylim([0,.3]); set(gcf,'color','w');
 figure(2); clf; boxplot([[y_med_cov(:,1);y_med_cov(:,2)],[y_med_cov(:,3);y_med_cov(:,4)],[y_med_cov(:,5);y_med_cov(:,6)],[hb_med_com;hb_med_com]],'labels',[slides(1:2:end); 'wt']); 
 ylabel('median cov of mRNA counts'); ylim([0,.3]); set(gcf,'color','w');
 
-figure(4); clf; boxplot([y_med_cov./hb_med_cov],'labels',slides);
+figure(4); clf; boxplot(y_med_cov./hb_med_cov,'labels',slides);
 ylabel('ratio of cov of mRNA counts');  set(gcf,'color','w');
 
+%%
 
+ pxdata(1:2*Tembs,1) = [pxdata(:,1);pxdata(:,2)];
+ pxdata(1:2*Tembs,2) = [pxdata(1:Tembs,3);pxdata(1:Tembs,4)];
+ pxdata(1:2*Tembs,3) = [pxdata(1:Tembs,5);pxdata(1:Tembs,6)];
+ 
+  pcurve(1:2*Tembs,1) = [pcurve(:,1);pcurve(:,2)];
+  pcurve(1:2*Tembs,2) = [pcurve(1:Tembs,3);pcurve(1:Tembs,4)];
+  pcurve(1:2*Tembs,3) = [pcurve(1:Tembs,5);pcurve(1:Tembs,6)];
+      
+%     pcurve_hb(1:2*Tembs,1) = [pcurve_hb(:,1);pcurve_hb(:,2)];
+%     pcurve_hb(1:2*Tembs,2) = [pcurve_hb(1:Tembs,3);pcurve_hb(1:Tembs,4)];
+%     pcurve_hb(1:2*Tembs,3) = [pcurve_hb(1:Tembs,5);pcurve_hb(1:Tembs,6)];
+    %%
+
+pts = 500; 
+xmin = min(cat(1,pxdata{:}));
+xmax = max(cat(1,pxdata{:}));
+xs = linspace(xmin,xmax,pts)+abs(xmin);
+
+
+figure(21); clf;
+   figure(22); clf;
+
+   S = 3;
+mcurve = zeros(S,pts);
+stdcurve = zeros(S,pts); 
+fitcurve = zeros(S,pts);
+fit_hb = zeros(S,pts);
+mhb = zeros(S,pts);
+shb = zeros(S,pts); 
+
+
+pcurve_hb = reshape(pcurve_hb,S*Tembs,1);
+
+for s = 1:S
+    c = zeros(50,pts); 
+    hb = zeros(50,pts); 
+    j = 0;
+    for e= 1:Tembs
+        if isempty(pxdata{e,s}) == 0 
+            j = j+1;
+            x = pxdata{e,s}+abs(xmin);
+            y = pcurve{e,s};
+            
+            c(j,:) = interp1(x',y',xs);% linspace(min(x),max(x),100));
+            hb(j,:) = interp1(x',pcurve_hb{e,s}',xs);
+            figure(21); plot(x,y,'o','color',[s/S,0,1-s/S],'MarkerSize',1); hold on;
+            plot(x,pcurve_hb{e,s},'o','color','k','MarkerSize',1); hold on;
+           % plot(xs,c(j,:),'bo','MarkerSize',2); hold on;
+
+        end
+    end
+ 
+  c(c==0) = NaN;
+      hb(hb==0) = NaN;
+      
+
+      
+    mcurve(s,:) = nanmean(c); % yellow
+    stdcurve(s,:) = nanstd(c);  % yellow variation
+    
+    mhb(s,:) = nanmean(hb);
+    shb(s,:) = nanstd(hb); 
+  
+    figure(21); 
+    plot(xs,mcurve(s,:),'color',[s/S,0,1-s/S]);
+    plot(xs, mhb(s,:) ,'k'); 
+
+     y = smooth(mcurve(s,:),.3,'rloess');
+     h = smooth(mhb(s,:),.3,'rloess');
+     [jnk, fitcurve(s,:)] = fxn_fit_sigmoid(xs,y',[4,mean(xs),max(mcurve(s,:)),0],'r');
+     [jnk2, fit_hb(s,:)] = fxn_fit_sigmoid(xs,h',[4,mean(xs),max(mhb(s,:)),0],'r');
+
+    figure(21); 
+    plot(xs,fitcurve(s,:),'color',[s/S,0,1-s/S]); hold on;
+     plot(xs,fit_hb(s,:),'color','k'); hold on;
+  %   errorbar(xs(1:2:end),mcurve(s,1:2:end),stdcurve(s,1:2:end),'color',[1/s,0,1-1/s]); 
+   % errorbar(xs(1:20:end),mcurve(s,1:20:end),stdcurve(s,1:20:end),'linestyle','none','color',[s/S,0,1-s/S]); 
+
+end
 
 %%
 
@@ -420,7 +521,7 @@ xlabel('distance (nm)','Fontsize',F);
 legend(['no proximal, N=',num2str(MP01{e1}.Nnucs)],...
     ['no distal, N=',num2str(MP02{e2}.Nnucs)],['cntrl N=',num2str(MP09{e9}.Nnucs)],'Endogenous, combined');
 set(gca,'Fontsize',F);
-title(['mid cc13 mRNA counts']);
+title('mid cc13 mRNA counts');
 
 
 %% 
