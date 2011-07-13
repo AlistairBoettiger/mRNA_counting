@@ -13,9 +13,13 @@ slides = {'No prox A'; 'No prox B';'No distal A'; 'No distal B';  'cntrl A'; 'cn
 
 chns = 2; 
 ver = ''; vout = '';
+oldset = 0; 
+
+
+    indiv_endog = 1; 
 
 % OPTIONS
-Ndatasets = 5; 
+Ndatasets = 5;  % N datasets
 min_hb = .001; % 35;
 max_hb = .025;
 max_curves = 50;
@@ -28,12 +32,10 @@ other_plots = 0;
 S = length(slides);
 Tembs = 40; 
 j = 0; 
-emb = 0; 
 
 NucsT = cell(max_curves,1);
-pcurve = cell(Tembs,Ndatasets);
-pcurve_hb = cell(Tembs,S);
-pxdata = cell(Tembs,S); 
+pcurve = cell(Tembs,2,Ndatasets);
+pxdata = cell(Tembs,Ndatasets); 
 pars = cell(1,S);
 
 y_med_cov = NaN*zeros(Tembs,S);
@@ -115,7 +117,7 @@ for s = 1:S
     % Get boundary point of first curve as a reference
     if s == 1;
         e = 1;     
-        gx = hbdata{e}.Data_sort(:,1);  
+        gx = hbdata{e}.Data_sort(:,1)'; %  + 1E6;  % Need to keep x positive for data fitting funciton to work right
         mcorr =   1; %  hbdata{e}.Nnucs./hbdata{1}.Nnucs;
         
         if subtract_maternal == 1; 
@@ -124,7 +126,7 @@ for s = 1:S
              hb_cnt = mcorr*hbdata{e}.Data_sort(:,2);
         end
 
-        [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',hb_cnt',[4,mean(gx),max(hb_cnt),min(hb_cnt)],'r');
+        [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx,hb_cnt',[3,mean(gx),max(hb_cnt),min(hb_cnt)],'r');
         offsets(e) = pars{s}(e,2); 
         p1 = pars{s}(e,2);
 
@@ -135,9 +137,14 @@ for s = 1:S
             plot(gx,fit,'r');
             plot(p1,max(hb_cnt)/4,'r*','MarkerSize',20);
         end
-    end  
-
-      
+    end
+    
+    
+    if dataset - oldset ~= 0; % restart embryo counter if we've switched datasets  
+        emb = 0;
+        disp('starting new dataset'); 
+    end
+    
     for e= 1:Es;  % Get curve fit parameters for the rest of the curves
         try
              mcorr =   1; %  hbdata{e}.Nnucs./hbdata{1}.Nnucs;
@@ -148,13 +155,12 @@ for s = 1:S
                  hb_cnt = mcorr*hbdata{e}.Data_sort(:,2);
                  hb_m = mcorr*hbdata{e}.mu(:,1);
             end   
-             gx = hbdata{e}.Data_sort(:,1);
+             gx = hbdata{e}.Data_sort(:,1) ;%   + 1E6; % Need to keep x positive for data fitting funciton to work right
             [pars{s}(e,:),fit] = fxn_fit_sigmoid(gx',hb_cnt',[4,mean(gx),max(hb_cnt),min(hb_cnt)],'r');
             if s ==1 && e == 1
             else
                 offsets(e) = pars{s}(e,2); % s = 1; e=7
  
-                
               % % % % Manual work around for bug at the moment.    
                 if pars{s}(e,2) > 2E5
                    offsets(e) = pars{s}(e,2) -4.2E5;
@@ -169,7 +175,8 @@ for s = 1:S
                 plot(offsets(e),max(hb_cnt)/4,'r*','MarkerSize',20);
             end
             
-            cond =hbdata{e}.Nnucs<250 && hbdata{e}.Nnucs>150 &&  pars{s}(e,1) > 2 && pars{s}(e,3)+ pars{s}(e,4) <10E-3 && pars{s}(e,3)+ pars{s}(e,4) >5E-3 ;  
+            cond =hbdata{e}.Nnucs<250 && hbdata{e}.Nnucs>150 &&  pars{s}(e,1) > 2 && pars{s}(e,3)+ pars{s}(e,4) <11E-3 && pars{s}(e,3)+ pars{s}(e,4) >3E-3 ;  
+            %cond =hbdata{e}.Nnucs<250 && hbdata{e}.Nnucs>150 &&  pars{s}(e,1) > 2 && pars{s}(e,3)+ pars{s}(e,4) <20E-3 && pars{s}(e,3)+ pars{s}(e,4) >10E-3 ;  
             
             
         catch er
@@ -181,9 +188,9 @@ for s = 1:S
                 j = j+1; 
                 emb = emb+1;
                 NucsT{j} = ['wt',' emb',num2str(e),' N=', num2str( hbdata{e}.Nnucs) ];
-                xdata = hbdata{e}.Data_sort(:,1) + p1-offsets(e);
+                xdata = hbdata{e}.Data_sort(:,1) + p1-offsets(e)  ; % + 1E6;
                pxdata{emb,dataset} = xdata;
-               pcurve{emb,dataset,1} = hb_cnt;
+               pcurve{emb,1,dataset} = hb_cnt;
                            
                        if plot_grads == 1
                            figure(21); hold on;
@@ -211,7 +218,7 @@ for s = 1:S
                     y_m = mcorr*hbdata{e}.mu(:,2)  - min(mcorr*hbdata{e}.Data_sort(:,3));
                     y_e =  mcorr*hbdata{e}.sigma(:,2); 
                     yhb = y_cnt./hb_cnt;
-                    pcurve{emb,dataset,2} = y_cnt;        
+                    pcurve{emb,2,dataset} = y_cnt;        
 
                             if plot_grads == 1
                                 figure(22); hold on; 
@@ -242,6 +249,7 @@ for s = 1:S
             end          
             
     end % loop over embryos
+    oldset = dataset; 
 end % loop of slides
 
 % get rid of unused, pre-allocated cells;
@@ -287,87 +295,124 @@ ylabel('median cov of mRNA counts'); ylim([0,.3]); set(gcf,'color','w');
 figure(4); clf; boxplot(y_med_cov./hb_med_cov,'labels',slides);
 ylabel('ratio of cov of mRNA counts');  set(gcf,'color','w');
 
-%%
 
- pxdata(1:2*Tembs,1) = [pxdata(:,1);pxdata(:,2)];
- pxdata(1:2*Tembs,2) = [pxdata(1:Tembs,3);pxdata(1:Tembs,4)];
- pxdata(1:2*Tembs,3) = [pxdata(1:Tembs,5);pxdata(1:Tembs,6)];
- 
-  pcurve(1:2*Tembs,1) = [pcurve(:,1);pcurve(:,2)];
-  pcurve(1:2*Tembs,2) = [pcurve(1:Tembs,3);pcurve(1:Tembs,4)];
-  pcurve(1:2*Tembs,3) = [pcurve(1:Tembs,5);pcurve(1:Tembs,6)];
-      
-%     pcurve_hb(1:2*Tembs,1) = [pcurve_hb(:,1);pcurve_hb(:,2)];
-%     pcurve_hb(1:2*Tembs,2) = [pcurve_hb(1:Tembs,3);pcurve_hb(1:Tembs,4)];
-%     pcurve_hb(1:2*Tembs,3) = [pcurve_hb(1:Tembs,5);pcurve_hb(1:Tembs,6)];
+
+
     %%
 
-pts = 500; 
+    
+pts = 500;
+solid = .2*pts:.9*pts;
 xmin = min(cat(1,pxdata{:}));
 xmax = max(cat(1,pxdata{:}));
 xs = linspace(xmin,xmax,pts)+abs(xmin);
 
+N = sum(1-cellfun('isempty', pxdata(1,:)));
+Es = zeros(1,N);
 
 figure(21); clf;
    figure(22); clf;
 
-   S = 3;
-mcurve = zeros(S,pts);
-stdcurve = zeros(S,pts); 
-fitcurve = zeros(S,pts);
-fit_hb = zeros(S,pts);
-mhb = zeros(S,pts);
-shb = zeros(S,pts); 
+mcurve = zeros(N,pts);
+stdcurve = zeros(N,pts); 
+fitcurve = zeros(N,length(solid));
+fit_hb = zeros(N,length(solid));
+mhb = zeros(N,pts);
+shb = zeros(N,pts); 
 
-
-pcurve_hb = reshape(pcurve_hb,S*Tembs,1);
-
-for s = 1:S
+    hbpool = {}; hbx = {};
+    
+ for s = 1:N   
     c = zeros(50,pts); 
     hb = zeros(50,pts); 
-    j = 0;
-    for e= 1:Tembs
-        if isempty(pxdata{e,s}) == 0 
-            j = j+1;
-            x = pxdata{e,s}+abs(xmin);
-            y = pcurve{e,s};
+    Es(s) = sum(1-cellfun('isempty',pxdata(:,s)));
+    for emb = 1:Es(s)
+            x = pxdata{emb,s}+abs(xmin);
+            y = pcurve{emb,2,s};
+            c(emb,:) = interp1(x',y',xs);% linspace(min(x),max(x),100));
+            figure(21); plot(x,y,'.','color',[s/N,0,1-s/N],'MarkerSize',3); hold on;
             
-            c(j,:) = interp1(x',y',xs);% linspace(min(x),max(x),100));
-            hb(j,:) = interp1(x',pcurve_hb{e,s}',xs);
-            figure(21); plot(x,y,'o','color',[s/S,0,1-s/S],'MarkerSize',1); hold on;
-            plot(x,pcurve_hb{e,s},'o','color','k','MarkerSize',1); hold on;
-           % plot(xs,c(j,:),'bo','MarkerSize',2); hold on;
-
-        end
+            if indiv_endog == 1  
+                hb(emb,:) = interp1(x',pcurve{emb,1,s}',xs);
+                plot(x,pcurve{emb,1,s},'.','color','k','MarkerSize',3); hold on;
+            end
+           % plot(xs,c(emb,:),'bo','MarkerSize',2); hold on;
     end
- 
-  c(c==0) = NaN;
-      hb(hb==0) = NaN;
-      
 
-      
+    
+    c(c==0) = NaN;    
     mcurve(s,:) = nanmean(c); % yellow
     stdcurve(s,:) = nanstd(c);  % yellow variation
+    y = smooth(mcurve(s,:),.3,'rloess');
+    [jnk, fitcurve(s,:)] = fxn_fit_sigmoid(xs(solid),y(solid)',[5,mean(xs),max(mcurve(s,:)),0],'r',[NaN,NaN,NaN,0]);
     
-    mhb(s,:) = nanmean(hb);
-    shb(s,:) = nanstd(hb); 
-  
     figure(21); 
-    plot(xs,mcurve(s,:),'color',[s/S,0,1-s/S]);
-    plot(xs, mhb(s,:) ,'k'); 
+    plot(xs,mcurve(s,:),'color',[s/N,0,1-s/N]);
+    plot(xs(solid),fitcurve(s,:),'color',[s/N,0,1-s/N]); hold on;
+    
+    figure(22); 
+    plot(xs(solid),fitcurve(s,:),'color',[s/N,0,1-s/N]); hold on;
+     plot(xs,mcurve(s,:),'o','color',[s/N,0,1-s/N],'MarkerSize',3); hold on;
+    errorbar(xs(2*s:12:end),mcurve(s,2*s:12:end),stdcurve(s,2*s:12:end),'linestyle','none','color',[s/N,0,1-s/N]);
+    
+    if indiv_endog == 1 ;%  && s~=3
+        hb(hb==0) = NaN;
+        mhb(s,:) = nanmean(hb);
+        shb(s,:) = nanstd(hb); 
+        h = smooth(mhb(s,:),.3,'rloess');
+        [jnk2, fit_hb(s,:)] = fxn_fit_sigmoid(xs(solid),h(solid)',[4,mean(xs),max(mhb(s,:)),0],'r',[NaN,NaN,NaN,0]);
 
-     y = smooth(mcurve(s,:),.3,'rloess');
-     h = smooth(mhb(s,:),.3,'rloess');
-     [jnk, fitcurve(s,:)] = fxn_fit_sigmoid(xs,y',[4,mean(xs),max(mcurve(s,:)),0],'r');
-     [jnk2, fit_hb(s,:)] = fxn_fit_sigmoid(xs,h',[4,mean(xs),max(mhb(s,:)),0],'r');
+        figure(21); 
+         plot(xs, mhb(s,:) ,'k'); 
+         plot(xs(solid),fit_hb(s,:),'color','k'); hold on;
+         
+         figure(22); 
+         plot(xs(solid),fit_hb(s,:),'k--'); hold on;
+     plot(xs,mhb(s,:),'o','color','k','MarkerSize',3); hold on;
+   % errorbar(xs(2*s:12:end),mhb(s,2*s:12:end),shb(s,2*s:12:end),'linestyle','none','color','k');
+   
+         
+     else
+        hbpool = [hbpool; pcurve(:,1,s)];
+        hbx = [hbx;pxdata(:,s)]; 
+    end
+ end
 
-    figure(21); 
-    plot(xs,fitcurve(s,:),'color',[s/S,0,1-s/S]); hold on;
-     plot(xs,fit_hb(s,:),'color','k'); hold on;
-  %   errorbar(xs(1:2:end),mcurve(s,1:2:end),stdcurve(s,1:2:end),'color',[1/s,0,1-1/s]); 
-   % errorbar(xs(1:20:end),mcurve(s,1:20:end),stdcurve(s,1:20:end),'linestyle','none','color',[s/S,0,1-s/S]); 
-
-end
+ if indiv_endog ~=1
+     has_data = logical(1-cellfun('isempty',hbx));
+     hbpool2 = hbpool(has_data);
+     hbx2 = hbx(has_data);
+   
+     hb = zeros(length(hbx2),pts); 
+     for e = 1:length(hbx2)
+            x = cell2mat(hbx2)'+abs(xmin);
+            hb(e,:)=interp1(x,cell2mat(hbpool2)',xs);% linspace(min(x),max(x),100));
+            figure(21); plot(x,cell2mat(hbpool2)','o','color','k','MarkerSize',1); hold on;
+     end         
+        hb(hb==0) = NaN;
+        mhb(1,:) = nanmean(hb);
+        shb(1,:) = nanstd(hb); 
+        h = smooth(mhb(1,:),.3,'rloess');
+        [jnk2, fit_hb(1,:)] = fxn_fit_sigmoid(xs(solid),h(solid)',[4,mean(xs),max(mhb(s,:)),0],'r',[NaN,NaN,NaN,0]);
+        figure(21); 
+         plot(xs, mhb(1,:) ,'k--'); 
+         plot(xs(solid),fit_hb(1,:),'color','k'); hold on;
+            
+ end
+ 
+ figure(21); 
+ xlim([4E4,17E4]);
+ ylim([0,0.012]); 
+ xlabel('distance (nm)'); ylabel('mRNA density (molecules/50nm voxel)');
+ legend(['no proximal N=', num2str(Es(1))],['no distal N=', num2str(Es(2))],...
+     ['control N=', num2str(Es(3))],['wt N=', num2str(sum(Es))]);
+ 
+  figure(22); 
+ xlim([4E4,17E4]);
+ ylim([0,0.012]); 
+ xlabel('distance (nm)'); ylabel('mRNA density (molecules/50nm voxel)');
+ legend(['no proximal N=', num2str(Es(1))],['no distal N=', num2str(Es(2))],...
+     ['control N=', num2str(Es(3))],['wt N=', num2str(sum(Es))]);
 
 %%
 
