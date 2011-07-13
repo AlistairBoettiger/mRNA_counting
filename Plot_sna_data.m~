@@ -55,16 +55,23 @@ for s = 1:S
 switch slides{s}
     case 'y control' % 'MP10Hz'
        date = '2011-05-22/';  
-      fname = 's04_MP10Hz';% 's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
+      fname = 's04_MP10Hz';% 
       chns = 2; ver = '_v3';
       skip = [1,3];   
       
     case 'y no distal' % 'MP06Hz'
         date = '2011-05-22/'; 
-      fname =  's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
+      fname =  's05_MP06Hz' ;%  
       chns = 2;
       ver = '_v2';
       skip = 10;% 
+      
+    case 'y no distal B' % 'MP06Hz'
+        date = '2011-05-22/'; 
+      fname =  's05_MP06Hz_b' ;%  
+      chns = 2;
+      ver = '_v4';
+      skip = 20;% 
  
     case 'y no proximal' % 'MP05Hz'
         date ='2011-06-20/';%  

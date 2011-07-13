@@ -55,16 +55,26 @@ for s = 1:S
 switch slides{s}
     case 'y control' % 'MP10Hz'
        date = '2011-05-22/';  
-      fname = 's04_MP10Hz';% 's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
+      fname = 's04_MP10Hz';% 
       chns = 2; ver = '_v3';
       skip = [1,3];   
+      dataset = 1;
       
     case 'y no distal' % 'MP06Hz'
         date = '2011-05-22/'; 
-      fname =  's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
+      fname =  's05_MP06Hz' ;%  
       chns = 2;
       ver = '_v2';
       skip = 10;% 
+      dataset = 2;
+      
+    case 'y no distal B' % 'MP06Hz'
+        date = '2011-05-22/'; 
+      fname =  's05_MP06Hz_b' ;%  
+      chns = 2;
+      ver = '_v4';
+      skip = 20;% 
+      dataset = 2;
  
     case 'y no proximal' % 'MP05Hz'
         date ='2011-06-20/';%  
@@ -72,6 +82,7 @@ switch slides{s}
           ver = '';
         chns = 2;
         skip = 7;
+        dataset = 3;
       
       
     case 'y control het' % 'MP10het'
@@ -79,7 +90,8 @@ switch slides{s}
         fname ='MP10_22C_sna_y_d'; 
         ver = '_v3';%
         chns = 2; 
-       skip = 9;    
+       skip = 9;   
+       dataset = 4;
       
     case 'y no proximal het' % 'MP05het'
         date = '2011-02-17/'; 
@@ -87,22 +99,17 @@ switch slides{s}
         ver = '_v2';
         chns = 2;
         skip = 3;
+        dataset = 5;
         
         
-        
-   
+   % % Rescues, used separately, restart dataset indexing from 1 
     case 'wt'
         date = '2011-02-17/'; 
         fname ='MP10_22C_sna_y_d'; 
         ver = '_v3';%
         chns = 1; 
        skip = 9;    
-        
-%        date = '2011-05-22/';  
-%       fname = 's04_MP10Hz';% 's05_MP06Hz' ;%  's07_MP08Hz_snaD_22C';
-%       chns = 1; ver = '_v3';
-%       skip = [1,3];   
-        
+        dataset = 1;       
         
    case 'primary alone' % 'sna2.8Hz'
         date = '2011-06-20/';
@@ -110,6 +117,7 @@ switch slides{s}
         ver = '';
         chns = 1;
         skip = 15; 
+        dataset = 2;
     
    case 'shadow removed' %  'MP08Hz'
         date = '2011-05-22/'; 
@@ -117,6 +125,7 @@ switch slides{s}
         ver = '';
         chns = 1; 
         skip = [2,3,7]; % 3 misoriented
+        dataset = 3;
         
     case 'primary removed'% 'MP07Hz'
         date = '2011-06-20/'; 
@@ -124,6 +133,7 @@ switch slides{s}
          ver = '';
         chns =1;
         skip =[1,3,5];
+        dataset = 4;
         
     case '1x primary removed' % 'MP07het'
         date = '2011-05-22/'; 
@@ -131,7 +141,7 @@ switch slides{s}
          ver = '';
         chns =1;
         skip =15;
-        
+        dataset = 5;
   
 end
 

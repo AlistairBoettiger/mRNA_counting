@@ -23,9 +23,11 @@
    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
  % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
   % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
-  slidedate ='2011-06-20/';%  '2011-05-22/'; % 
-  subfolder =  's07_MP05Hz/';% 'sna2.8Hz/';%  's06_MP10_sna18/'; %  'MP07Hz/';%  's05_MP06/'   ; %'s11_G4B/'; %  % 's21_MP07/';  % s04_MP10/';%     s07_MP08/'
-  fname ='s07_MP05Hz_22C';% 'sna2.8Hz_snaD_22C';st_channel = 1; %'s06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % 'MP07Hz_snaD_22C';% 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
+  slidedate ='2011-05-22/'; % '2011-06-20/';%   
+  subfolder =  's05_MP06/'; % 's07_MP05Hz/';% 'sna2.8Hz/';%  's06_MP10_sna18/'; %  'MP07Hz/';%  's05_MP06/'   ; %'s11_G4B/'; %  % 's21_MP07/';  % s04_MP10/';%     s07_MP08/'
+  fname ='s05_MP06Hz_b'; ver = '_v4';%   's07_MP05Hz_22C';% 'sna2.8Hz_snaD_22C';st_channel = 1; %'s06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % 'MP07Hz_snaD_22C';% 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
+  vc1 = ver; vc2 = ver;  vc1 = '_v4'; vc2 = '_v4';
+  
   
   missG = 1.0; 
   ipars{3} = missG; 
@@ -72,13 +74,13 @@ for e =  1: Es %  e = 7
       
       if nametype == 1 
           try
-             % ver = '_v2';
+               ver = vc1; 
               load([folder,slidedate,fname,'_',emb,'_chn', num2str( st_channel+1),'_data',ver,'.mat']); 
               mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
               disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
               ipars{1} = Rpars; 
               if chns ==2
-                %  ver = '_v4';
+                ver = vc2;
                 load([folder,slidedate,fname,'_',emb,'_chn',num2str( st_channel+2),'_data',ver,'.mat']);
                  disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
                 mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
