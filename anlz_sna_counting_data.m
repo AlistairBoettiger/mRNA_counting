@@ -17,16 +17,16 @@
   
 
   
-  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; % defaults
-  cbar = 0; 
+  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; vout ='';% defaults
+  cbar = 1; 
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
- % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
-  % fname = 's04_MP10Hz'; ver = '_v3';% 'MP07het_snaD_22C'; Es=4;%  %  's04_MP10Hz';%  's07_MP08Hz_snaD_22C'; 
-  slidedate ='2011-05-22/'; % '2011-06-20/';%   
-  subfolder =  's05_MP06/'; % 's07_MP05Hz/';% 'sna2.8Hz/';%  's06_MP10_sna18/'; %  'MP07Hz/';%  's05_MP06/'   ; %'s11_G4B/'; %  % 's21_MP07/';  % s04_MP10/';%     s07_MP08/'
-  fname ='s05_MP06Hz_b'; ver = '_v4';%   's07_MP05Hz_22C';% 'sna2.8Hz_snaD_22C';st_channel = 1; %'s06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % 'MP07Hz_snaD_22C';% 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%  'MP05_22C_sna_y_c';  ver = '_v2';  % 'MP10_22C_sna_y_d'; ver = '_v2';%  '_v2';  %
-  vc1 = ver; vc2 = ver;  vc1 = '_v4'; vc2 = '_v4';
+  % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
+  % fname =   %  
+  slidedate = '2011-05-22/'; %    '2011-06-20/';%    '2011-02-17/';%    %  
+  subfolder = 's04_MP10/';%  's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %  's07_MP05Hz/';%    's05_MP06/'; %  's05_MP06/'   ; %'s11_G4B/'; %  % s04_MP10/';%    
+  fname ='s04_MP10Hz'; ver = ''; % 's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's07_MP05Hz_22C';%  's05_MP06Hz'; ver = '_v2';%  's05_MP06Hz_b'; ver = '_v4';% %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
+  vc1 = ver; vc2 = ver;   % vc1 = ''; vc2 = '_v4';
   
   
   missG = 1.0; 
@@ -321,14 +321,18 @@ title(['Nuclei = ',num2str(Nnucs)]);
 figure(12); subplot(3,ceil(Es/3),e);
 imagesc(PlotmRNA_r); colormap hot; 
 if cbar == 1
-    caxis([20,max(Data_sort(:,2))]); colorbar;
+   % caxis([20,max(Data_sort(:,2))]); colorbar;
+    
+     caxis([20,200]); colorbar; axis off;
 end
     
 if chns == 2
-    figure(13); subplot(3,ceil(Es/3),e); set(gcf,'color','k'); colordef black;
+    figure(13); subplot(3,ceil(Es/3),e); 
+    set(gcf,'color','k'); colordef black;
     imagesc(PlotmRNA2_r); colormap hot; 
     if cbar == 1 
-        caxis([20,max(Data_sort(:,3))]); colorbar; axis off;
+       % caxis([20,max(Data_sort(:,3))]); colorbar; axis off;
+        caxis([20,200]); colorbar; axis off;
     end
 end
 
@@ -351,11 +355,17 @@ end
 
 figure(12); set(gcf,'color','k');
 
-save([folder,slidedate,fname,'_graddata',ver,'.mat'],'data'); 
+
+save([folder,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+
+
+%save([folder,slidedate,fname,'_graddata',ver,'.mat'],'data'); 
 
 %%
 
 % e =1;
 % figure(1); clf; imagesc(data{e}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([15,110]); axis off;
 % figure(2); clf; imagesc(data{2}.PlotmRNA); colordef black; set(gcf,'color','k'); colormap hot; colorbar; caxis([15,300]); axis off;
+
+
 
