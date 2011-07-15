@@ -427,10 +427,10 @@ end
 
 indiv_endog = 1; chns = 1;
 
-
+Theta = 30; 
 
 pts = 500;
-solid = .3*pts:.9*pts;
+solid = .4*pts:.9*pts;
 xmin = min(cat(1,pxdata{:}));
 xmax = max(cat(1,pxdata{:}));
 xs = linspace(xmin,xmax,pts)+abs(xmin);
@@ -455,8 +455,15 @@ sdat = zeros(N,pts);
     c = zeros(50,pts); 
     dat = zeros(50,pts); 
     Es(s) = sum(1-cellfun('isempty',pxdata(:,s)));
-    for emb = 1:Es(s)
-        
+    
+    if chns == 1
+        dat_color = [s/N,0,1-s/N];
+    else
+        dat_color = 'k';
+    end
+    
+    
+    for emb = 1:Es(s)      
         if chns == 2 
             x = pxdata{emb,s}+abs(xmin);
             y = pcurve{emb,2,s};
@@ -464,37 +471,33 @@ sdat = zeros(N,pts);
             y = y(v);
             
             c(emb,:) = interp1(x',y',xs);% linspace(min(x),max(x),100));
-            figure(21); plot(x,y,'.','color',[s/N,0,1-s/N],'MarkerSize',1); hold on;
+            figure(21); plot(x,y,'o','color',[s/N,0,1-s/N],'MarkerSize',1); hold on;
         end
         
-            if indiv_endog == 1  
-                x = pxdata{emb,s}+abs(xmin);
-                [x,v] = unique(x);
-                y = pcurve{emb,1,s}';
-                y = y(v);
-                dat(emb,:) = interp1(x',y,xs);
-                if chns == 2
-                    plot(x,y,'.','color','k','MarkerSize',1); hold on;
-                else
-                    plot(x,y,'.','color',[s/N,0,1-s/N],'MarkerSize',1); hold on;
-                end
-            end
+        if indiv_endog == 1  
+            x = pxdata{emb,s}+abs(xmin);
+            [x,v] = unique(x);
+            y = pcurve{emb,1,s}';
+            y = y(v);
+            dat(emb,:) = interp1(x',y,xs);
+            figure(21); hold on;
+            plot(x,y,'o','color',dat_color,'MarkerSize',1); hold on;
+        end
            % plot(xs,c(emb,:),'bo','MarkerSize',2); hold on;
     end
 
-    if chns ==2;
+    if chns ==2;  % won't exist if chns ~= 2
         c(c==0) = NaN;    
         mcurve(s,:) = nanmean(c); % yellow
         stdcurve(s,:) = nanstd(c);  % yellow variation
-
         y = smooth(mcurve(s,:),.1,'rloess');
         [jnk, fitcurve(s,:)] = fxn_fit_sigmoid(xs(solid),y(solid)',[5,mean(xs),max(mcurve(s,:)),0],'r',[NaN,NaN,NaN,0]);
 
         figure(21); 
             plot(xs,mcurve(s,:),'color',[s/N,0,1-s/N]);
-            plot(xs(solid),fitcurve(s,:),'color',[s/N,0,1-s/N],'linewidth',2); hold on;   
+            plot(xs(solid),fitcurve(s,:),'color',[s/N,0,1-s/N],'linewidth',3); hold on;   
         figure(22); 
-            plot(xs(solid),fitcurve(s,:),'color',[s/N,0,1-s/N],'linewidth',2); hold on;
+            plot(xs(solid),fitcurve(s,:),'color',[s/N,0,1-s/N],'linewidth',3); hold on;
              plot(xs,mcurve(s,:),'o','color',[s/N,0,1-s/N],'MarkerSize',3); hold on;
             errorbar(xs(2*s:12:end),mcurve(s,2*s:12:end),stdcurve(s,2*s:12:end),'linestyle','none','color',[s/N,0,1-s/N]);
     end
@@ -504,35 +507,48 @@ sdat = zeros(N,pts);
  
         dat_peak = nanmedian(dat,2);
 
-        low = nanmean(  dat(dat_peak<60,:)  );
-        mid = nanmean( dat(dat_peak>60,:)   );
+        low = nanmean(  dat(dat_peak<Theta,:)  );
+        mid = nanmean( dat(dat_peak>Theta,:)   );
+        low_s = nanstd(  dat(dat_peak<Theta,:)  );
+        mid_s = nanstd( dat(dat_peak>Theta,:)   );
         
+        y = smooth(low,.12,'rloess');
+        [pars,h] = fxn_fit_sigmoid(xs(solid),y(solid)',[7,mean(xs),max(y),0],'r',[NaN,NaN,NaN,0]);
+        figure(21); 
+            plot(xs,low,'color',dat_color);  hold on;
+            plot(xs(solid),h,'color',dat_color,'linewidth',3); 
+         figure(22); 
+            plot(xs(solid),h,'--','color',dat_color,'linewidth',3); hold on;
+            plot(xs,low,'o','color',dat_color,'MarkerSize',3); hold on;
+            errorbar(xs(4*s:12:end),low(4*s:12:end),low_s(4*s:12:end),'linestyle','none','color',dat_color);
+        
+        
+        y = smooth(mid,.12,'rloess');
+        [pars,h] = fxn_fit_sigmoid(xs(solid),y(solid)',[7,mean(xs),max(y),0],'r',[NaN,NaN,NaN,0]);
+        figure(21); 
+            plot(xs,mid,'color',dat_color); 
+            plot(xs(solid),h,'color',dat_color,'linewidth',2);     
+         figure(22); 
+            plot(xs(solid),h,'--','color',dat_color,'linewidth',2); hold on;
+            plot(xs,mid,'o','color',dat_color,'MarkerSize',3); hold on;
+            errorbar(xs(4*s:12:end),mid(4*s:12:end),mid_s(4*s:12:end),'linestyle','none','color',dat_color);
+                   
         
 
        %  figure(1); clf; plot(xs,low); hold on; plot(xs,mid);
-        
-        mdat(s,:) = nanmean(dat);
-        sdat(s,:) = nanstd(dat); 
-        h = smooth(mdat(s,:),.1,'rloess');
-        [jnk2, fit_dat(s,:)] = fxn_fit_sigmoid(xs(solid),h(solid)',[4,mean(xs),max(mdat(s,:)),0],'r',[NaN,NaN,NaN,0]);
-
-        if chns == 2;
-             figure(21); 
-                 plot(xs, mdat(s,:) ,'k'); 
-                 plot(xs(solid),fit_dat(s,:),'color','k','linewidth',2); hold on; 
-             figure(22); 
-                 plot(xs(solid),fit_dat(s,:),'k--','linewidth',2); hold on;
-                plot(xs,mdat(s,:),'o','color','k','MarkerSize',3); hold on;
-                errorbar(xs(7:12:end),mdat(s,7:12:end),sdat(s,7:12:end),'linestyle','none','color','k');
-        elseif chns ==1;
-             figure(21); 
-                 plot(xs, mdat(s,:),'color' ,[s/N,0,1-s/N]); 
-                 plot(xs(solid),fit_dat(s,:),'color',[s/N,0,1-s/N],'linewidth',2); hold on; 
-             figure(22); 
-                 plot(xs(solid),fit_dat(s,:),'--','color',[s/N,0,1-s/N],'linewidth',2); hold on;
-                plot(xs,mdat(s,:),'o','color',[s/N,0,1-s/N],'MarkerSize',3); hold on;
-                errorbar(xs(7:12:end),mdat(s,7:12:end),sdat(s,7:12:end),'linestyle','none','color',[s/N,0,1-s/N]);
-        end
+%  % orginal non-split pattering        
+%         mdat(s,:) = nanmean(dat);
+%         sdat(s,:) = nanstd(dat); 
+%         h = smooth(mdat(s,:),.1,'rloess');
+%         [jnk2, fit_dat(s,:)] = fxn_fit_sigmoid(xs(solid),h(solid)',[4,mean(xs),max(mdat(s,:)),0],'r',[NaN,NaN,NaN,0]);
+% 
+%              figure(21); 
+%                  plot(xs, mdat(s,:) ,'k'); 
+%                  plot(xs(solid),fit_dat(s,:),'color',dat_color,'linewidth',2); hold on; 
+%              figure(22); 
+%                  plot(xs(solid),fit_dat(s,:),'--','color',dat_color,'linewidth',2); hold on;
+%                 plot(xs,mdat(s,:),'o','color',dat_color,'MarkerSize',3); hold on;
+%                 errorbar(xs(7:12:end),mdat(s,7:12:end),sdat(s,7:12:end),'linestyle','none','color','k');
      else
         datpool = [datpool; pcurve(:,1,s)];
         datx = [datx;pxdata(:,s)]; 
@@ -575,8 +591,10 @@ sdat = zeros(N,pts);
  
  figure(21); 
  ylim([0,250]);
- xlim([.1E5,1.6E5]); 
- xlabel('distance (nm)'); ylabel('mRNA density (molecules/50nm voxel)');
+ xlim([7E4,1.6E5]); 
+ xlabel('distance (nm)');
+ ylabel('mRNA count (molecules/cell)');
+ set(gcf,'color','w');
   if chns == 2; % label for yellow analysis only  
       legend(['no proximal N=', num2str(Es(1))],['no distal N=', num2str(Es(2))],...
     ['control N=', num2str(Es(3))],['wt N=', num2str(sum(Es))]);
@@ -584,7 +602,7 @@ sdat = zeros(N,pts);
 
   figure(22); 
  ylim([0,250]);
- xlim([.1E5,1.6E5]); 
+ xlim([7E4,16E4]); 
  xlabel('distance (nm)'); ylabel('mRNA density (molecules/50nm voxel)');
 
    if chns ==2; % label for yellow analysis only    
