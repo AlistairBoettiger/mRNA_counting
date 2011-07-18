@@ -12,9 +12,9 @@
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
  
-% slides = {'y control'; 'y no distal'; 'y no proximal';'y control het'; 'y no proximal het';'cntrl y, sna[IIG]'};
+ slides = {'y control'; 'y control B';'y no distal';'y no distal B'; 'y no proximal';'y control het'; 'y no proximal het'};
 % slides = {'cntrl y, sna[IIG]'};
- slides = {'primary alone','shadow removed', 'primary removed', 'wt'}; % { 'sna2.8Hz', 'MP08Hz','MP07Hz', 'wt'};
+% slides = {'primary alone','shadow removed', 'primary removed', 'wt'}; % { 'sna2.8Hz', 'MP08Hz','MP07Hz', 'wt'};
 %slides = {'sna2.8Hz','wt'};   % slides = {'MP10Hz', 'MP06Hz'
 %'MP10het','MP05het'};
 ver = '';
@@ -70,6 +70,13 @@ switch slides{s}
       fname = 's04_MP10Hz';% 
       chns = 2; ver = '_v2';
       skip = [1,3];   
+      dataset = 1;
+      
+    case 'y control B' % 'MP10Hz'
+       date = '2011-05-22/';  
+      fname = 's04_MP10Hz_b';% 
+      chns = 2; ver = '_v2';
+      skip = 20;   
       dataset = 1;
       
     case 'y no distal' % 'MP06Hz'
@@ -170,7 +177,7 @@ switch slides{s}
 end
 
 % Actually grab the data from the chosen slide ('case').  
-   load([folder,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+   load([folder,date,fname,ver,'_slidedata',vout,'.mat'],'data'); 
    % load([folder,date,fname,'_graddata',ver,'.mat'],'data');  
     Es = length(data); 
     offsets = zeros(1,Es); 

@@ -23,9 +23,9 @@
    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
   % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
   % fname =   %  
-  slidedate = '2011-05-22/'; %    '2011-06-20/';%    '2011-02-17/';%    %  
-  subfolder = 's04_MP10/';%  's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %  's07_MP05Hz/';%    's05_MP06/'; %  's05_MP06/'   ; %'s11_G4B/'; %  % s04_MP10/';%    
-  fname ='s04_MP10Hz'; ver = ''; % 's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's07_MP05Hz_22C';%  's05_MP06Hz'; ver = '_v2';%  's05_MP06Hz_b'; ver = '_v4';% %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
+  slidedate =  '2011-07-12/';  % '2011-05-22/'; %    '2011-06-20/';%    '2011-02-17/';%    %  
+  subfolder = 'MP12Hz/'; % 's05_MP06/'   ; % 's04_MP10/';%  's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
+  fname ='MP12Hz_snaD_22C'; % 's05_MP06Hz_b'; ver = '_v4';%  's04_MP10Hz_b'; ver = '_v2'; % 's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's07_MP05Hz_22C';%  's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
   vc1 = ver; vc2 = ver;   % vc1 = ''; vc2 = '_v4';
   
   
@@ -34,7 +34,7 @@
   
   manual_orient =[];%  [-10,-45,-35,45,135,45,-145,-50,-80,65];
 
-  chns = 2; % 1 % 2; %
+  chns = 1; % 1 % 2; %
  
 %    try
 %      load([folder,fname,'_slidedata',ver], 'Data'); 
