@@ -12,9 +12,9 @@
 clear all;
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
  
- slides = {'y control'; 'y control B';'y no distal';'y no distal B'; 'y no proximal';'y control het'; 'y no proximal het'};
+% slides = {'y control'; 'y control B';'y no distal';'y no distal B'; 'y no proximal';'y control het'; 'y no proximal het'};
 % slides = {'cntrl y, sna[IIG]'};
-% slides = {'primary alone','shadow removed', 'primary removed', 'wt'}; % { 'sna2.8Hz', 'MP08Hz','MP07Hz', 'wt'};
+ slides = {'primary alone','shadow removed', 'primary removed', 'wt'}; % { 'sna2.8Hz', 'MP08Hz','MP07Hz', 'wt'};
 %slides = {'sna2.8Hz','wt'};   % slides = {'MP10Hz', 'MP06Hz'
 %'MP10het','MP05het'};
 ver = '';
@@ -379,6 +379,27 @@ if chns == 1;
     ylabel('CoV for mRNA counts'); ylim([0,0.25]);
 end
 
+% figure(2); clf; plot(sna_lev','ko');
+% xlim([0,5]); set(gcf,'color','w');
+
+Es = zeros(1,S+1); Ltot = 0; mtot = 0;
+figure(3); clf;
+for s=1:S
+    Es(s+1) = sum(1-cellfun('isempty',pxdata(:,s)));
+    for e=1:Es(s+1)
+        y = pcurve{e,1,s};
+         y = y(y>max(y)/2);
+        L = length(y); 
+        Ltot = Ltot+L;
+        mtot = mtot + sum(y); 
+        figure(3); hold on;
+        plot(.5*rand(1,L) + sum(Es(1:s))+e*ones(1,L),y,'.','color',[s/N,0,1-s/N],'MarkerSize',4);
+    end
+end
+set(gcf,'color','w'); ylabel('mRNA count'); xlabel('cell index');
+title([num2str(round(mtot)), ' mRNA counted from ', num2str(Ltot),' cells']);
+
+
 if chns == 2
     wt_sna = [];
 
@@ -618,7 +639,26 @@ sdat = zeros(N,pts);
    end
 
 
+%% Individual showcase embryos
 
+
+
+
+date = '2011-05-22/'; 
+        fname =  's07_MP08Hz_snaD_22C';
+        ver = '';
+        chns = 1; 
+        folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
+load([folder,date,fname,'_graddata',ver],'data');  
+
+P = data{5}.PlotmRNA;
+
+figure(1); clf;  %surf(P); shading interp;
+
+set(gcf,'color','k');
+P1 = P; P1(P<40) = 0; figure(1); subplot(1,3,1); imagesc(P1); colormap hot; caxis([20,70]);
+P1 = P; P1(P<45) = 0; figure(1); subplot(1,3,2); imagesc(P1); colormap hot; caxis([20,70]);
+P1 = P; P1(P<50) = 0; figure(1); subplot(1,3,3); imagesc(P1); colormap hot; caxis([20,70]);
 
 %%
 

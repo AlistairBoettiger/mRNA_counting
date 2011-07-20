@@ -25,7 +25,7 @@
   % fname =   %  
   slidedate =  '2011-07-12/';  % '2011-05-22/'; %    '2011-06-20/';%    '2011-02-17/';%    %  
   subfolder = 'MP12Hz/'; % 's05_MP06/'   ; % 's04_MP10/';%  's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
-  fname ='MP12Hz_snaD_22C'; % 's05_MP06Hz_b'; ver = '_v4';%  's04_MP10Hz_b'; ver = '_v2'; % 's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's07_MP05Hz_22C';%  's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
+  fname ='MP12Hz_snaD_22C'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%  's04_MP10Hz_b'; ver = '_v2'; % 's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's07_MP05Hz_22C';%  's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
   vc1 = ver; vc2 = ver;   % vc1 = ''; vc2 = '_v4';
   
   
@@ -75,13 +75,15 @@ for e =  1: Es %  e = 7
       if nametype == 1 
           try
                ver = vc1; 
-              load([folder,slidedate,fname,'_',emb,'_chn', num2str( st_channel+1),'_data',ver,'.mat']); 
+             % load([folder,slidedate,fname,'_',emb,'_chn', num2str( st_channel+1),'_data',ver,'.mat']); 
+              load([folder,slidedate,fname,'_',emb,'_chn2','_data',ver,'.mat']); 
               mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
               disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
               ipars{1} = Rpars; 
               if chns ==2
                 ver = vc2;
-                load([folder,slidedate,fname,'_',emb,'_chn',num2str( st_channel+2),'_data',ver,'.mat']);
+               % load([folder,slidedate,fname,'_',emb,'_chn',num2str( st_channel+2),'_data',ver,'.mat']);
+                  load([folder,slidedate,fname,'_',emb,'_chn1','_data',ver,'.mat']);
                  disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
                 mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
                 ipars{2} = Rpars; 
@@ -356,7 +358,7 @@ end
 figure(12); set(gcf,'color','k');
 
 
-save([folder,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+save([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
 
 
 %save([folder,slidedate,fname,'_graddata',ver,'.mat'],'data'); 
