@@ -1,37 +1,62 @@
- 
-  
+
+%%  anlz_sna_sim_cnt_data
+
+% Alistair Boettiger                                   Date Begun: 07/17/11
+% Levine Lab                                        Last Modified: 07/20/11
+
+
+%% 
 
 clear all;
-
-maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; vout ='';% defaults
-   
-  cbar = 1; 
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
-   rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
-  % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
-  % fname =   %  
-  slidedate = '2011-07-12/'; % '2011-05-22/'; %    '2011-06-20/';%    '2011-02-17/';%    %  
-  subfolder =  'sna2.8het/'; %  's05_MP06/'   ; % 's04_MP10/';%  's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
-  fname =  'sna2p8het_sim_sna'; % 's05_MP06Hz_b'; ver = '_v4';%  's04_MP10Hz_b'; ver = '_v2'; % 's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's07_MP05Hz_22C';%  's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
- ver = '_v2';
+  rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
+
+
+%%
+
+% working off of data from anlz_sna_count_data
+
+date = '2011-04_and_earlier/'; % 
+fname ='MP12Hz_snaD_22C_b'; ver = ''; vout = '';
+load([folder,date,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+
+figure(1); clf; colordef white; set(gcf,'color','w');
+figure(11); clf; colordef white; set(gcf,'color','w');
+for e = 1:length(data);
+    sna = data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2));
+    sim = data{e}.Data_sort(:,3);
+    figure(1); subplot(2,5,e); 
+    scatter(sna,sim); xlim([0,250]);
+    
+    figure(11); subplot(2,5,e);
+    plot(data{e}.Data_sort(:,1),sna,'r.');
+    hold on; 
+    plot(data{e}.Data_sort(:,1),sim,'b.');
+end
+
+%% sna-sim heterogeniety in sna2.8 Hets
   
 
-  emb = '01';
+  slidedate = '2011-04_and_earlier/'; % '2011-05-22/'; %    '2011-06-20/';%    
+  subfolder =  'sna2p8het/'; %  's05_MP06/'   ; % 's04_MP10/';%  's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
+  fname =  'sna2p8het_sim_sna'; % 's05_MP06Hz_b'; ver = '_v4';%  's04_MP10Hz_b'; ver = '_v2'; % 's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's07_MP05Hz_22C';%  's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
+ ver = '_v2';
 
-           load([rawfolder,slidedate,subfolder,fname,'_',emb,'_nucdata.mat']);  
-          
- 
+ % work off of raw data counts
+ emb = '01';
+
+       load([rawfolder,slidedate,subfolder,fname,'_',emb,'_nucdata.mat']);  
 
 
-              load([folder,slidedate,fname,'_',emb,'_chn', num2str( st_channel+1),'_data',ver,'.mat']); 
-              mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
-              disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
-              ipars{1} = Rpars; 
+          load([folder,slidedate,fname,'_',emb,'_chn', num2str( st_channel+1),'_data',ver,'.mat']); 
+          mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
+          disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
+          ipars{1} = Rpars; 
 
-                load([folder,slidedate,fname,'_',emb,'_chn',num2str( st_channel+2),'_data',ver,'.mat']);
-                 disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
-                mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
-                ipars{2} = Rpars; 
+            load([folder,slidedate,fname,'_',emb,'_chn',num2str( st_channel+2),'_data',ver,'.mat']);
+             disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
+            mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
+            ipars{2} = Rpars; 
 
     
           

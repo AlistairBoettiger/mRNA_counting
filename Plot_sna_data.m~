@@ -1,7 +1,7 @@
 
 %%                          Plot_sna_data.m
 % Alistair Boettiger                                Date Begun: 06/27/11
-% Levine Lab         
+% Levine Lab                                    Last Modified: 07/21/11
 
 %% Notes
 %  this script is written to work on the ouptut of anlz_sna_counting data.
@@ -10,40 +10,50 @@
 %  same slide into a common dataset).  
 
 clear all;
+showcase = 0; % show individual embryo analyses
+
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
- 
-% slides = {'y control'; 'y control B';'y no distal';'y no distal B'; 'y no proximal';'y control het'; 'y no proximal het'};
+% slides = {'y control'; 'y control B';'y no distal';'y no distal B'; 'y no proximal'; 'y no proximal B'; 'y control het'; 'y no proximal het'}; set_names = {'control BAC', 'no distal', 'no proximal', 'cntrl het', 'no prox het'}; 
 % slides = {'cntrl y, sna[IIG]'};
- slides = {'primary alone','shadow removed', 'primary removed', 'wt'}; % { 'sna2.8Hz', 'MP08Hz','MP07Hz', 'wt'};
-%slides = {'sna2.8Hz','wt'};   % slides = {'MP10Hz', 'MP06Hz'
-%'MP10het','MP05het'};
+ slides = { 'wt','wt B','wt C','control BAC','control BAC B', 'primary removed', 'primary removed B', 'shadow removed', 'shadow removed B','primary alone'}; set_names = {'wt','control BAC','proximal removed','distal removed','proximal alone'}; 
+ 
+
 ver = '';
 vout= '';
 
 % record stats
 S = length(slides);
-Ndatasets = 1; 
+Ndatasets = 5; 
 oldset = 0;
 dset = 0; 
 
+plotson = 0; 
+
+Theta = 50;  % 30
+
 % set up figures for legend
-figure(1); clf;  figure(3); clf;  figure(4); clf;
-colordef white; set(gcf,'color','w');
- for s = 1:S
-        figure(1); hold on; plot(0,500,'-','color',[s/S,0,1-s/S]); 
-        colordef white; set(gcf,'color','w');
-        figure(3); hold on; plot(0,500,'-','color',[s/S,0,1-s/S]);
-        colordef white; set(gcf,'color','w');
-        figure(4);hold on;  plot(0,500,'-','color',[s/S,0,1-s/S]);
-        colordef white; set(gcf,'color','w');
- end
-figure(1); legend(slides);
- figure(3); legend(slides);
- figure(4); legend(slides); 
+
+    figure(1); clf;  figure(3); clf;  figure(4); clf;
+    colordef white; set(gcf,'color','w');
+     for s = 1:Ndatasets
+            figure(1); hold on; plot(0,500,'-','color',[s/S,0,1-s/S]); 
+            colordef white; set(gcf,'color','w');
+            figure(3); hold on; plot(0,500,'-','color',[s/S,0,1-s/S]);
+            colordef white; set(gcf,'color','w');
+            figure(4);hold on;  plot(0,500,'-','color',[s/S,0,1-s/S]);
+            colordef white; set(gcf,'color','w');
+     end
+    figure(1); legend(set_names);
+     figure(3); legend(set_names);
+     figure(4); legend(set_names); 
+
 
 ave_sna = cell(S,1);
 std_sna = cell(S,1); 
 cov_sna = cell(S,1);
+ave_sna_col = cell(Ndatasets,1);
+std_sna_col = cell(Ndatasets,1); 
+cov_sna_col = cell(Ndatasets,1);
 ave_y = cell(S,1); 
 std_y = cell(S,1); 
 cov_y = cell(S,1);
@@ -75,15 +85,15 @@ switch slides{s}
     case 'y control B' % 'MP10Hz'
        date = '2011-05-22/';  
       fname = 's04_MP10Hz_b';% 
-      chns = 2; ver = '_v2';
-      skip = 20;   
+      chns = 2; ver = '_v3';
+      skip = 5;   
       dataset = 1;
       
     case 'y no distal' % 'MP06Hz'
         date = '2011-05-22/'; 
       fname =  's05_MP06Hz' ;%  
       chns = 2;
-      ver = ''; %'_v2';
+      ver = '_v2'; %'_v2';
       skip = 10;% 
       dataset = 2;
       
@@ -91,16 +101,24 @@ switch slides{s}
         date = '2011-05-22/'; 
       fname =  's05_MP06Hz_b' ;%  
       chns = 2;
-      ver = '_v4';
+      ver =  '_v4';
       skip = 20;% 
       dataset = 2;
  
     case 'y no proximal' % 'MP05Hz'
         date ='2011-06-20/';%  
         fname ='s07_MP05Hz_22C';
-          ver = ''; % '_v2';
+          ver = '_v2'; % '_v2';
         chns = 2;
-        skip = 7;
+        skip = [6,7];
+        dataset = 3;
+      
+    case 'y no proximal B' % 'MP05Hz'
+        date ='2011-06-20/';%  
+        fname ='s07_MP05Hz_22C_c';
+          ver = ''; % 
+        chns = 2;
+        skip = 17;
         dataset = 3;
       
       
@@ -140,15 +158,48 @@ switch slides{s}
         ver = '_v3';%
         chns = 1; 
        skip = 9;    
-        dataset = 1;       
+        dataset = 1;     
         
-   case 'primary alone' % 'sna2.8Hz'
-        date = '2011-06-20/';
-        fname = 'sna2.8Hz_snaD_22C';
-        ver = '';
+    case 'wt B'
+     date = '2011-02-17/'; 
+        fname = 'MP05_22C_sna_y_c'; 
+        ver = '_v2';
         chns = 1;
-        skip = 15; 
+        skip = 3;
+        dataset = 1;
+%         date ='2011-06-20/';%  
+%         fname ='s07_MP05Hz_22C';
+%           ver = '_v2'; % '_v2';
+%         chns = 1;
+%         skip = 7;
+%         dataset = 1;
+ 
+    case 'wt C'
+        date ='2011-06-20/';%  
+        fname ='s07_MP05Hz_22C_c';
+          ver = ''; % 
+        chns = 1;
+        skip = 17;
+      dataset = 1;
+        
+        
+    case 'control BAC'
+        date = '2011-04_and_earlier/'; %
+        fname ='MP12Hz_snaD_22C'; 
+        chns = 1;
+         skip = 15;
+        ver = ''; 
         dataset = 2;
+        
+    case 'control BAC B'
+        date = '2011-04_and_earlier/'; %
+        fname ='MP12Hz_snaD_22C_b'; 
+        chns = 1;
+         skip = 15;
+        ver = ''; 
+        dataset = 2; 
+        
+
     
    case 'shadow removed' %  'MP08Hz'
         date = '2011-05-22/'; 
@@ -156,15 +207,40 @@ switch slides{s}
         ver = '';
         chns = 1; 
         skip = [2,3,7]; % 3 misoriented
-        dataset = 3;
+        dataset = 4;
+        
+    case 'shadow removed B'
+        date = '2011-05-22/'; 
+        fname =  'MP08Hz_snaD_22C_b';
+        ver = '';
+        chns = 1; 
+        skip = 15; % 
+        dataset = 4;
         
     case 'primary removed'% 'MP07Hz'
-        date = '2011-06-20/'; 
+        date = '2011-04_and_earlier/'; %
         fname = 'MP07Hz_snaD_22C';%
-         ver = '';
+         ver = '';% '_v2';
         chns =1;
         skip =[1,3,5];
-        dataset = 4;
+        dataset = 3;
+        
+   case 'primary removed B'% 'MP07Hz'
+        date = '2011-04_and_earlier/'; %
+        fname = 'MP07Hz_snaD_22C_b';%
+         ver =  '_v2';
+        chns =1;
+        skip =20;
+        dataset = 3;
+        
+   case 'primary alone' % 'sna2.8Hz'
+        date = '2011-06-20/';
+        fname = 'sna2.8Hz_snaD_22C';
+        ver = '';
+        chns = 1;
+        skip = 15; 
+        dataset = 5;
+        
         
     case '1x primary removed' % 'MP07het'
         date = '2011-05-22/'; 
@@ -172,7 +248,7 @@ switch slides{s}
          ver = '';
         chns =1;
         skip =15;
-        dataset = 5;
+        dataset = 6;
   
 end
 
@@ -215,10 +291,10 @@ end
   p1 = p(2); 
    offsets(e) = p1; 
    
-    figure(20); clf; plot(gx', grad,'b');
-    hold on; 
-    plot(gx,fit,'r');
-    plot(p(2),A/4,'r*','MarkerSize',20);
+%     figure(20); clf; plot(gx', grad,'b');
+%     hold on; 
+%     plot(gx,fit,'r');
+%     plot(p(2),A/4,'r*','MarkerSize',20);
  
     k = 2;  % for slide 1 we'll start indexing curves to shift from k = 2;
  else
@@ -235,7 +311,7 @@ for e= k:Es;
      grad = grad(st:end); 
      gx = gx(st:end);
 
-    figure(20); clf; plot(gx,grad);
+   % figure(20); clf; plot(gx,grad);
     n = 3;
     theta = 2*mean(gx);  
     A = max(grad); 
@@ -244,19 +320,15 @@ for e= k:Es;
 
     offsets(e) = abs(p(2)); 
 
-    figure(20); clf; plot(gx', grad,'b');
-    hold on; 
-    plot(gx,fit,'r');
-    plot(p(2),A/4,'r*','MarkerSize',20);
+%     figure(20); clf; plot(gx', grad,'b');
+%     hold on; 
+%     plot(gx,fit,'r');
+%     plot(p(2),A/4,'r*','MarkerSize',20);
     catch er
         disp(er.message); 
         continue
     end
 end
-
-
-figure(1);
-colordef white; set(gcf,'color','w');
 
 
 
@@ -269,12 +341,13 @@ colordef white; set(gcf,'color','w');
 
 
 for e = 1:Es 
-        if isempty(find(e==skip,1))  && isempty(data{e}) ~= 1;
+    % 
+    
+        if isempty(find(e==skip,1))  && isempty(data{e}) ~= 1 && data{e}.Nnucs > 255  && data{e}.Nnucs < 350 ; %   ------------------------------------ 
             emb =emb+1;
             
-             
-            
-            mcorr =   1;%   data{e}.Nnucs./data{1}.Nnucs; 
+             % *** %
+          mcorr = 1;%   data{e}.Nnucs./data{1}.Nnucs;  % 1 
             sna_cnt = mcorr*data{e}.Data_sort(:,2) - min(mcorr*data{e}.Data_sort(:,2));
             sna_m = mcorr*data{e}.mu(:,1)  - min(mcorr*data{e}.Data_sort(:,2));
                       
@@ -288,12 +361,14 @@ for e = 1:Es
             % compute median coefficient of variation
             med_cov  = data{e}.sigma(:,1);
             cov_sna{s}(e) = median(med_cov(sna_m>max(sna_m)/2)./sna_m(sna_m>max(sna_m)/2)); 
-            
-     %     cnt_dist{s}{e} = sna_cnt(sna_cnt>max(sna_m)/2);
             ave_sna{s}(e) = mean(sna_cnt(sna_cnt>max(sna_m)/2)) ;
             std_sna{s}(e) = std(sna_cnt(sna_cnt>max(sna_m)/2)) ;
             
-            if  chns == 1
+            cov_sna_col{dset}(emb) = median(med_cov(sna_m>max(sna_m)/2)./sna_m(sna_m>max(sna_m)/2)); 
+            ave_sna_col{dset}(emb) = mean(sna_cnt(sna_cnt>max(sna_m)/2)) ;
+            std_sna_col{dset}(emb) = std(sna_cnt(sna_cnt>max(sna_m)/2)) ;
+            
+            if  chns == 1 && plotson
                 figure(1);
                 plot(xdata,sna_cnt ,'o','color',[s/S,0,1-s/S],'MarkerSize',2); % check results    [e/Es,0,1-e/Es]
                 hold on; 
@@ -312,10 +387,7 @@ for e = 1:Es
             
       %  errorbar(data{e}.x+ p1-offsets(e),mcorr*data{e}.mu(:,1) - min(mcorr*data{e}.mu(:,1)) ,mcorr*data{e}.sigma(:,1),'linestyle','none','linewidth',3,'color',[e/Es,0,1-e/Es],'MarkerSize',1);
            if chns == 2;
-                figure(1);
-                 plot(data{e}.Data_sort(:,1) + p1-offsets(e),sna_cnt ,'.','color','k','MarkerSize',1); % check results    [e/Es,0,1-e/Es]
-                 hold on; 
-                 plot(data{e}.x+ p1-offsets(e), sna_m,'.','color','k','MarkerSize',5); % [e/Es,0,1-e/Es]
+
                
                 y_cnt = mcorr*data{e}.Data_sort(:,3)- min(mcorr*data{e}.Data_sort(:,3));
                 y_m = mcorr*data{e}.mu(:,2)- min(mcorr*data{e}.Data_sort(:,3));
@@ -323,26 +395,30 @@ for e = 1:Es
                 % whole curve for later plotting
                 pcurve{emb,2,dset} = y_cnt;  % dataset
                 
-                figure(1); 
-                plot(data{e}.Data_sort(:,1)+  p1-offsets(e),y_cnt,'.','color',[s/S,0,1-s/S],'MarkerSize',1); %[(s-1)/2,1-e/Es,e/Es]
-                hold on; 
-                plot(data{e}.x+ p1-offsets(e),y_m,'o','color',[s/S,0,1-s/S],'MarkerSize',5); % [0,1-e/Es,e/Es]
-
                 ave_y{s}(e) = mean(y_cnt(sna_cnt>max(sna_m)/2)) ;
                 std_y{s}(e) = std(y_cnt(sna_cnt>max(sna_m)/2)) ;
                 
                 med_cov  = data{e}.sigma(:,2);
                 cov_y{s}(e) = median(med_cov(sna_m>max(sna_m)/2)./y_m(sna_m>max(sna_m)/2)); 
+               
+                if plotson
+                    figure(1);
+                    plot(data{e}.Data_sort(:,1) + p1-offsets(e),sna_cnt ,'.','color','k','MarkerSize',1); % check results    [e/Es,0,1-e/Es]
+                    hold on; 
+                    plot(data{e}.x+ p1-offsets(e), sna_m,'.','color','k','MarkerSize',5); % [e/Es,0,1-e/Es]
+                    plot(data{e}.Data_sort(:,1)+  p1-offsets(e),y_cnt,'.','color',[s/S,0,1-s/S],'MarkerSize',1); %[(s-1)/2,1-e/Es,e/Es]
+                    hold on; 
+                    plot(data{e}.x+ p1-offsets(e),y_m,'o','color',[s/S,0,1-s/S],'MarkerSize',5); % [0,1-e/Es,e/Es]
 
-                figure(3); hold on; 
-            % plot(data{e}.Data_sort(:,1)+  p1-offsets(e), data{e}.Data_sort(:,3)./data{e}.Data_sort(:,2) ,'.','color',[e/Es,0,1-e/Es],'MarkerSize',5); ylim([0,2]); 
-            % plot(mean(data{e}.Data_sort(:,3)./data{e}.Data_sort(:,2)),'.','color',[e/Es,0,1-e/Es]);
-
-              errorbar(data{e}.x+  p1-offsets(e),data{e}.sigma(:,2)./data{e}.mu(:,2),data{e}.bssigma(:,2)./data{e}.mu(:,2),'o','color',[s/S,0,1-s/S],'MarkerSize',5);
-               ylabel('CoV of mRNA count'); xlabel('distance (nm)');
-              ylim([0,.50]);
+                    figure(3); hold on; 
+                % plot(data{e}.Data_sort(:,1)+  p1-offsets(e), data{e}.Data_sort(:,3)./data{e}.Data_sort(:,2) ,'.','color',[e/Es,0,1-e/Es],'MarkerSize',5); ylim([0,2]); 
+                % plot(mean(data{e}.Data_sort(:,3)./data{e}.Data_sort(:,2)),'.','color',[e/Es,0,1-e/Es]);
+                  errorbar(data{e}.x+  p1-offsets(e),data{e}.sigma(:,2)./data{e}.mu(:,2),data{e}.bssigma(:,2)./data{e}.mu(:,2),'o','color',[s/S,0,1-s/S],'MarkerSize',5);
+                   ylabel('CoV of mRNA count'); xlabel('distance (nm)');
+                  ylim([0,.50]);
+                end
             
-           if e == 2;% 2
+           if e == 2  && plotson;% 2
             y_hist  =  hist(y_cnt(sna_cnt>max(sna_m)/2),0:5:250); 
             figure(4); hold on; plot(0:5:250,y_hist,'color',[s/S,0,1-s/S],'linewidth',4);
            end
@@ -352,7 +428,7 @@ for e = 1:Es
         end
 end
 
-    
+    oldset = dset; 
 end % end loop over slides
 
 figure(1);  ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
@@ -373,31 +449,45 @@ if chns == 1;
     end
 
     
-    figure(2); clf; boxplot(sna_lev,'width',.8,'labels',slides);
+    figure(1); clf; set(gcf,'color','w'); colordef white;
+    boxplot(sna_lev,'width',.8,'labels',slides);
     ylabel('mRNA counts'); ylim([0,225]);
-     figure(3); clf; boxplot(sna_cov,'width',.8,'labels',slides);
+    
+     figure(2); clf; set(gcf,'color','w'); colordef white;
+     boxplot(sna_cov,'width',.8,'labels',slides);
     ylabel('CoV for mRNA counts'); ylim([0,0.25]);
+    hold on;
+    pois = sqrt(nanmean(sna_lev))./nanmean(sna_lev) ;  
+    figure(2); hold on; plot(pois,'k.');  
+    
+    sna_lev = zeros(Tembs,dset);
+    sna_std = zeros(Tembs,dset);
+    sna_cov = zeros(Tembs,dset); 
+    
+    Ne = zeros(dset,1); % number of embryos in each data set;
+    for s = 1:dset
+        Ne(s) = length(ave_sna_col{s});
+        sna_lev(:,s) = [ave_sna_col{s}'; NaN*ones(Tembs-Ne(s),1)]  ;
+        sna_std(:,s) = [std_sna_col{s}'; NaN*ones(Tembs-Ne(s),1)]  ;
+        sna_cov(:,s) = [cov_sna_col{s}'; NaN*ones(Tembs-Ne(s),1)]  ;
+    end
+
+    labs = strcat(set_names',' N=', num2str(Ne))
+
+    figure(5); clf; set(gcf,'color','w'); colordef white;
+    boxplot(sna_lev,'width',.8,'labels',labs);
+    ylabel('mRNA counts'); ylim([0,225]);
+    
+     figure(6); clf; set(gcf,'color','w'); colordef white;
+     boxplot(sna_cov,'width',.8,'labels',set_names);
+    ylabel('CoV for mRNA counts'); ylim([0,0.25]);
+    hold on;
+    pois = sqrt(nanmean(sna_lev))./nanmean(sna_lev) ;  
+    figure(6); hold on; plot(pois,'k.');  
 end
 
 % figure(2); clf; plot(sna_lev','ko');
 % xlim([0,5]); set(gcf,'color','w');
-
-Es = zeros(1,S+1); Ltot = 0; mtot = 0;
-figure(3); clf;
-for s=1:S
-    Es(s+1) = sum(1-cellfun('isempty',pxdata(:,s)));
-    for e=1:Es(s+1)
-        y = pcurve{e,1,s};
-         y = y(y>max(y)/2);
-        L = length(y); 
-        Ltot = Ltot+L;
-        mtot = mtot + sum(y); 
-        figure(3); hold on;
-        plot(.5*rand(1,L) + sum(Es(1:s))+e*ones(1,L),y,'.','color',[s/N,0,1-s/N],'MarkerSize',4);
-    end
-end
-set(gcf,'color','w'); ylabel('mRNA count'); xlabel('cell index');
-title([num2str(round(mtot)), ' mRNA counted from ', num2str(Ltot),' cells']);
 
 
 if chns == 2
@@ -432,33 +522,68 @@ if chns == 2
 
     labs = ['wt'; slides(:)];
     
-%     figure(2); clf; boxplot( [wt_sna,ybox(:,2:2:end)],'whisker',0,...
-%     'labels',labs);
-%      ylim([0,250]);
-%  
-%      figure(5); clf; boxplot(ycov,'colors',[1,0,0;0,1,0],'width',.8,...
-%         'labels',{'wt','2x y-cntrl','wt','2x no-shadow','wt','2x no-prox','wt','1x y-cntrl','wt','1x no-prox'});
-%         ylim([0,0.3]);
-%         set(gcf,'color','w'); ylabel('CoV for mRNA counts');
-    
+  
         
    figure(1); clf; boxplot(ybox); 
         
    figure(2); boxplot(yhb,'width',.8,'labels',slides);
      ylabel('ratio, y / hb');
      
-    
+     figure(4); clf; boxplot(ycov);
+     
 end
  
+%% Density scatters
 
+N = oldset; 
+
+Es = zeros(1,N+1); Ltot = 0; mtot = 0;
+figure(3); clf;
+for s=1:N
+    Es(s+1) = sum(1-cellfun('isempty',pxdata(:,s)))+1;
+    for e=1:Es(s+1)
+        y = pcurve{e,1,s};
+         y = y(y>max(y)/2);
+        L = length(y); 
+        Ltot = Ltot+L;
+        mtot = mtot + sum(y); 
+        figure(3); hold on;
+        plot(.5*rand(1,L) + sum(Es(1:s))+e*ones(1,L),y,'.','color',[s/N,0,1-s/N],'MarkerSize',4);
+    end
+end
+set(gcf,'color','w'); ylabel('mRNA count'); xlabel('embryo index');
+title([num2str(round(mtot)), ' mRNA counted from ', num2str(Ltot),' cells']);
+
+if chns == 2;
+    Es = zeros(1,N+1); Ltot = 0; mtot = 0;
+    % figure(4); clf;
+    for s=1:N
+        Es(s+1) = sum(1-cellfun('isempty',pxdata(:,s)))+1;
+        for e=1:Es(s+1)
+            y = pcurve{e,2,s};
+             y = y(y>max(y)/2);
+            L = length(y); 
+            Ltot = Ltot+L;
+            mtot = mtot + sum(y); 
+            figure(3); hold on;
+            plot(.5*rand(1,L) + sum(Es(1:s))+e*ones(1,L),y,'.','color',[0,1-s/N,s/N],'MarkerSize',4);
+        end
+    end
+    set(gcf,'color','w'); ylabel('mRNA count'); xlabel('embryo index');
+    title([num2str(round(mtot)), ' yellow mRNA counted from ', num2str(Ltot),' cells']);
+end
 %% Playing with different plots of saved curve data
 
-indiv_endog = 1; chns = 1;
+indiv_endog = 1; % chns = 1;
 
-Theta = 30; 
+Thresh = 30; 
+
+
+
+
 
 pts = 500;
-solid = .4*pts:.9*pts;
+solid = .4*pts:.8*pts;
 xmin = min(cat(1,pxdata{:}));
 xmax = max(cat(1,pxdata{:}));
 xs = linspace(xmin,xmax,pts)+abs(xmin);
@@ -518,9 +643,11 @@ sdat = zeros(N,pts);
         c(c==0) = NaN;    
         mcurve(s,:) = nanmean(c); % yellow
         stdcurve(s,:) = nanstd(c);  % yellow variation
-        y = smooth(mcurve(s,:),.1,'rloess');
-        [jnk, fitcurve(s,:)] = fxn_fit_sigmoid(xs(solid),y(solid)',[5,mean(xs),max(mcurve(s,:)),0],'r',[NaN,NaN,NaN,0]);
+        y = smooth(mcurve(s,:),.05,'rloess');
+        [jnk, fitcurve(s,:)] = fxn_fit_sigmoid(xs(solid),y(solid)',[8,mean(xs),max(y),0],'r',[NaN,NaN,NaN,0]);
 
+        figure(8); hold on; plot(xs(solid),y(solid)'); 
+        
         figure(21); 
             plot(xs,mcurve(s,:),'color',[s/N,0,1-s/N]);
             plot(xs(solid),fitcurve(s,:),'color',[s/N,0,1-s/N],'linewidth',3); hold on;   
@@ -530,28 +657,29 @@ sdat = zeros(N,pts);
             errorbar(xs(2*s:12:end),mcurve(s,2*s:12:end),stdcurve(s,2*s:12:end),'linestyle','none','color',[s/N,0,1-s/N]);
     end
     
-    if indiv_endog == 1 ;%  && s=3
+    if indiv_endog == 1  && chns == 1
         dat(dat==0) = NaN;
  
-        dat_peak = nanmedian(dat,2);
-
-        low = nanmean(  dat(dat_peak<Theta,:)  );
-        mid = nanmean( dat(dat_peak>Theta,:)   );
-        low_s = nanstd(  dat(dat_peak<Theta,:)  );
-        mid_s = nanstd( dat(dat_peak>Theta,:)   );
+        dat_peak = nanmedian(dat(:,solid),2);
+ low = zeros(1,length(xs));
+ mid = low; y = low; h = low; 
+        low = nanmean(  dat(dat_peak<Theta,:),1  );
+        mid = nanmean( dat(dat_peak>Theta,:),1   );
+        low_s = nanstd(  dat(dat_peak<Theta,:),[],1  );
+        mid_s = nanstd( dat(dat_peak>Theta,:),[],1   );
         
-        y = smooth(low,.12,'rloess');
+        y = smooth(low,.05,'rloess');
         [pars,h] = fxn_fit_sigmoid(xs(solid),y(solid)',[7,mean(xs),max(y),0],'r',[NaN,NaN,NaN,0]);
         figure(21); 
-            plot(xs,low,'color',dat_color);  hold on;
-            plot(xs(solid),h,'color',dat_color,'linewidth',3); 
+            plot(xs,low,'-.','color',dat_color);  hold on;
+            plot(xs(solid),h,'-.','color',dat_color,'linewidth',3); 
          figure(22); 
             plot(xs(solid),h,'--','color',dat_color,'linewidth',3); hold on;
             plot(xs,low,'o','color',dat_color,'MarkerSize',3); hold on;
             errorbar(xs(4*s:12:end),low(4*s:12:end),low_s(4*s:12:end),'linestyle','none','color',dat_color);
         
         
-        y = smooth(mid,.12,'rloess');
+        y = smooth(mid,.05,'rloess');
         [pars,h] = fxn_fit_sigmoid(xs(solid),y(solid)',[7,mean(xs),max(y),0],'r',[NaN,NaN,NaN,0]);
         figure(21); 
             plot(xs,mid,'color',dat_color); 
@@ -605,7 +733,7 @@ sdat = zeros(N,pts);
         dat(dat==0) = NaN;
         mdat(1,:) = nanmean(dat);
         sdat(1,:) = nanstd(dat); 
-        h = smooth(mdat(1,:),.1,'rloess');
+        h = smooth(mdat(1,:),.08,'rloess');
         [jnk2, fit_dat(1,:)] = fxn_fit_sigmoid(xs(solid),h(solid)',[5,mean(xs),max(h(solid)),0],'r',[NaN,NaN,NaN,0]);
         figure(21); 
              % plot(xs, mdat(1,:) ,'k--'); figure(1); clf;
@@ -641,7 +769,7 @@ sdat = zeros(N,pts);
 
 %% Individual showcase embryos
 
-
+if showcase == 1
 
 
 date = '2011-05-22/'; 
@@ -703,4 +831,4 @@ e = 10;
 %   figure(1); clf; imagesc(Iout); colormap hot;
 %  axis off; set(gcf,'color','k');
 %  
- 
+end

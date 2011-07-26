@@ -18,23 +18,23 @@
 
   
   maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; vout ='';% defaults
-  cbar = 1; 
+  cbar = 1;  chns_flipped = 0; 
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
-  % rawfolder = '/Volumes/GRAID/Raw_Data/2011-02-17/MP05_22C/';% MP10_22C/'; % 
-  % fname =   %  
-  slidedate =  '2011-07-12/';  % '2011-05-22/'; %    '2011-06-20/';%    '2011-02-17/';%    %  
-  subfolder = 'MP12Hz/'; % 's05_MP06/'   ; % 's04_MP10/';%  's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
-  fname ='MP12Hz_snaD_22C'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%  's04_MP10Hz_b'; ver = '_v2'; % 's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's07_MP05Hz_22C';%  's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
+  slidedate = '2011-04_and_earlier/';  %  '2011-05-22/'; %       '2011-06-20/';%      '2011-02-17/';%    %  
+  subfolder =   'MP12Hz/'; % 'MP07Hz/';% 's04_MP10/';%  's05_MP06/'   ; % 's07_MP05Hz/'; %   's07_MP08/'; %  'sna2p8het/'; %   's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
+  fname =  'MP12Hz_snaD_22C'; ver = '_v2';%'MP07Hz_snaD_22C_b'; ver= '_v3'; % % 's04_MP10Hz_b'; ver = '_v3'; %  % 's05_MP06Hz_b'; ver = '_v2';% 's07_MP05Hz_22C_c';  ver = '';%     'MP08Hz_snaD_22C_b' ; % 's07_MP05Hz_22C_c';%  ver = '_v2';%  'sna2p8het_sim_sna'; ver = '_v2'; Es=1; % 'MP12Hz_snaD_22C_b'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%   's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
   vc1 = ver; vc2 = ver;   % vc1 = ''; vc2 = '_v4';
   
+  chns_flipped = 0; 
   
+  % vout ='_o2';
   missG = 1.0; 
   ipars{3} = missG; 
   
   manual_orient =[];%  [-10,-45,-35,45,135,45,-145,-50,-80,65];
 
-  chns = 1; % 1 % 2; %
+  chns = 2; % 1 % 2; %
  
 %    try
 %      load([folder,fname,'_slidedata',ver], 'Data'); 
@@ -75,15 +75,19 @@ for e =  1: Es %  e = 7
       if nametype == 1 
           try
                ver = vc1; 
-             % load([folder,slidedate,fname,'_',emb,'_chn', num2str( st_channel+1),'_data',ver,'.mat']); 
-              load([folder,slidedate,fname,'_',emb,'_chn2','_data',ver,'.mat']); 
+              load([folder,slidedate,fname,'_',emb,'_chn', num2str( st_channel+1),'_data',ver,'.mat']); 
+              if chns_flipped == 1  
+                    load([folder,slidedate,fname,'_',emb,'_chn2','_data',ver,'.mat']); 
+              end
               mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
               disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
               ipars{1} = Rpars; 
               if chns ==2
                 ver = vc2;
-               % load([folder,slidedate,fname,'_',emb,'_chn',num2str( st_channel+2),'_data',ver,'.mat']);
-                  load([folder,slidedate,fname,'_',emb,'_chn1','_data',ver,'.mat']);
+                load([folder,slidedate,fname,'_',emb,'_chn',num2str( st_channel+2),'_data',ver,'.mat']);
+                if chns_flipped == 1
+                    load([folder,slidedate,fname,'_',emb,'_chn1','_data',ver,'.mat']);
+                end
                  disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
                 mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
                 ipars{2} = Rpars; 
@@ -109,7 +113,12 @@ for e =  1: Es %  e = 7
                       for n=1:Nnucs;
                           PlotmRNA(PlotmRNA==n) = mRNAsadj(n+cor);
                           if chns == 2
+                              try
                             PlotmRNA2(PlotmRNA2==n) = mRNAsadj2(n+cor);
+                              catch er
+                                  disp(er.message);
+                              end
+                                  
                           end
                       end
     figure(1); clf; imagesc(PlotmRNA); colormap hot; colorbar;
@@ -184,8 +193,9 @@ for e =  1: Es %  e = 7
     [b,m,n] = unique(nuc_order);
     dists = d(m);
     if length(dists) < length(mRNAsadj)
-       disp('length dists does not match');
-       dists = [dists,dists(end)]; 
+        disp('length dists does not match');
+        % dists = [0,dists,dists(end)]; 
+       dists = d;
     end
         figure(1); clf; plot(dists,mRNAsadj ,'g.');  % check results
 
@@ -219,6 +229,7 @@ for e =  1: Es %  e = 7
     %%
   catch err
       disp(err.message);
+      disp(['error on line ', err.stack.line]);
      %  break
        continue 
  end
