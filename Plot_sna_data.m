@@ -228,7 +228,7 @@ switch slides{s}
    case 'primary removed B'% 'MP07Hz'
         date = '2011-04_and_earlier/'; %
         fname = 'MP07Hz_snaD_22C_b';%
-         ver =  '_v2';
+         ver =  '_v3';
         chns =1;
         skip =20;
         dataset = 3;
@@ -348,9 +348,14 @@ for e = 1:Es
             
              % *** %
           mcorr = 1;%   data{e}.Nnucs./data{1}.Nnucs;  % 1 
-            sna_cnt = mcorr*data{e}.Data_sort(:,2) - min(mcorr*data{e}.Data_sort(:,2));
-            sna_m = mcorr*data{e}.mu(:,1)  - min(mcorr*data{e}.Data_sort(:,2));
-                      
+%             sna_cnt = mcorr*data{e}.Data_sort(:,2) - min(mcorr*data{e}.Data_sort(:,2));
+%             sna_m = mcorr*data{e}.mu(:,1)  - min(mcorr*data{e}.Data_sort(:,2));
+            
+            sna_cnt = mcorr*data{e}.Data_sort(:,2)  - min(mcorr*data{e}.mu(:,1));
+            sna_cnt(sna_cnt<0) = 0;
+            sna_m = mcorr*data{e}.mu(:,1)  - min(mcorr*data{e}.mu(:,1));
+            sna_m(sna_m<0) = 0; 
+            
             xdata = data{e}.Data_sort(:,1) + p1-offsets(e)  ; 
             
             % store whole curves
@@ -455,7 +460,7 @@ if chns == 1;
     
      figure(2); clf; set(gcf,'color','w'); colordef white;
      boxplot(sna_cov,'width',.8,'labels',slides);
-    ylabel('CoV for mRNA counts'); ylim([0,0.25]);
+    ylabel('CoV for mRNA counts'); ylim([0,0.35]);
     hold on;
     pois = sqrt(nanmean(sna_lev))./nanmean(sna_lev) ;  
     figure(2); hold on; plot(pois,'k.');  
@@ -479,8 +484,8 @@ if chns == 1;
     ylabel('mRNA counts'); ylim([0,225]);
     
      figure(6); clf; set(gcf,'color','w'); colordef white;
-     boxplot(sna_cov,'width',.8,'labels',set_names);
-    ylabel('CoV for mRNA counts'); ylim([0,0.25]);
+     boxplot(sna_cov,'width',.8,'labels',set_names,'labelorientation','inline');
+    ylabel('CoV for mRNA counts'); ylim([0.05,0.5]);
     hold on;
     pois = sqrt(nanmean(sna_lev))./nanmean(sna_lev) ;  
     figure(6); hold on; plot(pois,'k.');  
@@ -576,14 +581,14 @@ end
 
 indiv_endog = 1; % chns = 1;
 
-Thresh = 30; 
+Thresh = 5; 
 
 
 
 
 
 pts = 500;
-solid = .4*pts:.8*pts;
+solid = .4*pts:.75*pts;
 xmin = min(cat(1,pxdata{:}));
 xmax = max(cat(1,pxdata{:}));
 xs = linspace(xmin,xmax,pts)+abs(xmin);
@@ -594,6 +599,8 @@ Es = zeros(1,N);
 figure(21); clf;
    figure(22); clf;
 
+   indiv_cells = 0;
+   
 mcurve = zeros(N,pts);
 stdcurve = zeros(N,pts); 
 fitcurve = zeros(N,length(solid));
@@ -633,8 +640,10 @@ sdat = zeros(N,pts);
             y = pcurve{emb,1,s}';
             y = y(v);
             dat(emb,:) = interp1(x',y,xs);
-            figure(21); hold on;
-            plot(x,y,'o','color',dat_color,'MarkerSize',1); hold on;
+            if indiv_cells == 1;
+                figure(21); hold on;
+                plot(x,y,'o','color',dat_color,'MarkerSize',1); hold on;
+            end
         end
            % plot(xs,c(emb,:),'bo','MarkerSize',2); hold on;
     end
@@ -646,7 +655,7 @@ sdat = zeros(N,pts);
         y = smooth(mcurve(s,:),.05,'rloess');
         [jnk, fitcurve(s,:)] = fxn_fit_sigmoid(xs(solid),y(solid)',[8,mean(xs),max(y),0],'r',[NaN,NaN,NaN,0]);
 
-        figure(8); hold on; plot(xs(solid),y(solid)'); 
+       % figure(8); hold on; plot(xs(solid),y(solid)'); 
         
         figure(21); 
             plot(xs,mcurve(s,:),'color',[s/N,0,1-s/N]);
@@ -668,25 +677,29 @@ sdat = zeros(N,pts);
         low_s = nanstd(  dat(dat_peak<Theta,:),[],1  );
         mid_s = nanstd( dat(dat_peak>Theta,:),[],1   );
         
-        y = smooth(low,.05,'rloess');
-        [pars,h] = fxn_fit_sigmoid(xs(solid),y(solid)',[7,mean(xs),max(y),0],'r',[NaN,NaN,NaN,0]);
+        y = smooth(low,.12,'rloess');
+        y(y<0) = 0; 
+        [pars,h] = fxn_fit_sigmoid(xs(solid),y(solid)',[5,mean(xs(solid)),max(y(solid)),0],'r',[NaN,NaN,NaN,NaN]);
         figure(21); 
-            plot(xs,low,'-.','color',dat_color);  hold on;
-            plot(xs(solid),h,'-.','color',dat_color,'linewidth',3); 
+            plot(xs,low,'-.','color',dat_color,'linewidth',1);  hold on;
+            plot(xs(solid),h,'-.','color',dat_color,'linewidth',2); 
          figure(22); 
-            plot(xs(solid),h,'--','color',dat_color,'linewidth',3); hold on;
+            plot(xs(solid),h,'--','color',dat_color,'linewidth',2); hold on;
             plot(xs,low,'o','color',dat_color,'MarkerSize',3); hold on;
             errorbar(xs(4*s:12:end),low(4*s:12:end),low_s(4*s:12:end),'linestyle','none','color',dat_color);
         
-        
-        y = smooth(mid,.05,'rloess');
-        [pars,h] = fxn_fit_sigmoid(xs(solid),y(solid)',[7,mean(xs),max(y),0],'r',[NaN,NaN,NaN,0]);
+         figure(8); hold on; plot(xs(solid),y(solid)','k.'); 
+        plot(xs(solid),h,'--','color',dat_color,'linewidth',3); hold on;
+         
+        y = smooth(mid,.08,'rloess');
+        y(y<0) = 0; 
+        [pars,h] = fxn_fit_sigmoid(xs(solid),y(solid)',[9,mean(xs(solid)),max(y(solid)),0],'r',[NaN,NaN,NaN,0]);
         figure(21); 
-            plot(xs,mid,'color',dat_color); 
+            plot(xs,mid,'color',dat_color,'linewidth',1); 
             plot(xs(solid),h,'color',dat_color,'linewidth',2);     
          figure(22); 
             plot(xs(solid),h,'--','color',dat_color,'linewidth',2); hold on;
-            plot(xs,mid,'o','color',dat_color,'MarkerSize',3); hold on;
+            plot(xs,mid,'o','color',dat_color,'MarkerSize',1); hold on;
             errorbar(xs(4*s:12:end),mid(4*s:12:end),mid_s(4*s:12:end),'linestyle','none','color',dat_color);
                    
         
@@ -733,7 +746,7 @@ sdat = zeros(N,pts);
         dat(dat==0) = NaN;
         mdat(1,:) = nanmean(dat);
         sdat(1,:) = nanstd(dat); 
-        h = smooth(mdat(1,:),.08,'rloess');
+        h = smooth(mdat(1,:),.05,'rloess');
         [jnk2, fit_dat(1,:)] = fxn_fit_sigmoid(xs(solid),h(solid)',[5,mean(xs),max(h(solid)),0],'r',[NaN,NaN,NaN,0]);
         figure(21); 
              % plot(xs, mdat(1,:) ,'k--'); figure(1); clf;
@@ -747,7 +760,7 @@ sdat = zeros(N,pts);
  
  figure(21); 
  ylim([0,250]);
- xlim([7E4,1.6E5]); 
+ xlim([7E4,1.3E5]); 
  xlabel('distance (nm)');
  ylabel('mRNA count (molecules/cell)');
  set(gcf,'color','w');
