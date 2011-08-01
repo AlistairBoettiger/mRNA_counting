@@ -17,7 +17,10 @@ clear all;
 % working off of data from anlz_sna_count_data
 
 date = '2011-04_and_earlier/'; % 
-fname ='MP12Hz_snaD_22C_b'; ver = ''; vout = '';
+ fname ='MP12Hz_snaD_22C_b'; 
+ver = ''; vout = '';
+
+% fname = 'sna2p8het_30C';
 load([folder,date,fname,ver,'_slidedata',vout,'.mat'],'data'); 
 
 figure(1); clf; colordef white; set(gcf,'color','w');
@@ -25,8 +28,18 @@ figure(11); clf; colordef white; set(gcf,'color','w');
 for e = 1:length(data);
     sna = data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2));
     sim = data{e}.Data_sort(:,3);
-    figure(1); subplot(2,5,e); 
-    scatter(sna,sim); xlim([0,250]);
+    figure(1); subplot(2,5,e);
+    
+    dist = data{e}.Data_sort(:,1);
+    dc = [dist/16E4,zeros(length(dist),1),1-dist/16E4];
+    scatter(sna,sim,100,dc,'.');
+    xlim([0,250]);
+    xlabel('sna mRNA counts'); ylabel('sim mRNA counts');
+    
+    
+    figure(3);  subplot(2,5,e);
+    x=data{e}.Data_sort(:,1);
+    hist(sna,linspace(0,400,50));  xlim([0,400]);
     
     figure(11); subplot(2,5,e);
     plot(data{e}.Data_sort(:,1),sna,'r.');
@@ -34,16 +47,113 @@ for e = 1:length(data);
     plot(data{e}.Data_sort(:,1),sim,'b.');
 end
 
+
+%%    Bimodal histogram within mesoderm 
+
+date = '2011-04_and_earlier/'; % 
+ fname ='MP12Hz_snaD_22C_b'; 
+ver = ''; vout = '';
+
+load([folder,date,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+
+       e =5; xmax = 7.5E4; xmin = 1.8E4;
+     %  e = 6; xmax = 7.5E4;
+    sna = data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2));
+    sim = data{e}.Data_sort(:,3);
+    x=data{e}.Data_sort(:,1);
+    b = linspace(0,350,27);
+  
+    figure(2); 
+      plot(data{e}.Data_sort(:,1),sna,'r.');
+    hold on; 
+    plot(data{e}.Data_sort(:,1),sim,'b.');
+    
+        figure(3); clf;   
+           
+ hist(sna(x>xmin & x<xmax),b);  xlim([-5,260]);    
+xlabel('mRNA count'); ylabel('frequency');
+  
+    
+           figure(4); clf;
+    hist(sna,b);  xlim([0,300]);
+    
+%%  plot bimodal histogram  
+
+date = '2011-04_and_earlier/'; % 
+ver = ''; vout = '';
+
+ fname = 'sna2p8het_30C';
+load([folder,date,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+       figure(3); clf;
+       e =7; xmax = 9.5E4;
+     %  e = 6; xmax = 7.5E4;
+    sna = data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2));
+    sim = data{e}.Data_sort(:,3);
+    x=data{e}.Data_sort(:,1);
+    b = linspace(0,350,27);
+ hist(sna(x<xmax),b);  xlim([-5,260]);    
+xlabel('mRNA count'); ylabel('frequency');
+  
+    
+           figure(4); clf;
+    hist(sna,b);  xlim([0,300]);
+    
+       figure(2); 
+      plot(data{e}.Data_sort(:,1),sna,'r.');
+    hold on; 
+    plot(data{e}.Data_sort(:,1),sim,'b.');
+    
+    %%  plot bimodal histogram   B
+
+date = '2011-04_and_earlier/'; % 
+ver = ''; vout = '';
+
+ fname = 'sna2p8het_sim_sna';   ver = '_v2'; % 
+load([folder,date,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+       figure(3); clf;
+       e =1; xmax = 11.7E4; xmin = 1.5E4;
+     %  e = 6; xmax = 7.5E4;
+    sna = data{e}.Data_sort(:,2) - min(data{e}.Data_sort(:,2));
+    sim = data{e}.Data_sort(:,3);
+    x=data{e}.Data_sort(:,1);
+    b = linspace(0,350,27);
+ hist(sna(x>xmin & x<xmax),b);  xlim([-5,260]);    
+xlabel('mRNA count'); ylabel('frequency');
+  
+    
+           figure(4); clf;
+    hist(sna,b);  xlim([0,300]);
+    
+       figure(2); 
+      plot(data{e}.Data_sort(:,1),sna,'r.');
+    hold on; 
+    plot(data{e}.Data_sort(:,1),sim,'b.');
+    
 %% sna-sim heterogeniety in sna2.8 Hets
   
-
-  slidedate = '2011-04_and_earlier/'; % '2011-05-22/'; %    '2011-06-20/';%    
-  subfolder =  'sna2p8het/'; %  's05_MP06/'   ; % 's04_MP10/';%  's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
-  fname =  'sna2p8het_sim_sna'; % 's05_MP06Hz_b'; ver = '_v4';%  's04_MP10Hz_b'; ver = '_v2'; % 's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's07_MP05Hz_22C';%  's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
- ver = '_v2';
+st_channel = 0;  cor = 0;
+slidedate = '2011-04_and_earlier/'; % 'sna2p8het_sim_sna';   ver = '_v2'; % 
+% % ------------------------------------ % % 
+%   
+%   subfolder =  'sna2p8het/'; % 
+%   fname =  'sna2p8het_30C'; % 'sna2p8het_sim_sna';   ver = '_v2'; % 
+% 
+%  % work off of raw data counts
+% emb = '03' ;  ThS = 125; sna_bkg = 25; sim_bkg = 5;
+%  emb = '04';  ThS = 80; sna_bkg = 25; sim_bkg = 5;
+% % ------------------------------------ % %  
+ 
+ %
+ 
+  subfolder =  'MP12Hz/'; % 
+  fname ='MP12Hz_snaD_22C_b'; 
 
  % work off of raw data counts
- emb = '01';
+emb = '05' ;  ThS = 100; sna_bkg = 30; sim_bkg = 30;
+
+ 
+%
+ 
 
        load([rawfolder,slidedate,subfolder,fname,'_',emb,'_nucdata.mat']);  
 
@@ -58,15 +168,16 @@ end
             mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
             ipars{2} = Rpars; 
 
-    
-          
-    
-%%              
-       PlotmRNA = imresize(NucLabeled,.5,'nearest');
+        PlotmRNA = imresize(NucLabeled,.5,'nearest');
        PlotmRNA2 = PlotmRNA; 
 
        
        NucLabeled = imresize(NucLabeled,.5,'nearest'); 
+          
+    
+%  
+
+   
                       Nnucs =    max( NucLabeled(:) );
                       for n=1:Nnucs;
                           PlotmRNA(PlotmRNA==n) = mRNAsadj(n+cor);
@@ -88,10 +199,10 @@ end
     ylabel('sim (mRNA counts)'); 
     xlim([40,200]); ylim([40,160]);
     
-    sna = PlotmRNA2-30;
-    sna(sna<90) = 0; 
-    sim = PlotmRNA-30;
-    sim(sna>90) = 0; 
+    sna = PlotmRNA2-sna_bkg;
+    sna(sna<ThS) = 0; 
+    sim = PlotmRNA-sim_bkg;
+    sim(sna>ThS) = 0; 
     sim(sim<0) = 0; 
        
     [h,w] = size(PlotmRNA);
@@ -108,11 +219,14 @@ end
     
     figure(1); colordef white;  clf; imagesc(sna); colormap(Red); colorbar; 
     figure(2); colordef white; clf; imagesc(sim); colormap(Green); colorbar; colordef white;
-    
-     sna = PlotmRNA2-30;
-      sim = PlotmRNA-30;
-      sna(sna<40 & sim<40) = 0;
-      sim(sna<40 & sim<40) = 0;
+
+  %%  
+  
+  Th = 30;
+     sna = PlotmRNA2-sna_bkg;
+      sim = PlotmRNA-sim_bkg;
+      sna(sna<Th & sim<Th) = 0;
+      sim(sna<Th & sim<Th) = 0;
       sna = nonzeros(sna);
       sim = nonzeros(sim);
      figure(3); clf; scatter((sna(:)),(sim(:)),'ko'); 
@@ -140,5 +254,25 @@ end
         p(s) = sum(mRNAsadj(mRNAsadj2>s))/Nnucs;
     end     
     figure(5); clf; plot(p); 
+    
+    
+    %%
+    
+    x = linspace(-2,2,20); y = linspace(0,1,20);
+    [X,Y] = meshgrid(x,y);
+    Z = exp(-X.^2) + .09*rand(20,20); Z(Z>1) = 1;  
+    
+    Zn = Z-.3 + .3*rand(20,20);  Zn(Zn<0) = 0;
+    
+  figure(1); clf; set(gcf,'color','w');
+  subplot(2,2,1); surf(X,Y,Z); shading interp; view(22,66); colormap copper; %axis off; 
+  Z2 = Z; Z2(Z>.5) = 1; Z2(Z<.5) = 0;
+  subplot(2,2,3); surf(X,Y,Z2); shading interp; view(22,76); colormap copper; 
+    
+   subplot(2,2,2); surf(X,Y,Zn); shading interp; view(22,66); colormap copper;
+  Zn2 = Zn; Zn2(Zn>.5) = 1; Zn2(Zn<.5) = 0;
+  subplot(2,2,4); surf(X,Y,Zn2); shading interp; view(22,76); colormap copper; 
+    
+    %%
     
     
