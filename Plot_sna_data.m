@@ -13,9 +13,13 @@ clear all;
 showcase = 0; % show individual embryo analyses
 
 folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
-% slides = {'y control'; 'y control B';'y no distal';'y no distal B'; 'y no proximal'; 'y no proximal B'; 'y control het'; 'y no proximal het'}; set_names = {'control BAC', 'no distal', 'no proximal', 'cntrl het', 'no prox het'}; 
+
+%Nmin = 100; Nmax = 260; 
+Nmin = 260; Nmax = 400; 
+
+slides = {'y control'; 'y control B'; 'y control C'; 'y no distal';'y no distal B'; 'y no proximal'; 'y no proximal B'; 'y control het'; 'y no proximal het'}; set_names = {'control BAC', 'no distal', 'no proximal', 'cntrl het', 'no prox het'}; 
 % slides = {'cntrl y, sna[IIG]'};
- slides = { 'wt','wt B','wt C','control BAC','control BAC B', 'primary removed', 'primary removed B', 'shadow removed', 'shadow removed B','primary alone'}; set_names = {'wt','control BAC','proximal removed','distal removed','proximal alone'}; 
+% slides = { 'wt','wt B','wt C','control BAC','control BAC B', 'primary removed', 'primary removed B', 'shadow removed', 'shadow removed B','primary alone'}; set_names = {'wt','control BAC','proximal removed','distal removed','proximal alone'}; Nmin = 255; Nmax = 355;    
  
 
 ver = '';
@@ -75,7 +79,14 @@ for s = 1:S
     
      % Slide label information 
 switch slides{s}
-    case 'y control' % 'MP10Hz'
+    case 'y control C' % 'MP10Hz'
+      date = '2011-05-22/';  
+      fname = 'MP10Hz_c';% 
+      chns = 2; ver = '_v2';
+      skip = 20;   
+      dataset = 1;
+
+     case 'y control' 
        date = '2011-05-22/';  
       fname = 's04_MP10Hz';% 
       chns = 2; ver = '_v2';
@@ -341,9 +352,9 @@ end
 
 
 for e = 1:Es 
+    % data{e}.Nnucs > 255  && data{e}.Nnucs < 400 ; %
     % 
-    
-        if isempty(find(e==skip,1))  && isempty(data{e}) ~= 1 && data{e}.Nnucs > 255  && data{e}.Nnucs < 350 ; %   ------------------------------------ 
+        if isempty(find(e==skip,1))  && isempty(data{e}) ~= 1 && data{e}.Nnucs > Nmin  && data{e}.Nnucs < Nmax ; %   ------------------------------------ 
             emb =emb+1;
             
              % *** %
@@ -394,9 +405,13 @@ for e = 1:Es
            if chns == 2;
 
                
-                y_cnt = mcorr*data{e}.Data_sort(:,3)- min(mcorr*data{e}.Data_sort(:,3));
-                y_m = mcorr*data{e}.mu(:,2)- min(mcorr*data{e}.Data_sort(:,3));
+%                 y_cnt = mcorr*data{e}.Data_sort(:,3)- min(mcorr*data{e}.Data_sort(:,3));
+%                 y_m = mcorr*data{e}.mu(:,2)- min(mcorr*data{e}.Data_sort(:,3));
                 
+                y_cnt = mcorr*data{e}.Data_sort(:,3)- min(mcorr*data{e}.mu(:,1));
+                y_cnt(y_cnt<0) =0;  
+                y_m = mcorr*data{e}.mu(:,2)- min(mcorr*data{e}.mu(:,2));
+                y_m(y_m<0) = 0; 
                 % whole curve for later plotting
                 pcurve{emb,2,dset} = y_cnt;  % dataset
                 
@@ -705,22 +720,26 @@ sdat = zeros(N,pts);
         
 
        %  figure(1); clf; plot(xs,low); hold on; plot(xs,mid);
-%  % orginal non-split pattering        
-%         mdat(s,:) = nanmean(dat);
-%         sdat(s,:) = nanstd(dat); 
-%         h = smooth(mdat(s,:),.1,'rloess');
-%         [jnk2, fit_dat(s,:)] = fxn_fit_sigmoid(xs(solid),h(solid)',[4,mean(xs),max(mdat(s,:)),0],'r',[NaN,NaN,NaN,0]);
-% 
-%              figure(21); 
-%                  plot(xs, mdat(s,:) ,'k'); 
-%                  plot(xs(solid),fit_dat(s,:),'color',dat_color,'linewidth',2); hold on; 
-%              figure(22); 
-%                  plot(xs(solid),fit_dat(s,:),'--','color',dat_color,'linewidth',2); hold on;
-%                 plot(xs,mdat(s,:),'o','color',dat_color,'MarkerSize',3); hold on;
-%                 errorbar(xs(7:12:end),mdat(s,7:12:end),sdat(s,7:12:end),'linestyle','none','color','k');
      else
         datpool = [datpool; pcurve(:,1,s)];
         datx = [datx;pxdata(:,s)]; 
+        
+        if indiv_endog == 1;
+         % orginal non-split pattering        
+        mdat(s,:) = nanmean(dat);
+        sdat(s,:) = nanstd(dat); 
+        h = smooth(mdat(s,:),.1,'rloess');
+        [jnk2, fit_dat(s,:)] = fxn_fit_sigmoid(xs(solid),h(solid)',[4,mean(xs),max(mdat(s,:)),0],'r',[NaN,NaN,NaN,0]);
+
+             figure(21); 
+                 plot(xs, mdat(s,:) ,'k'); 
+                 plot(xs(solid),fit_dat(s,:),'color',dat_color,'linewidth',2); hold on; 
+             figure(22); 
+                 plot(xs(solid),fit_dat(s,:),'--','color',dat_color,'linewidth',2); hold on;
+                plot(xs,mdat(s,:),'o','color',dat_color,'MarkerSize',3); hold on;
+                errorbar(xs(7:12:end),mdat(s,7:12:end),sdat(s,7:12:end),'linestyle','none','color','k');
+        end
+
     end
  end
  
@@ -774,10 +793,7 @@ sdat = zeros(N,pts);
  xlim([7E4,16E4]); 
  xlabel('distance (nm)'); ylabel('mRNA density (molecules/50nm voxel)');
 
-   if chns ==2; % label for yellow analysis only    
-       legend(['no proximal N=', num2str(Es(1))],['no distal N=', num2str(Es(2))],...
-      ['control N=', num2str(Es(3))],['wt N=', num2str(sum(Es))]);
-   end
+
 
 
 %% Individual showcase embryos

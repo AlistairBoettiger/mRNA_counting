@@ -21,12 +21,12 @@
   cbar = 1;  chns_flipped = 0; 
   folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
    rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
-  slidedate = '2011-04_and_earlier/';  %  '2011-05-22/'; %       '2011-06-20/';%      '2011-02-17/';%    %  
-  subfolder =  'MP07Hz/';%  'MP12Hz/'; % 's04_MP10/';%  's05_MP06/'   ; % 's07_MP05Hz/'; %   's07_MP08/'; %  'sna2p8het/'; %   's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
-  fname = 'MP07Hz_snaD_22C_b'; ver= '_v3'; % 'MP12Hz_snaD_22C'; ver = '';% % 's04_MP10Hz_b'; ver = '_v3'; %  % 's05_MP06Hz_b'; ver = '_v2';% 's07_MP05Hz_22C_c';  ver = '';%     'MP08Hz_snaD_22C_b' ; % 's07_MP05Hz_22C_c';%  ver = '_v2';%  'sna2p8het_sim_sna'; ver = '_v2'; Es=1; % 'MP12Hz_snaD_22C_b'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%   's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
+  slidedate = '2011-06-20/';%     '2011-05-22/'; %  '2011-04_and_earlier/';  %        '2011-02-17/';%    %  
+  subfolder =  's07_MP05Hz/'; % 's04_MP10/'; %  'sna2p8het/'; %   'MP07Hz/';%  'MP12Hz/'; % 's04_MP10/';%  's05_MP06/'   ; %    's07_MP08/'; %  's06_MP10_sna18/'; %   's07_MP08/' ;%  'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
+  fname = 's07_MP05Hz_22C_c';  ver = '';% 'MP10Hz_c'; ver = '_v2'; % 'sna2p8het_30C'; % 'MP07Hz_snaD_22C_b'; ver= '_v3'; % 'MP12Hz_snaD_22C'; ver = '';% % 's04_MP10Hz_b'; ver = '_v3'; %  % 's05_MP06Hz_b'; ver = '_v2';%      'MP08Hz_snaD_22C_b' ; % 's07_MP05Hz_22C_c';%  ver = '_v2';%  'sna2p8het_sim_sna'; ver = '_v2'; Es=1; % 'MP12Hz_snaD_22C_b'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%   's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
   vc1 = ver; vc2 = ver;   % vc1 = ''; vc2 = '_v4';
   
-  chns_flipped = 1; 
+  % chns_flipped = 1; 
   
   % vout ='_o2';
   missG = 1.0; 
@@ -208,13 +208,11 @@ for e =  1: Es %  e = 7
     if isempty(manual_orient)
         meanvar = std(Data_sort(10:20,2));     
          % show rotated image
-%          figure(2); clf; 
-%             PlotmRNA_r = imrotate(PlotmRNA,(0+90*rotes)-rprops(1).Orientation,'nearest');
-%             imagesc(PlotmRNA_r)
+             PlotmRNA_r = imrotate(PlotmRNA,(0+90*rotes)-rprops(1).Orientation,'nearest');
+%          figure(2); clf;  imagesc(PlotmRNA_r)            
         if chns == 2
-%             figure(3); clf; 
-%             PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops(1).Orientation ,'nearest'); 
-%             imagesc(PlotmRNA2_r); colormap hot;
+            PlotmRNA2_r = imrotate(missG*PlotmRNA2,(0+90*rotes)-rprops(1).Orientation ,'nearest'); 
+%             figure(3); clf; imagesc(PlotmRNA2_r); colormap hot;           
         end     
     end
  end
