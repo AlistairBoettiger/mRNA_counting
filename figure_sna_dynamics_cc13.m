@@ -15,7 +15,7 @@ clear all;
 Nuc{5} = imread([rawfolder,'2011-12/','max_wt_sna_03.tif']);
 Nuc{3} = imread([rawfolder,'2011-12/','max_wt_sna_04.tif']);
 Nuc{1} = imread([rawfolder,'2011-12/','max_wt_sna_10.tif']);
-Nuc12{4} = imread([rawfolder,'2011-11/s08_MP06_cflip/','max_MP06_cflip_b_08.tif']);
+Nuc{4} = imread([rawfolder,'2011-11/s08_MP06_cflip/','max_MP06_cflip_b_08.tif']);
 Nuc{2}= imread([rawfolder,'2011-05-22/s05_MP06/','max_s05_MP06Hz_b_02.tif']);
 %-----------------------------------------------------------------------%
 
