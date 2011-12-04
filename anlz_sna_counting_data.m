@@ -18,17 +18,18 @@
 
   
   maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; vout ='';% defaults
-  cbar = 1;  chns_flipped = 0; 
-  folder = '/Users/alistair/Documents/Berkeley/Levine_Lab/Projects/mRNA_counting/Data/';
-   rawfolder = '/Volumes/Data/Lab Data/Raw_Data/';
-  slidedate =  '2011-05-22/'; %'2011-04_and_earlier/';  % '2011-06-20/';%             '2011-02-17/';%    %  
-  subfolder =  's07_MP08/' ;%  'MP12Hz/'; %  's07_MP05Hz/'; % 's04_MP10/'; %  'sna2p8het/'; %   'MP07Hz/';% 's04_MP10/';%  's05_MP06/'   ; %    's07_MP08/'; %  's06_MP10_sna18/'; %    'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
-  fname =  'MP08Hz_snaD_22C_b' ; %  'MP12Hz_snaD_22C'; ver = '';%'s07_MP05Hz_22C_c';  ver = '';% 'MP10Hz_c'; ver = '_v2'; % 'sna2p8het_30C'; % 'MP07Hz_snaD_22C_b'; ver= '_v3'; %  % 's04_MP10Hz_b'; ver = '_v3'; %  % 's05_MP06Hz_b'; ver = '_v2';%    's07_MP05Hz_22C_c';%  ver = '_v2';%  'sna2p8het_sim_sna'; ver = '_v2'; Es=1; % 'MP12Hz_snaD_22C_b'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%   's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
+  cbar = 1;  chns_flipped = 0; nuc_chn = 3; plotnoise = 0; 
+  folder = 'C:\Users/Alistair/My Documents/Projects/mRNA_counting/Data/';
+   rawfolder = 'C:\Users/Alistair/Data/';
+   %rawfolder = 'I:\Raw_Data\';%
+  slidedate =  '2011-12\';% '2011-02-17/';% '2011-11/'; %'2011-05-22/'; %   '2011-04_and_earlier/';  % '2011-06-20/';%              %  
+  subfolder =  ''; % 'MP05_22C\';% 'MP10_22C\'; % 's08_MP06_cflip\'; %   's05_MP06/';%    's07_MP08/' ;%  'MP12Hz/'; %  's07_MP05Hz/'; % 's04_MP10/'; %  'sna2p8het/'; %   'MP07Hz/';% 's04_MP10/';%   ; %    's07_MP08/'; %  's06_MP10_sna18/'; %    'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
+  fname = 's140_sna'; ver =''; % 'MP05_22C_sna_y'; ver = '_vN'; % 'MP10_22C_sna_y_d'; ver = '_vN'; % 'MP06_cflip_b'; ver = '_v2';% 'wt_sna'; ver = '_v2';%   's05_MP06Hz'; ver = '_vN';% 'MP08_snaD_LacZ647'; ver = '_v3';% 'MP05'; ver = '_v3'%   %  %  'MP08Hz_snaD_22C_b' ; %  'MP12Hz_snaD_22C'; ver = '';%'s07_MP05Hz_22C_c';  ver = '';% 'MP10Hz_c'; ver = '_v2'; % 'sna2p8het_30C'; % 'MP07Hz_snaD_22C_b'; ver= '_v3'; %  % 's04_MP10Hz_b'; ver = '_v3'; %  %    's07_MP05Hz_22C_c';%  ver = '_v2';%  'sna2p8het_sim_sna'; ver = '_v2'; Es=1; % 'MP12Hz_snaD_22C_b'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%   's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
   vc1 = ver; vc2 = ver;   % vc1 = ''; vc2 = '_v4';
   
   % chns_flipped = 1; 
   
-   vout ='_o2';
+   vout ='';
   missG = 1.0; 
   ipars{3} = missG; 
   
@@ -43,7 +44,7 @@
 %    end
   
   
-  figure(10); clf; figure(11); clf; figure(12); clf;
+  figure(10); clf; figure(11); clf; figure(12); clf; figure(14); clf;
   
   data = cell(Es,1); 
 for e =  1: Es %  e = 7
@@ -311,31 +312,39 @@ figure(10); subplot(3,ceil(Es/3),e);  colordef white; set(gcf,'color','w');
     title(['Nuclei = ',num2str(Nnucs)]);
 
 
-figure(11); subplot(3,ceil(Es/3),e);  
-colordef white; set(gcf,'color','w');
-errorbar(x,sigma(:,1)./mu(:,1),bssigma(:,1)./mu(:,1),  'r.','MarkerSize',10); 
-hold on;
-if chns == 2;
-    errorbar(x,sigma(:,2)./mu(:,2),bssigma(:,2)./mu(:,2),  'b.','MarkerSize',10); ylim([0,1]);
-end
-plot(x,sqrt(mu(:,1))./mu(:,1),'k.','MarkerSize',10);
-ylabel('CoV'); xlabel('distance (nm)');
+    if plotnoise == 1
+        figure(11); subplot(3,ceil(Es/3),e);  
+        colordef white; set(gcf,'color','w');
+        errorbar(x,sigma(:,1)./mu(:,1),bssigma(:,1)./mu(:,1),  'r.','MarkerSize',10); 
+        hold on;
+        if chns == 2;
+            errorbar(x,sigma(:,2)./mu(:,2),bssigma(:,2)./mu(:,2),  'b.','MarkerSize',10); ylim([0,1]);
+        end
+        plot(x,sqrt(mu(:,1))./mu(:,1),'k.','MarkerSize',10);
+        ylabel('CoV'); xlabel('distance (nm)');
 
-if legon == 1
-    if chns == 2
-        legend('sna CoV','y CoV','Poisson CoV');
-    else
-      legend('sna CoV','Poisson CoV');  
+        if legon == 1
+            if chns == 2
+                legend('sna CoV','y CoV','Poisson CoV');
+            else
+              legend('sna CoV','Poisson CoV');  
+            end
+        end
+        title(['Nuclei = ',num2str(Nnucs)]);
     end
-end
-title(['Nuclei = ',num2str(Nnucs)]);
- 
+
+figure(14); subplot(3,ceil(Es/3),e);
+ Inuc = imread([rawfolder,slidedate,subfolder,'max_',fname,'_',emb,'.tif']);
+ Inuc = Inuc(:,:,nuc_chn);  
+ imagesc(Inuc); colormap hot; caxis([mean(Inuc(:))/2,2*mean(Inuc(:))]);
+
+
 figure(12); subplot(3,ceil(Es/3),e);
 imagesc(PlotmRNA_r); colormap hot; 
 if cbar == 1
-   % caxis([20,max(Data_sort(:,2))]); colorbar;
+    caxis([20,max(Data_sort(:,2))]); colorbar;
     
-     caxis([20,200]); colorbar; axis off;
+   %  caxis([20,200]); colorbar; axis off;
 end
     
 if chns == 2
