@@ -17,14 +17,14 @@
   
 
   
-  maternal = 0;  ver = '';  Es = 14; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; vout ='';% defaults
+  maternal = 0;  ver = '';  Es = 15; cor = 0;   nametype = 1;  st_channel = 0;  legon  = 0; vout ='';% defaults
   cbar = 1;  chns_flipped = 0; nuc_chn = 3; plotnoise = 0; 
   folder = 'C:\Users/Alistair/My Documents/Projects/mRNA_counting/Data/';
    rawfolder = 'C:\Users/Alistair/Data/';
    %rawfolder = 'I:\Raw_Data\';%
-  slidedate =  '2011-12\';% '2011-02-17/';% '2011-11/'; %'2011-05-22/'; %   '2011-04_and_earlier/';  % '2011-06-20/';%              %  
-  subfolder =  ''; % 'MP05_22C\';% 'MP10_22C\'; % 's08_MP06_cflip\'; %   's05_MP06/';%    's07_MP08/' ;%  'MP12Hz/'; %  's07_MP05Hz/'; % 's04_MP10/'; %  'sna2p8het/'; %   'MP07Hz/';% 's04_MP10/';%   ; %    's07_MP08/'; %  's06_MP10_sna18/'; %    'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
-  fname = 's140_sna'; ver =''; % 'MP05_22C_sna_y'; ver = '_vN'; % 'MP10_22C_sna_y_d'; ver = '_vN'; % 'MP06_cflip_b'; ver = '_v2';% 'wt_sna'; ver = '_v2';%   's05_MP06Hz'; ver = '_vN';% 'MP08_snaD_LacZ647'; ver = '_v3';% 'MP05'; ver = '_v3'%   %  %  'MP08Hz_snaD_22C_b' ; %  'MP12Hz_snaD_22C'; ver = '';%'s07_MP05Hz_22C_c';  ver = '';% 'MP10Hz_c'; ver = '_v2'; % 'sna2p8het_30C'; % 'MP07Hz_snaD_22C_b'; ver= '_v3'; %  % 's04_MP10Hz_b'; ver = '_v3'; %  %    's07_MP05Hz_22C_c';%  ver = '_v2';%  'sna2p8het_sim_sna'; ver = '_v2'; Es=1; % 'MP12Hz_snaD_22C_b'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%   's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
+  slidedate =  '2011-12\';% '2011-02-17/';% '2011-02-17/';% '2011-11/'; %'2011-05-22/'; %   '2011-04_and_earlier/';  % '2011-06-20/';%              %  
+  subfolder = ''; % 'MP10_22C\'; %  'MP05_22C\';% 's08_MP06_cflip\'; %   's05_MP06/';%    's07_MP08/' ;%  'MP12Hz/'; %  's07_MP05Hz/'; % 's04_MP10/'; %  'sna2p8het/'; %   'MP07Hz/';% 's04_MP10/';%   ; %    's07_MP08/'; %  's06_MP10_sna18/'; %    'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
+  fname =  's142_sna'; Es = 16; % 's140_sna'; ver ='_v3'; % 'MP10_22C_sna_y_e'; ver = '_vN'; % 'MP05_22C_sna_y'; ver = '_vN'; % 'MP10_22C_sna_y_d'; ver = '_vN'; % 'MP06_cflip_b'; ver = '_v2';% 'wt_sna'; ver = '_v2';%   's05_MP06Hz'; ver = '_vN';% 'MP08_snaD_LacZ647'; ver = '_v3';% 'MP05'; ver = '_v3'%   %  %  'MP08Hz_snaD_22C_b' ; %  'MP12Hz_snaD_22C'; ver = '';%'s07_MP05Hz_22C_c';  ver = '';% 'MP10Hz_c'; ver = '_v2'; % 'sna2p8het_30C'; % 'MP07Hz_snaD_22C_b'; ver= '_v3'; %  % 's04_MP10Hz_b'; ver = '_v3'; %  %    's07_MP05Hz_22C_c';%  ver = '_v2';%  'sna2p8het_sim_sna'; ver = '_v2'; Es=1; % 'MP12Hz_snaD_22C_b'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%   's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
   vc1 = ver; vc2 = ver;   % vc1 = ''; vc2 = '_v4';
   
   % chns_flipped = 1; 
@@ -81,7 +81,7 @@ for e =  1: Es %  e = 7
                     load([folder,slidedate,fname,'_',emb,'_chn2','_data',ver,'.mat']); 
               end
               mRNAsadj = mRNA_sadj; % mRNA_cnt./nuc_area;
-              disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
+             % disp(['chn1 thresh: ', num2str(Rpars.min_int)]);
               ipars{1} = Rpars; 
               if chns ==2
                 ver = vc2;
@@ -89,7 +89,7 @@ for e =  1: Es %  e = 7
                 if chns_flipped == 1
                     load([folder,slidedate,fname,'_',emb,'_chn1','_data',ver,'.mat']);
                 end
-                 disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
+               %  disp(['chn2 thresh: ', num2str(Rpars.min_int)]);
                 mRNAsadj2 = mRNA_sadj; % mRNA_cnt./nuc_area;  % 
                 ipars{2} = Rpars; 
               end
@@ -310,7 +310,7 @@ figure(10); subplot(3,ceil(Es/3),e);  colordef white; set(gcf,'color','w');
     end
     ylabel('number of mRNA transcripts per cell'); xlabel('distance (nm)');
     title(['Nuclei = ',num2str(Nnucs)]);
-
+    xlim([min(x),max(x)]); 
 
     if plotnoise == 1
         figure(11); subplot(3,ceil(Es/3),e);  
