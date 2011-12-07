@@ -108,7 +108,13 @@ slidedate = '2011-12/'; fname = 'wt_sna' ; ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
 mRNAs12telo{5} = data{3}.Data_sort(:,2);  mu12telo{5} = data{3}.mu;
 mRNAs12telo{3} = data{4}.Data_sort(:,2);  mu12telo{3} = data{4}.mu;
-mRNAs12telo{1} = data{10}.Data_sort(:,2); mu12telo{1} = data{10}.mu;
+% mRNAs12telo{1} = data{10}.Data_sort(:,2); mu12telo{1} = data{10}.mu;
+
+Nuc{5} = imread([rawfolder,slidedate,'max_',fname,'_03.tif']);
+Nuc{3} = imread([rawfolder,'2011-12/','max_wt_sna_04.tif']);
+Nuc{1} = imread([rawfolder,'2011-12/','max_wt_sna_10.tif']);
+Nuc{4} = imread([rawfolder,'2011-11/s08_MP06_cflip/','max_MP06_cflip_b_08.tif']);
+Nuc{2}= imread([rawfolder,'2011-05-22/s05_MP06/','max_s05_MP06Hz_b_02.tif']);
 
 slidedate = '2011-11/'; fname = 'MP06_cflip_b' ; ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
@@ -118,32 +124,40 @@ mRNAs12telo{4} = data{8}.Data_sort(:,2); mu12telo{4} = data{8}.mu;
 slidedate = '2011-05-22/'; fname = 's05_MP06Hz_b' ; ver = '_vN'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
 mRNAs12telo{2} = data{2}.Data_sort(:,2); mu12telo{2} = data{2}.mu;
+
+
+slidedate = '2011-12/'; fname = 's142_sna';  ver = '_v2'; vout = '';
+load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+mRNAs12telo{6} = data{1}.Data_sort(:,2); mu12telo{6} = data{1}.mu;
+mRNAs12telo{7} = data{2}.Data_sort(:,2); mu12telo{7} = data{2}.mu;
+
 %-----------------------------------------------------------------------%
 
 %========================== during cc13====================================
 % 'wt_sna'  emb = 09
 % 'MP06_cflip' emb = 01, 02, 09, 10 
 % 'MP06Hz_b' emb = 04, 05
-slidedate = '2011-12/'; fname = 's142_sna';  ver = ''; vout = '';
+slidedate = '2011-12/'; fname = 's142_sna';  ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs13{1} = data{1}.Data_sort(:,2); mu13{1} = data{1}.mu;
-mRNAs13{2} = data{2}.Data_sort(:,2); mu1{2} = data{2}.mu;
+mRNAs13{5} = data{10}.Data_sort(:,2); mu13{5} = data{10}.mu;
+mRNAs13{9} = data{11}.Data_sort(:,2); mu13{9} = data{11}.mu;
+mRNAs13{1} = data{8}.Data_sort(:,2); mu13{1} = data{8}.mu;
 
 slidedate = '2011-12/'; fname = 'wt_sna' ; ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs13{1} = data{9}.Data_sort(:,2); mu13{1} = data{9}.mu;
+mRNAs13{2} = data{9}.Data_sort(:,2); mu13{2} = data{9}.mu;
 
 slidedate = '2011-11/'; fname = 'MP06_cflip_b' ; ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs13{2} = data{1}.Data_sort(:,2); mu13{2} = data{1}.mu;
-mRNAs13{3} = data{2}.Data_sort(:,2); mu13{3} = data{2}.mu;
-mRNAs13{7} = data{9}.Data_sort(:,2); mu13{7} = data{9}.mu;
-mRNAs13{6} = data{10}.Data_sort(:,2); mu13{6} = data{10}.mu;
+mRNAs13{3} = data{1}.Data_sort(:,2); mu13{3} = data{1}.mu;
+mRNAs13{4} = data{2}.Data_sort(:,2); mu13{4} = data{2}.mu;
+mRNAs13{10} = data{9}.Data_sort(:,2); mu13{10} = data{9}.mu;
+mRNAs13{8} = data{10}.Data_sort(:,2); mu13{8} = data{10}.mu;
 
 slidedate = '2011-05-22/'; fname = 's05_MP06Hz_b' ; ver = '_vN'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs13{4} = data{4}.Data_sort(:,2); mu13{4} = data{4}.mu;
-mRNAs13{5} = data{5}.Data_sort(:,2); mu13{5} = data{5}.mu;
+mRNAs13{6} = data{4}.Data_sort(:,2); mu13{6} = data{4}.mu;
+mRNAs13{7} = data{5}.Data_sort(:,2); mu13{7} = data{5}.mu;
 %========================================================================%
 
 
@@ -153,26 +167,30 @@ mRNAs13{5} = data{5}.Data_sort(:,2); mu13{5} = data{5}.mu;
 % 'MP06_cflip' emb = 03, 04, 06
 % 'MP06Hz_b' emb = 01, 09, 10
 
+slidedate = '2011-12/'; fname = 's142_sna';  ver = '_v2'; vout = '';
+load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+mRNAs13meta{1} = data{15}.Data_sort(:,2); mu13meta{1} = data{15}.mu;
+
 slidedate = '2011-12/'; fname = 'wt_sna' ; ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs13meta{3} = data{5}.Data_sort(:,2); mu13meta{3} = data{5}.mu;
-mRNAs13meta{2} = data{6}.Data_sort(:,2); mu13meta{2} = data{6}.mu;
+mRNAs13meta{4} = data{5}.Data_sort(:,2); mu13meta{4} = data{5}.mu;
+mRNAs13meta{3} = data{6}.Data_sort(:,2); mu13meta{3} = data{6}.mu;
 
 slidedate = '2011-11/'; fname = 'MP06_cflip_b' ; ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs13meta{1} = data{3}.Data_sort(:,2); mu13meta{1} = data{3}.mu;
-mRNAs13meta{8} = data{4}.Data_sort(:,2); mu13meta{8} = data{4}.mu;
-mRNAs13meta{5} = data{6}.Data_sort(:,2); mu13meta{5} = data{6}.mu;
+mRNAs13meta{2} = data{3}.Data_sort(:,2); mu13meta{2} = data{3}.mu;
+mRNAs13meta{9} = data{4}.Data_sort(:,2); mu13meta{9} = data{4}.mu;
+% mRNAs13meta{6} = data{6}.Data_sort(:,2); mu13meta{5} = data{6}.mu;
 
 slidedate = '2011-12/';   fname ='s140_sna'; ver = '_v2';% vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data');
-mRNAs13meta{5} = data{7}.Data_sort(:,2); mu13meta{5} = data{7}.mu;
+mRNAs13meta{6} = data{7}.Data_sort(:,2); mu13meta{6} = data{7}.mu;
 
 slidedate = '2011-05-22/'; fname = 's05_MP06Hz_b' ; ver = '_vN'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs13meta{6} = data{1}.Data_sort(:,2); mu13meta{6} = data{1}.mu;
-mRNAs13meta{7} = data{9}.Data_sort(:,2); mu13meta{7} = data{9}.mu;
-mRNAs13meta{4} = data{10}.Data_sort(:,2); mu13meta{4} = data{10}.mu;
+mRNAs13meta{7} = data{1}.Data_sort(:,2); mu13meta{7} = data{1}.mu;
+mRNAs13meta{8} = data{9}.Data_sort(:,2); mu13meta{8} = data{9}.mu;
+mRNAs13meta{5} = data{10}.Data_sort(:,2); mu13meta{5} = data{10}.mu;
 %------------------------------------------------------------------%
 
 % =============== % telophase into cc14 ===============================
@@ -201,33 +219,38 @@ mRNAs13telo{2} = data{10}.Data_sort(:,2);  mu13telo{2} = data{10}.mu;
 % 'MP06Hz'; emb = 01, 02, 11, 12
 slidedate = '2011-12/'; fname = 'wt_sna' ; ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs14e{1} = data{1}.Data_sort(:,2);   mu14e{1} = data{1}.mu;
-mRNAs14e{2} = data{2}.Data_sort(:,2);   mu14e{2} = data{2}.mu;
-mRNAs14e{11} = data{7}.Data_sort(:,2);   mu14e{11} = data{7}.mu;
-mRNAs14e{14} = data{8}.Data_sort(:,2);   mu14e{14} = data{8}.mu;
+mRNAs14e{2} = data{1}.Data_sort(:,2);   mu14e{2} = data{1}.mu;
+mRNAs14e{4} = data{2}.Data_sort(:,2);   mu14e{4} = data{2}.mu;
+mRNAs14e{10} = data{7}.Data_sort(:,2);   mu14e{10} = data{7}.mu;
+mRNAs14e{11} = data{8}.Data_sort(:,2);   mu14e{11} = data{8}.mu;
 
 slidedate = '2011-05-22/'; fname = 's05_MP06Hz_b' ; ver = '_vN'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs14e{3} = data{6}.Data_sort(:,2);   mu14e{3} = data{6}.mu;
-mRNAs14e{12} = data{8}.Data_sort(:,2);  mu14e{12} = data{8}.mu;
-mRNAs14e{13} = data{11}.Data_sort(:,2);  mu14e{13} = data{11}.mu;
+mRNAs14e{5} = data{6}.Data_sort(:,2);   mu14e{5} = data{6}.mu;
+mRNAs14e{14} = data{8}.Data_sort(:,2);  mu14e{14} = data{8}.mu;
+mRNAs14e{9} = data{11}.Data_sort(:,2);  mu14e{9} = data{11}.mu;
 
-slidedate = '2011-05-22/'; fname = 's05_MP06Hz' ; ver = '_vN'; vout = '';
-load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs14e{4} = data{1}.Data_sort(:,2);  mu14e{4} = data{1}.mu;
-mRNAs14e{15} = data{2}.Data_sort(:,2);  mu14e{15} = data{2}.mu;
-mRNAs14e{16} = data{11}.Data_sort(:,2);  mu14e{16} = data{11}.mu;
-mRNAs14e{17} = data{12}.Data_sort(:,2);  mu14e{17} = data{12}.mu;
 
 slidedate = '2011-12/';   fname ='s140_sna'; ver = '_v2';% vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data');
-mRNAs14e{7} = data{1}.Data_sort(:,2); mu14e{7} = data{1}.mu(:,1);
-mRNAs14e{5} = data{3}.Data_sort(:,2); mu14e{5} = data{3}.mu(:,1);
-mRNAs14e{9} = data{4}.Data_sort(:,2); mu14e{9} = data{4}.mu(:,1);
+mRNAs14e{12} = data{1}.Data_sort(:,2); mu14e{12} = data{1}.mu(:,1);
+mRNAs14e{3} = data{3}.Data_sort(:,2); mu14e{3} = data{3}.mu(:,1);
+mRNAs14e{15} = data{4}.Data_sort(:,2); mu14e{15} = data{4}.mu(:,1);
 mRNAs14e{6} = data{5}.Data_sort(:,2); mu14e{6} = data{5}.mu(:,1);
-mRNAs14e{8} = data{8}.Data_sort(:,2); mu14e{8} = data{8}.mu(:,1);
-mRNAs14e{10} = data{9}.Data_sort(:,2); mu14e{10} = data{9}.mu(:,1);
+mRNAs14e{13} = data{8}.Data_sort(:,2); mu14e{13} = data{8}.mu(:,1);
+mRNAs14e{16} = data{9}.Data_sort(:,2); mu14e{16} = data{9}.mu(:,1);
 
+slidedate = '2011-12/'; fname = 's142_sna';  ver = '_v2'; vout = '';
+load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
+mRNAs14e{19} = data{3}.Data_sort(:,2); mu14e{19} = data{3}.mu;
+mRNAs14e{18} = data{4}.Data_sort(:,2); mu14e{18} = data{4}.mu;
+mRNAs14e{20} = data{5}.Data_sort(:,2); mu14e{20} = data{5}.mu;
+
+mRNAs14e{8} = data{6}.Data_sort(:,2); mu14e{8} = data{6}.mu;
+mRNAs14e{7} = data{7}.Data_sort(:,2); mu14e{7} = data{7}.mu;
+mRNAs14e{17} = data{9}.Data_sort(:,2); mu14e{17} = data{9}.mu;
+mRNAs14e{1} = data{12}.Data_sort(:,2); mu14e{1} = data{12}.mu;
+mRNAs14e{21} = data{13}.Data_sort(:,2); mu14e{21} = data{13}.mu;
 
 %---------------------------------------------------------%
 
@@ -236,74 +259,63 @@ mRNAs14e{10} = data{9}.Data_sort(:,2); mu14e{10} = data{9}.mu(:,1);
 
 slidedate = '2011-05-22/'; fname = 's05_MP06Hz' ; ver = '_vN'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs14s{1} = data{7}.Data_sort(:,2); mu14s{1} = data{7}.mu;
-mRNAs14s{2} = data{6}.Data_sort(:,2); mu14s{2} = data{6}.mu;
-
-mRNAs14s{13} = data{5}.Data_sort(:,2); mu14s{13} = data{5}.mu;
-mRNAs14s{14} = data{8}.Data_sort(:,2); mu14s{14} = data{8}.mu;
-
-mRNAs14s{21} = data{3}.Data_sort(:,2); mu14s{21} = data{3}.mu;
-mRNAs14s{22} = data{4}.Data_sort(:,2); mu14s{22} = data{4}.mu;
+% mRNAs14s{1} = data{7}.Data_sort(:,2); mu14s{1} = data{7}.mu;
+% mRNAs14s{2} = data{6}.Data_sort(:,2); mu14s{2} = data{6}.mu;
+% mRNAs14s{9} = data{3}.Data_sort(:,2); mu14s{9} = data{3}.mu;
+% mRNAs14s{10} = data{4}.Data_sort(:,2); mu14s{10} = data{4}.mu;
+mRNAs14s{11} = data{5}.Data_sort(:,2); mu14s{11} = data{5}.mu;
+mRNAs14s{12} = data{8}.Data_sort(:,2); mu14s{12} = data{8}.mu;
 
 
 slidedate = '2011-02-17/'; fname = 'MP05_22C_sna_y';  ver = '_vN'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs14s{3} = data{9}.Data_sort(:,2); mu14s{3} = data{9}.mu;
-mRNAs14s{4} = data{12}.Data_sort(:,2); mu14s{4} = data{12}.mu;
-mRNAs14s{5} = data{1}.Data_sort(:,2); mu14s{5} = data{1}.mu;
-mRNAs14s{6} = data{2}.Data_sort(:,2); mu14s{6} = data{2}.mu;
-mRNAs14s{7} = data{3}.Data_sort(:,2); mu14s{7} = data{3}.mu;
-mRNAs14s{8} = data{5}.Data_sort(:,2); mu14s{8} = data{5}.mu;
+mRNAs14s{1} = data{9}.Data_sort(:,2); mu14s{1} = data{9}.mu;
+mRNAs14s{2} = data{12}.Data_sort(:,2); mu14s{2} = data{12}.mu;
+mRNAs14s{3} = data{1}.Data_sort(:,2); mu14s{3} = data{1}.mu;
+mRNAs14s{4} = data{2}.Data_sort(:,2); mu14s{4} = data{2}.mu;
+mRNAs14s{5} = data{3}.Data_sort(:,2); mu14s{5} = data{3}.mu;
+mRNAs14s{6} = data{5}.Data_sort(:,2); mu14s{6} = data{5}.mu;
 
-mRNAs14s{15} = data{7}.Data_sort(:,2); mu14s{15} = data{7}.mu;
-mRNAs14s{16} = data{8}.Data_sort(:,2); mu14s{16} = data{8}.mu;
+mRNAs14s{13} = data{7}.Data_sort(:,2); mu14s{13} = data{7}.mu;
+mRNAs14s{14} = data{8}.Data_sort(:,2); mu14s{14} = data{8}.mu;
 
 
 slidedate = '2011-02-17/';   fname ='MP10_22C_sna_y_d'; ver = '_vN';% vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
 
-mRNAs14s{9} = data{4}.Data_sort(:,2); mu14s{9} = data{4}.mu(:,1);
-mRNAs14s{10} = data{5}.Data_sort(:,2); mu14s{10} = data{5}.mu(:,1);
-mRNAs14s{11} = data{2}.Data_sort(:,2); mu14s{11} = data{2}.mu(:,1);
-mRNAs14s{12} = data{3}.Data_sort(:,2); mu14s{12} = data{3}.mu(:,1);
+mRNAs14s{19} = data{4}.Data_sort(:,2); mu14s{19} = data{4}.mu(:,1);
+mRNAs14s{20} = data{5}.Data_sort(:,2); mu14s{20} = data{5}.mu(:,1);
+mRNAs14s{9} = data{2}.Data_sort(:,2); mu14s{9} = data{2}.mu(:,1);
+mRNAs14s{10} = data{3}.Data_sort(:,2); mu14s{10} = data{3}.mu(:,1);
 
-mRNAs14s{17} = data{7}.Data_sort(:,2); mu14s{17} = data{7}.mu(:,1);
-mRNAs14s{18} = data{8}.Data_sort(:,2); mu14s{18} = data{8}.mu(:,1);
-mRNAs14s{20} = data{1}.Data_sort(:,2); mu14s{20} = data{1}.mu(:,1);
+mRNAs14s{15} = data{7}.Data_sort(:,2); mu14s{15} = data{7}.mu(:,1);
+mRNAs14s{16} = data{8}.Data_sort(:,2); mu14s{16} = data{8}.mu(:,1);
+mRNAs14s{18} = data{1}.Data_sort(:,2); mu14s{18} = data{1}.mu(:,1);
 
 slidedate = '2011-02-17/'; fname = 'MP05_22C_sna_y_c';  ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAs14s{23} = data{1}.Data_sort(:,2); mu14s{23} = data{1}.mu(:,1);
-mRNAs14s{24} = data{2}.Data_sort(:,2); mu14s{24} = data{2}.mu(:,1);
-mRNAs14s{19} = data{4}.Data_sort(:,2); mu14s{19} = data{4}.mu(:,1);
+mRNAs14s{21} = data{1}.Data_sort(:,2); mu14s{21} = data{1}.mu(:,1);
+mRNAs14s{22} = data{2}.Data_sort(:,2); mu14s{22} = data{2}.mu(:,1);
+mRNAs14s{17} = data{4}.Data_sort(:,2); mu14s{17} = data{4}.mu(:,1);
 
-%% new data
-mRNAsN{1} = NaN; muN{1} = NaN; 
-
-slidedate = '2011-12/'; fname = 's142_sna';  ver = ''; vout = '';
+slidedate = '2011-12/'; fname = 's142_sna';  ver = '_v2'; vout = '';
 load([folder,slidedate,fname,ver,'_slidedata',vout,'.mat'],'data'); 
-mRNAsN{1} = data{1}.Data_sort(:,2); muN{1} = data{1}.mu;
-mRNAsN{2} = data{2}.Data_sort(:,2); muN{2} = data{2}.mu;
-mRNAsN{3} = data{3}.Data_sort(:,2); muN{3} = data{3}.mu;
-mRNAsN{4} = data{4}.Data_sort(:,2); muN{4} = data{4}.mu;
-mRNAsN{5} = data{5}.Data_sort(:,2); muN{5} = data{5}.mu;
-mRNAsN{6} = data{6}.Data_sort(:,2); muN{6} = data{6}.mu;
-mRNAsN{7} = data{7}.Data_sort(:,2); muN{7} = data{7}.mu;
-mRNAsN{8} = data{8}.Data_sort(:,2); muN{8} = data{8}.mu;
-mRNAsN{9} = data{9}.Data_sort(:,2); muN{9} = data{9}.mu;
-mRNAsN{10} = data{10}.Data_sort(:,2); muN{10} = data{10}.mu;
-mRNAsN{11} = data{11}.Data_sort(:,2); muN{11} = data{11}.mu;
-mRNAsN{12} = data{12}.Data_sort(:,2); muN{12} = data{12}.mu;
-mRNAsN{13} = data{13}.Data_sort(:,2); muN{13} = data{13}.mu;
-mRNAsN{14} = data{14}.Data_sort(:,2); muN{14} = data{14}.mu;
-mRNAsN{15} = data{15}.Data_sort(:,2); muN{15} = data{15}.mu;
-mRNAsN{16} = data{16}.Data_sort(:,2); muN{16} = data{16}.mu;
+ mRNAs14s{7} = data{14}.Data_sort(:,2); mu14s{7} = data{14}.mu;
+ mRNAs14s{8} = data{16}.Data_sort(:,2); mu14s{8} = data{16}.mu;
+
+
+% new data
+mRNAsN{1} = 0; muN{1} = 0; 
+
+
+
+
 
 mRNAs = [mRNAs12telo,mRNAs13,mRNAs13meta,mRNAs13telo,mRNAs14e,mRNAs14s,mRNAsN];
 mu = [mu12telo,mu13,mu13meta,mu13telo,mu14e,mu14s,muN];
 
-all_mRNA = {mRNAs12telo(2:end),mRNAs13,[mRNAs13meta(1:4),mRNAs13meta(6:7)],mRNAs13telo,mRNAs14e,mRNAs14s,mRNAsN};
-all_mu = {mu12telo(2:end),mu13,[mu13meta(1:4),mu13meta(6:7)],mu13telo,mu14e,mu14s,muN};
+all_mRNA = {mRNAs12telo(2:end),mRNAs13,mRNAs13meta,mRNAs13telo,mRNAs14e,mRNAs14s,mRNAsN};
+all_mu = {mu12telo(2:end),mu13,mu13meta,mu13telo,mu14e,mu14s,muN};
 G = length(all_mRNA);
 
 
@@ -325,9 +337,11 @@ dyn_fig = figure(2); clf; colordef white; set(gcf,'color','w'); hold on;
     end
     CMap(e,:) = [group/length(g),0,1-group/length(g)] ;
     
-        
-        sna = mRNAs{e} - min(mu{e});
-        pk = max(mu{e}-min(mu{e}));
+%         temp = sort(mu{e});
+%         sna = mRNAs{e} - temp(2); %  min(mu{e});
+%         pk = max(mu{e}-temp(2)); % min(mu{e}));
+        sna = mRNAs{e} -  min(mu{e});
+        pk = max(mu{e}- min(mu{e}));
         mRNA{e} =  sna( sna>1/2*pk); 
         bkd{e} = sna( sna<1/2*pk);
         figure(2);  
@@ -339,7 +353,7 @@ dyn_fig = figure(2); clf; colordef white; set(gcf,'color','w'); hold on;
         L2 = length(bkd{e});
         plot(.7*rand(1,L2)+e*ones(1,L2),bkd{e},'.','color',CMap(e,:)*.2+[.8,.8,.8],'MarkerSize',5);
         % meds_off(e) = mean(bkd{e}(bkd{e}>0));
-         meds_off(e) = sum(bkd{e}>15)/(L2+L);
+         meds_off(e) = sum(bkd{e}>20)/(L2+L);
            
     end 
     
@@ -349,7 +363,7 @@ dyn_fig = figure(2); clf; colordef white; set(gcf,'color','w'); hold on;
     ylim([0,300]); set(gca,'FontSize',14);
 ylabel('mRNA counts per cell');
     
-    
+  %%  
     x = 2:Es;
     
     figure(2); hold on;
@@ -358,8 +372,8 @@ ylabel('mRNA counts per cell');
     
     figure(2);  hold on;
     bkd_curve = smooth(meds_off(2:end));
-    plot(x+.35,150*bkd_curve); 
-    plot(x+.35,150*meds_off(2:end),'o');
+    plot(x+.35,250*bkd_curve); 
+    plot(x+.35,250*meds_off(2:end),'o');
 
     
     
@@ -373,16 +387,20 @@ upp_cnt = zeros(G,1);
 low_cnt = zeros(G,1);
 std_cnt = zeros(G,1); 
 for k=1:G
-    for e=1:length(all_mRNA{k})
+    for e=1:length(all_mRNA{k}) % length(all_mu{k})
+        temp = sort(all_mu{k}{e});
+%          sna = all_mRNA{k}{e} - temp(2);
+%          pk = max(all_mu{k}{e}-temp(2) );
+%         
             sna = all_mRNA{k}{e} - min(all_mu{k}{e});
             pk = max(all_mu{k}{e}-min(all_mu{k}{e}));
             mRNAon{k}{e} =  sna( sna>1/2*pk); 
     end  
-     med_cnt(k) = median(cellfun(@mean,mRNAon{k}));
+     med_cnt(k) = median(cellfun(@nanmean,mRNAon{k}));
      
-     sort_mean_cnt = sort(cellfun(@mean,mRNAon{k}));
-     upp_cnt(k) = sort_mean_cnt(round(3/4*length(sort_mean_cnt)));
-     low_cnt(k) = sort_mean_cnt(round(1/4*length(sort_mean_cnt)));
+     sort_mean_cnt = sort(cellfun(@nanmean,mRNAon{k}));
+     upp_cnt(k) = sort_mean_cnt(max([round(3/4*length(sort_mean_cnt)),1]));
+     low_cnt(k) = sort_mean_cnt(max([1,round(1/4*length(sort_mean_cnt))]));
      std_cnt(k) = std(sort_mean_cnt);
 end    
 
