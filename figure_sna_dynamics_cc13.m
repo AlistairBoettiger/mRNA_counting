@@ -328,14 +328,16 @@ g = [Ls(1),sum(Ls(1:2)),sum(Ls(1:3)),sum(Ls(1:4)),sum(Ls(1:5)),sum(Ls(1:6)),sum(
 group = 1;  % embryo group
 gi = 0; % index of embryos within group
 
+meds_on = zeros(1,Es); meds_off = zeros(1,Es); meds_offB = zeros(1,Es); 
+
 dyn_fig = figure(2); clf; colordef white; set(gcf,'color','w'); hold on;
-    for e=2:Es
+for e=2:Es
         
     if e > g(group)
         group = group + 1;
         gi = 0; 
     end
-    CMap(e,:) = [group/length(g),0,1-group/length(g)] ;
+    CMap(e,:) = [group/(length(g)-1),0,1-group/(length(g)-1)] ;
     
 %         temp = sort(mu{e});
 %         sna = mRNAs{e} - temp(2); %  min(mu{e});
@@ -351,34 +353,48 @@ dyn_fig = figure(2); clf; colordef white; set(gcf,'color','w'); hold on;
         
      
         L2 = length(bkd{e});
-        plot(.7*rand(1,L2)+e*ones(1,L2),bkd{e},'.','color',CMap(e,:)*.2+[.8,.8,.8],'MarkerSize',5);
+        plot(.7*rand(1,L2)+e*ones(1,L2),bkd{e},'.','color',CMap(e,:)*.15+[.85,.85,.85],'MarkerSize',5);
         % meds_off(e) = mean(bkd{e}(bkd{e}>0));
          meds_off(e) = sum(bkd{e}>20)/(L2+L);
-           
-    end 
+          meds_offB(e) = sum(bkd{e}>20);  
+end 
     
     
       
     
-    ylim([0,300]); set(gca,'FontSize',14);
+ ylim([0,300]); set(gca,'FontSize',14);
 ylabel('mRNA counts per cell');
+xlabel(' "Time" (embryo number ascending age)');    
+%   %%  
+%     x = 2:Es;
+%     
+%     figure(2); hold on;
+%     plot(x+.35,meds_on(2:end),'ko'); hold on;
+%     plot(x+.35,smooth(meds_on(2:end)));
+%     
+%     figure(2);  hold on;
+%     bkd_curve = smooth(meds_off(2:end));
+%     plot(x+.35,250*bkd_curve); 
+%     plot(x+.35,250*meds_off(2:end),'o');
     
-  %%  
-    x = 2:Es;
+%%
+    figure(3); clf; colordef white; set(gcf,'color','w');
+    bkd_curve = smooth(meds_off(2:end),.25);
+    plot(x+.35,bkd_curve,'k-','linewidth',2); hold on;
+    plot(x+.35,meds_off(2:end),'k+');
     
-    figure(2); hold on;
-    plot(x+.35,meds_on(2:end),'ko'); hold on;
-    plot(x+.35,smooth(meds_on(2:end)));
-    
-    figure(2);  hold on;
-    bkd_curve = smooth(meds_off(2:end));
-    plot(x+.35,250*bkd_curve); 
-    plot(x+.35,250*meds_off(2:end),'o');
-
+%     bkd_curve = smooth(meds_offB(2:end),.25);
+%     plot(x+.35,bkd_curve,'b-','linewidth',2); hold on;
+%     plot(x+.35,meds_offB(2:end),'b+');
     
     
-  
+    ylim([0,.5]); set(gca,'FontSize',14);
+    ylabel('fraction of partially active cells');
+    
+xlabel(' "Time" (embryo number, ascending age)');    
 %% new section
+
+all_mRNA{3} = all_mRNA{3}(1:end-1);
 
 mRNAon = cell(6,1);
 
@@ -386,7 +402,7 @@ med_cnt = zeros(G,1);
 upp_cnt = zeros(G,1);
 low_cnt = zeros(G,1);
 std_cnt = zeros(G,1); 
-for k=1:G
+for k=1:G % k=3
     for e=1:length(all_mRNA{k}) % length(all_mu{k})
         temp = sort(all_mu{k}{e});
 %          sna = all_mRNA{k}{e} - temp(2);
@@ -394,7 +410,7 @@ for k=1:G
 %         
             sna = all_mRNA{k}{e} - min(all_mu{k}{e});
             pk = max(all_mu{k}{e}-min(all_mu{k}{e}));
-            mRNAon{k}{e} =  sna( sna>1/2*pk); 
+            mRNAon{k}{e} =  sna(sna>1/2*pk); 
     end  
      med_cnt(k) = median(cellfun(@nanmean,mRNAon{k}));
      
@@ -408,7 +424,9 @@ end
 
 % .5 = exp(-7.5/tau)
 % tau = -7.5/log(.5) = 10.82
-% exp(-2/10.82) 
+% exp(-4/10.82) 
+
+
 
 prev_tau = 10.82;
 T = 2; % estimate of mitosis length
@@ -416,6 +434,10 @@ T = 2; % estimate of mitosis length
 my_tau = -T/log( 2*med_cnt(4)/med_cnt(3) );
 max_tau =  max([-T/log( 2*upp_cnt(4)/med_cnt(3) ),-T/log( 2*med_cnt(4)/low_cnt(3))]);
 min_tau = min([-T/log( 2*low_cnt(4)/med_cnt(3) ),-T/log( 2*med_cnt(4)/upp_cnt(3))]);
+
+ubnd_tau = min([-T/log( 2*upp_cnt(4)/upp_cnt(3) ),-T/log( 2*upp_cnt(4)/upp_cnt(3))]);
+lbnd_tau = min([-T/log( 2*low_cnt(4)/low_cnt(3) ),-T/log( 2*low_cnt(4)/low_cnt(3))]);
+
 % tau = T/log(2m1/m2)
 % 
 % Dtau = sqrt( (dtau/dT*DT)^2 + dtau/dm1*Dm1)^2 + (dtau/dm2*Dm2)^2 )
@@ -430,26 +452,29 @@ t = linspace(0,10,25);
 degred = med_cnt(3)*exp(-t/my_tau); 
 low_d = med_cnt(3)*exp(-t/max_tau);
 high_d = med_cnt(3)*exp(-t/min_tau);
+
+high_d = upp_cnt(3)*exp(-t/ubnd_tau);
+low_d = low_cnt(3)*exp(-t/lbnd_tau); 
 figure(4); clf; plot(t,degred,'k-','linewidth',3); hold on;
 plot(t,low_d,'k--');
 
 plot(0,med_cnt(3),'.','Color',[.5,0,.5],'MarkerSize',30);
 plot(2,2*med_cnt(4),'.','Color',[.7,0,.3],'MarkerSize',30);
-plot(7.5,.5*med_cnt(3),'.','Color',[.6,.5,.1],'MarkerSize',30);
+plot(8,.5*med_cnt(3),'.','Color',[.6,.5,.1],'MarkerSize',30);
 plot(-10,-10, 'k+','MarkerSize',10);
 plot(0*ones(1,length(mRNAon{3})),cellfun(@mean,mRNAon{3}),'+','Color',[.5,0,.5],'MarkerSize',10);
 plot([2*ones(1,length(mRNAon{4}))],[2*cellfun(@mean,mRNAon{4})],'+','MarkerSize',10,'Color',[.7,0,.3]);
  plot(t,high_d,'k--');
  
-xlim([min(t),max(t)]);
-legend(['measured halflife =',num2str(my_tau*log(2),3),' min ',...
+xlim([min(t),8]);
+legend(['measured snail halflife =',num2str(my_tau*log(2),3),' min ',...
     '(',num2str(min_tau*log(2),2),',',num2str(max_tau*log(2),2),')'],'error bounds',...
-    'prometaphase','late telophase','measured ftz halflife = 7.5 min',...
+    'prometaphase','late telophase','ftz halflife = 8 min(6,10) [Edgar  1986]',...
     'mean counts from indiv. embryos');
 set(gcf,'color','w');
 ylabel('mRNA count'); xlabel('time (min)');
 title('mRNA degredation during cell division');
-ylim([0,300]);
+ylim([30,280]);
 
 %%  mRNA synthesis
 t = linspace(0,20,25);
@@ -457,9 +482,12 @@ lifetime = my_tau/log(2);
 
 Tdiv = 16; % time of division / prophase
 m1 = med_cnt(1); m2 = med_cnt(3);  
-synthesis_rate = (m2 - m1*exp(-Tdiv/lifetime))/(lifetime*(1-exp(-Tdiv/lifetime)))  
-min_syn = (low_cnt(3) - upp_cnt(1)*exp(-Tdiv/lifetime))/(lifetime*(1-exp(-Tdiv/lifetime)))  
-max_syn = (upp_cnt(3) - low_cnt(1)*exp(-Tdiv/lifetime))/(lifetime*(1-exp(-Tdiv/lifetime)))  
+synthesis_rate = (m2 - m1*exp(-Tdiv/lifetime))/(lifetime*(1-exp(-Tdiv/lifetime)))  ;
+min_syn = (low_cnt(3) - upp_cnt(1)*exp(-Tdiv/lifetime))/(lifetime*(1-exp(-Tdiv/lifetime))) ; 
+max_syn = (upp_cnt(3) - low_cnt(1)*exp(-Tdiv/lifetime))/(lifetime*(1-exp(-Tdiv/lifetime)))  ;
+ 
+low_syn = (low_cnt(3) - low_cnt(1)*exp(-Tdiv/lifetime))/(lifetime*(1-exp(-Tdiv/lifetime)))  ;
+upp_syn = (upp_cnt(3) - upp_cnt(1)*exp(-Tdiv/lifetime))/(lifetime*(1-exp(-Tdiv/lifetime)))  ;
  
 % % with my tau (min tau really blows this up)
 % min_syn = (low_cnt(3) - upp_cnt(1)*exp(-Tdiv/max_tau))/(max_tau*(1-exp(-Tdiv/max_tau)))  
@@ -470,6 +498,9 @@ prod = med_cnt(1)*exp(-t/lifetime) + synthesis_rate*lifetime*(1-exp(-t/lifetime)
 upp_prod = med_cnt(1)*exp(-t/lifetime) + min_syn*lifetime*(1-exp(-t/lifetime));
 low_prod = med_cnt(1)*exp(-t/lifetime) + max_syn*lifetime*(1-exp(-t/lifetime));
 
+ upp_prod = upp_cnt(1)*exp(-t/lifetime) + max_syn*lifetime*(1-exp(-t/lifetime));
+ low_prod = low_cnt(1)*exp(-t/lifetime) + min_syn*lifetime*(1-exp(-t/lifetime));
+
 figure(5); clf; plot(t,prod,'k--','linewidth',3); hold on;
 plot(t,upp_prod,'k--');
 plot(0,med_cnt(1),'b.','MarkerSize',30);
@@ -479,44 +510,44 @@ plot(-10,-10, 'k+','MarkerSize',10);
 
 plot([0*ones(1,length(mRNAon{1}))],[cellfun(@mean,mRNAon{1})],'b+','MarkerSize',10);
 plot([16*ones(1,length(mRNAon{3}))],[cellfun(@mean,mRNAon{3})],'+','Color',[4/8,0,1-4/8],'MarkerSize',10);
-plot(2*(1:length(mRNAon{2})),[cellfun(@mean,mRNAon{2})],'+','Color',[2/8,0,1-2/8],'MarkerSize',10);
+plot(1.5*(1:length(mRNAon{2})),[cellfun(@mean,mRNAon{2})],'+','Color',[2/8,0,1-2/8],'MarkerSize',10);
  plot(t,low_prod,'k--');
 set(gcf,'color','w');
 ylabel('mRNA count'); xlabel('time (min)');
 
-xlim([0,20]); ylim([0,270]);
+xlim([-1,20]); ylim([50,280]);
 
 legend(['tx rate =', num2str(synthesis_rate/2,2),'mRNA/min (', num2str(min_syn/2,2),',',num2str(max_syn/2,2), ')'],...
     'uncertainty bound','ave # mRNA at telophase of cc12',...
     'ave # mRNA of interphase embryos','ave # mRNA at prometaphase cc13',...
      'mean counts from indiv. embryos','Location','South')
  title('mRNA synthesis rate');
-%%  mRNA synthesis
-t = linspace(0,20,25);
-synthesis_rate = 21; lifetime = my_tau/log(2);
-prod = med_cnt(1)*exp(-t/lifetime) + synthesis_rate*lifetime*(1-exp(-t/lifetime));
-figure(5); clf; plot(t,prod); hold on;
-
-   %  plot(.7*rand(1,L)+e*ones(1,L),mRNA{e},'.','color',CMap(e,:),'MarkerSize',5);
-   
-cc12s = cell2mat(mRNAon{1}'); 
-plot(.7*rand(1,length(cc12s)), cc12s,'.'); hold on;
-cc13t = cell2mat(mRNAon{3}'); 
-plot(16+.7*rand(1,length(cc13t)), cc13t,'.','color','r');
-for e=1:length(mRNAon{2})
-    L = length(mRNAon{2}{e});
-    plot(.7*rand(1,L)+2*e*ones(1,L),mRNAon{2}{e},'.','color','m','MarkerSize',5);
-end
-
-
- plot(t,prod,'k-','linewidth',3);
-
-set(gcf,'color','w');
-ylabel('mRNA count'); xlabel('time (min)');
-
-legend(['tx rate =', num2str(synthesis_rate/2,2),'mRNA/min'],...
-    '# mRNA at telophase of cc12','# mRNA at prometaphase cc13',...
-    '# mRNA of interphase embryos')
+% %%  mRNA synthesis
+% t = linspace(0,20,25);
+% synthesis_rate = 21; lifetime = my_tau/log(2);
+% prod = med_cnt(1)*exp(-t/lifetime) + synthesis_rate*lifetime*(1-exp(-t/lifetime));
+% figure(5); clf; plot(t,prod); hold on;
+% 
+%    %  plot(.7*rand(1,L)+e*ones(1,L),mRNA{e},'.','color',CMap(e,:),'MarkerSize',5);
+%    
+% cc12s = cell2mat(mRNAon{1}'); 
+% plot(.7*rand(1,length(cc12s)), cc12s,'.'); hold on;
+% cc13t = cell2mat(mRNAon{3}'); 
+% plot(16+.7*rand(1,length(cc13t)), cc13t,'.','color','r');
+% for e=1:length(mRNAon{2})
+%     L = length(mRNAon{2}{e});
+%     plot(.7*rand(1,L)+2*e*ones(1,L),mRNAon{2}{e},'.','color','m','MarkerSize',5);
+% end
+% 
+% 
+%  plot(t,prod,'k-','linewidth',3);
+% 
+% set(gcf,'color','w');
+% ylabel('mRNA count'); xlabel('time (min)');
+% 
+% legend(['tx rate =', num2str(synthesis_rate/2,2),'mRNA/min'],...
+%     '# mRNA at telophase of cc12','# mRNA at prometaphase cc13',...
+%     '# mRNA of interphase embryos')
 
 %%
 

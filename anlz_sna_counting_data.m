@@ -24,7 +24,7 @@
    %rawfolder = 'I:\Raw_Data\';%
   slidedate =  '2011-12\';% '2011-02-17/';% '2011-02-17/';% '2011-11/'; %'2011-05-22/'; %   '2011-04_and_earlier/';  % '2011-06-20/';%              %  
   subfolder = ''; % 'MP10_22C\'; %  'MP05_22C\';% 's08_MP06_cflip\'; %   's05_MP06/';%    's07_MP08/' ;%  'MP12Hz/'; %  's07_MP05Hz/'; % 's04_MP10/'; %  'sna2p8het/'; %   'MP07Hz/';% 's04_MP10/';%   ; %    's07_MP08/'; %  's06_MP10_sna18/'; %    'sna2.8Hz/';%   'MP07Hz/';% 's21_MP07/';  % '' %    's05_MP06/'; % 's11_G4B/'; %  % s04_MP10/';%    
-  fname =  's142_sna'; ver = '_v2'; Es = 16; % 'snaD'; % 's140_sna'; ver ='_v3'; % 'MP10_22C_sna_y_e'; ver = '_vN'; % 'MP05_22C_sna_y'; ver = '_vN'; % 'MP10_22C_sna_y_d'; ver = '_vN'; % 'MP06_cflip_b'; ver = '_v2';% 'wt_sna'; ver = '_v2';%   's05_MP06Hz'; ver = '_vN';% 'MP08_snaD_LacZ647'; ver = '_v3';% 'MP05'; ver = '_v3'%   %  %  'MP08Hz_snaD_22C_b' ; %  'MP12Hz_snaD_22C'; ver = '';%'s07_MP05Hz_22C_c';  ver = '';% 'MP10Hz_c'; ver = '_v2'; % 'sna2p8het_30C'; % 'MP07Hz_snaD_22C_b'; ver= '_v3'; %  % 's04_MP10Hz_b'; ver = '_v3'; %  %    's07_MP05Hz_22C_c';%  ver = '_v2';%  'sna2p8het_sim_sna'; ver = '_v2'; Es=1; % 'MP12Hz_snaD_22C_b'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%   's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
+  fname =  's05_MP08_b'; ver = ''; % 's04_MP08'; ver =''; % 'snaD_b';  Es = 16; % 's142_sna'; ver = '_v2'; Es = 16; % 'snaD'; % 's140_sna'; ver ='_v3'; % 'MP10_22C_sna_y_e'; ver = '_vN'; % 'MP05_22C_sna_y'; ver = '_vN'; % 'MP10_22C_sna_y_d'; ver = '_vN'; % 'MP06_cflip_b'; ver = '_v2';% 'wt_sna'; ver = '_v2';%   's05_MP06Hz'; ver = '_vN';% 'MP08_snaD_LacZ647'; ver = '_v3';% 'MP05'; ver = '_v3'%   %  %  'MP08Hz_snaD_22C_b' ; %  'MP12Hz_snaD_22C'; ver = '';%'s07_MP05Hz_22C_c';  ver = '';% 'MP10Hz_c'; ver = '_v2'; % 'sna2p8het_30C'; % 'MP07Hz_snaD_22C_b'; ver= '_v3'; %  % 's04_MP10Hz_b'; ver = '_v3'; %  %    's07_MP05Hz_22C_c';%  ver = '_v2';%  'sna2p8het_sim_sna'; ver = '_v2'; Es=1; % 'MP12Hz_snaD_22C_b'; ver = ''; % 's05_MP06Hz_b'; ver = '_v4';%   's06_MP10_sna18_b'; ver = '_v4'; cbar =1;  %     % 's07_MP08Hz_snaD_22C';  % 'sna2.8Hz_snaD_22C';st_channel = 1; % 'MP07Hz_snaD_22C'; % 'MP07het_snaD_22C'; Es=4; %  'MP10_22C_sna_y_d'; ver = '_v3'; % 'MP05_22C_sna_y_c';  ver = ''; %  % 's05_MP06Hz'; ver = '_v2';%   %      's06_MP10_sna18_b'; st_channel = 1;   ver = '_v4'; % ' 's05_MP06Hz_b'; ver = '_v2';  % 's11_G4B_LacZ'; ver = '_v2'; legon =0; %     'MP07het_snaD_22C';%   %  '_v2';  %
   vc1 = ver; vc2 = ver;   % vc1 = ''; vc2 = '_v4';
   
   % chns_flipped = 1; 
@@ -35,7 +35,7 @@
   
   manual_orient =[];%  [-10,-45,-35,45,135,45,-145,-50,-80,65];
 
-  chns = 1; % 1 % 2; %
+  chns = 2; % 1 % 2; %
  
 %    try
 %      load([folder,fname,'_slidedata',ver], 'Data'); 
@@ -47,7 +47,7 @@
   figure(10); clf; figure(11); clf; figure(12); clf; figure(14); clf;
   
   data = cell(Es,1); 
-for e =  1: Es %  e = 7
+for e =  1: Es %  e = 5
     if e<10
         emb = ['0',num2str(e)];
     else
@@ -190,6 +190,7 @@ for e =  1: Es %  e = 7
     %     figure(1); clf; imshow(C);
 
     % Sort by distance from upper left corner (max bcd).  
+    c_inds(isnan(c_inds)) = [];
     nuc_order = NucLabel(c_inds);
     [b,m,n] = unique(nuc_order);
     dists = d(m);
